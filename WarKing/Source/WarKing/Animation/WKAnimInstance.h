@@ -3,17 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "WKGameMode.generated.h"
+#include "Animation/AnimInstance.h"
+#include "WKAnimInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WARKING_API AWKGameMode : public AGameModeBase
+class WARKING_API UWKAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 	
-private:
-	AWKGameMode();
 };
