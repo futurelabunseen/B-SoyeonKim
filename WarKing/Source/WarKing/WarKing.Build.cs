@@ -7,8 +7,10 @@ public class WarKing : ModuleRules
 	public WarKing(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+
+        PublicIncludePaths.AddRange(new string[] { "WarKing" });
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
