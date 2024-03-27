@@ -33,7 +33,7 @@ AWKCharacterBase::AWKCharacterBase()
 	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
 
 	//ThirdPerson 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Game/OtherAssets/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> CharacterMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/OtherAssets/ParagonGreystone/Characters/Heroes/Greystone/Meshes/Greystone.Greystone'"));
 
 	if (CharacterMeshRef.Object)
 	{
@@ -42,7 +42,7 @@ AWKCharacterBase::AWKCharacterBase()
 
 	
 	//ThirdPerson
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Game/OtherAssets/Characters/Mannequins/Animations/ABP_Manny.ABP_Manny_C"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Game/WarKing/Animation/ABP_WKCharacter.ABP_WKCharacter_C"));
 
 	if (AnimInstanceClassRef.Class)
 	{
