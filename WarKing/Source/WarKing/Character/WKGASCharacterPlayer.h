@@ -23,6 +23,9 @@ private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
+	virtual void OnRep_Owner() override;
+
+protected:
 	void SetupGASInputComponent();
 
 	void GASInputPressed(int32 InputId);
@@ -36,5 +39,4 @@ protected:
 	// 플레이어에게 부여할 어빌리티의 목록들
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
-
 };

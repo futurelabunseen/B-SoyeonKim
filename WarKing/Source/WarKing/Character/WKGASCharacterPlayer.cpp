@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "Player/WKGASPlayerState.h"
 #include "EnhancedInputComponent.h"
+#include "WarKing.h"
 
 AWKGASCharacterPlayer::AWKGASCharacterPlayer()
 {
@@ -20,6 +21,18 @@ UAbilitySystemComponent* AWKGASCharacterPlayer::GetAbilitySystemComponent() cons
 void AWKGASCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));
+
+	// Owner 확인 Log
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("Owner : %s"), *OwnerActor->GetName());
+	}
+	else
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("No Owner"));
+	}
 
 	//빙의 타이밍에 ASC를 대입하기 위해
 	//TODO : 멀티플레이에서 전달 받기 위해서는 OnRep_PlayerState이벤트 함수에서 구현할 것
@@ -42,6 +55,28 @@ void AWKGASCharacterPlayer::PossessedBy(AController* NewController)
 			SetupGASInputComponent();
 		}
 	}
+
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
+}
+
+void AWKGASCharacterPlayer::OnRep_Owner()
+{
+	//클라에서 Owner값이 서버로부터 복제되며 함수 호출
+	WK_LOG(LogWKNetwork, Log, TEXT("%s %s"), *GetName(), TEXT("Begin"));
+
+	Super::OnRep_Owner();
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("Owner : %s"), *OwnerActor->GetName());
+	}
+	else
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("No Owner"));
+	}
+
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
 void AWKGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

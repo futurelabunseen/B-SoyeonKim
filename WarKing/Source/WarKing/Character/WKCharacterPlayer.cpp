@@ -49,13 +49,20 @@ void AWKCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APlayerController* PlayerController = CastChecked<APlayerController>(GetController());
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	
+	// Client의 경우 PlayerController가 없으므로 Skip
+	if (PlayerController)
 	{
-		Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		//Subsystem->RemoveMappingContext(DefaultMappingContext);
-	}
+		 //PlayerController = CastChecked<APlayerController>(GetController());
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->ClearAllMappings();
 
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			//Subsystem->RemoveMappingContext(DefaultMappingContext);
+		}
+	}
 }
 
 void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
