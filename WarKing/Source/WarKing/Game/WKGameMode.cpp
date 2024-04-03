@@ -4,6 +4,7 @@
 #include "Game/WKGameMode.h"
 #include "WarKing.h"
 #include "WKGameState.h"
+#include "Player/WKGASPlayerState.h"
 
 AWKGameMode::AWKGameMode()
 {
@@ -24,6 +25,7 @@ AWKGameMode::AWKGameMode()
 	}
 	
 	GameStateClass = AWKGameState::StaticClass();
+	PlayerStateClass = AWKGASPlayerState::StaticClass();
 }
 
 void AWKGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)

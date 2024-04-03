@@ -19,7 +19,9 @@ UAbilitySystemComponent* AWKGASCharacterPlayer::GetAbilitySystemComponent() cons
 }
 
 void AWKGASCharacterPlayer::PossessedBy(AController* NewController)
-{
+{	
+	// 서버 전용
+	//서버에서는 PossessedBy 함수 호출 -> 빙의 
 	Super::PossessedBy(NewController);
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));
 
@@ -34,34 +36,15 @@ void AWKGASCharacterPlayer::PossessedBy(AController* NewController)
 		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("No Owner"));
 	}
 
-	//빙의 타이밍에 ASC를 대입하기 위해
-	//TODO : 멀티플레이에서 전달 받기 위해서는 OnRep_PlayerState이벤트 함수에서 구현할 것
-	AWKGASPlayerState* GASPS = GetPlayerState<AWKGASPlayerState>();
-
-	if (GASPS)
-	{
-		ASC = GASPS->GetAbilitySystemComponent();
-		ASC->InitAbilityActorInfo(GASPS, this);
-
-		// 어빌리티의 순서대로 아이디 부여
-		int32 InputId = 0;
-		for (const auto& StartAbility : StartAbilities)
-		{
-			FGameplayAbilitySpec StartSpec(StartAbility);
-			StartSpec.InputID = InputId++;
-			ASC->GiveAbility(StartSpec);
-
-			// 서버에서 호출 되는 경우를 위해 SetupPlayerInputComponent()외에 중복 호출
-			SetupGASInputComponent();
-		}
-	}
-
+	GASAbilitySetting();
+	ConsoleCommandSetting();
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
 void AWKGASCharacterPlayer::OnRep_Owner()
 {
-	//클라에서 Owner값이 서버로부터 복제되며 함수 호출
+	// 클라는 OnPossess() 호출 X -> PossessedBy 함수 호출되지 않음
+	//클라에서 Owner값이 서버로부터 복제되며 함수 호출	
 	WK_LOG(LogWKNetwork, Log, TEXT("%s %s"), *GetName(), TEXT("Begin"));
 
 	Super::OnRep_Owner();
@@ -77,13 +60,64 @@ void AWKGASCharacterPlayer::OnRep_Owner()
 	}
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
+
+	ConsoleCommandSetting();
 }
 
 void AWKGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetupPlayerInputComponent"));
 	SetupGASInputComponent();
+}
+
+void AWKGASCharacterPlayer::OnRep_PlayerState()
+{
+	// 클라 전용 
+	Super::OnRep_PlayerState();
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("OnRep_PlayerState"));
+
+	// 서버에서 복제한 PlayerState가 존재하고 나서 GAS를 연결해야 하므로 여기서 호출
+	GASAbilitySetting();
+}
+
+void AWKGASCharacterPlayer::GASAbilitySetting()
+{	
+	AWKGASPlayerState* GASPS = GetPlayerState<AWKGASPlayerState>();
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("GASAbilitySetting"));
+
+	if (GASPS)
+	{
+		ASC = GASPS->GetAbilitySystemComponent();
+		ASC->InitAbilityActorInfo(GASPS, this);
+
+		for (const auto& StartAbility : StartAbilities)
+		{
+			FGameplayAbilitySpec StartSpec(StartAbility);
+			ASC->GiveAbility(StartSpec);
+		}
+
+		for (const auto& StartInputAbility : StartInputAbilities)
+		{
+			FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
+			StartSpec.InputID = StartInputAbility.Key;
+			ASC->GiveAbility(StartSpec);
+		}
+
+		SetupGASInputComponent();
+	}
+}
+
+void AWKGASCharacterPlayer::ConsoleCommandSetting()
+{
+	//GasAbility Debug 확인용 
+	//TODO: 현재 클라이언트에서 AutonomousProxy의 PlayerController가 아닌 SimulatedProxy의 PlayerController를 가져옴 수정해야 함
+	APlayerController* PlayerController = CastChecked<APlayerController>(GetOwner());
+
+	if (ensure(PlayerController))
+	{
+		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	}
 }
 
 void AWKGASCharacterPlayer::SetupGASInputComponent()
@@ -94,6 +128,7 @@ void AWKGASCharacterPlayer::SetupGASInputComponent()
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWKGASCharacterPlayer::GASInputPressed, 0);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AWKGASCharacterPlayer::GASInputReleased, 0);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AWKGASCharacterPlayer::GASInputPressed, 1);
 	}
 }
 
@@ -128,3 +163,5 @@ void AWKGASCharacterPlayer::GASInputReleased(int32 InputId)
 		}
 	}
 }
+
+

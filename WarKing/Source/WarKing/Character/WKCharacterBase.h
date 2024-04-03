@@ -14,4 +14,14 @@ class WARKING_API AWKCharacterBase : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AWKCharacterBase();
+	FORCEINLINE virtual class UAnimMontage* GetComboActionMontage() const { return ComboActionMontage; }
+	FORCEINLINE class UWKComboActionData* GetComboActionData() const { return ComboActionData; }
+
+protected:
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> ComboActionMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UWKComboActionData> ComboActionData;
 };

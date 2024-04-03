@@ -21,6 +21,7 @@ private:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void OnRep_PlayerState() override;
 
 protected:
 	virtual void OnRep_Owner() override;
@@ -31,6 +32,9 @@ protected:
 	void GASInputPressed(int32 InputId);
 	void GASInputReleased(int32 InputId);
 
+	void GASAbilitySetting();
+	void ConsoleCommandSetting();
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
@@ -39,4 +43,7 @@ protected:
 	// 플레이어에게 부여할 어빌리티의 목록들
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
 };
