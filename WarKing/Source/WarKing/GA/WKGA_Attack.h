@@ -29,6 +29,10 @@ protected:
 	UFUNCTION()
 	void OnInterruptedCallback();
 
+	FName GetNextSection();
+	void StartComboTimer();
+	void CheckComboInput();
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UWKComboActionData> CurrentComboData;

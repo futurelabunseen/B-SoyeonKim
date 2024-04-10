@@ -44,7 +44,7 @@ void AWKGASCharacterPlayer::PossessedBy(AController* NewController)
 void AWKGASCharacterPlayer::OnRep_Owner()
 {
 	// 클라는 OnPossess() 호출 X -> PossessedBy 함수 호출되지 않음
-	//클라에서 Owner값이 서버로부터 복제되며 함수 호출	
+	// 클라에서 Owner값이 서버로부터 복제되며 함수 호출	
 	WK_LOG(LogWKNetwork, Log, TEXT("%s %s"), *GetName(), TEXT("Begin"));
 
 	Super::OnRep_Owner();
@@ -110,8 +110,6 @@ void AWKGASCharacterPlayer::GASAbilitySetting()
 
 void AWKGASCharacterPlayer::ConsoleCommandSetting()
 {
-	//GasAbility Debug 확인용 
-	//TODO: 현재 클라이언트에서 AutonomousProxy의 PlayerController가 아닌 SimulatedProxy의 PlayerController를 가져옴 수정해야 함
 	APlayerController* PlayerController = CastChecked<APlayerController>(GetOwner());
 
 	if (ensure(PlayerController))
