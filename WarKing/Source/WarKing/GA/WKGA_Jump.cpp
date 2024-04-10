@@ -3,6 +3,7 @@
 
 #include "GA/WKGA_Jump.h"
 #include "GameFramework/Character.h"
+#include "GA/AT/WKAT_JumpAndWaitForLanding.h"
 
 UWKGA_Jump::UWKGA_Jump()
 {
@@ -26,8 +27,25 @@ bool UWKGA_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 void UWKGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	//ability Task로 Jump하도록
+	UWKAT_JumpAndWaitForLanding* JumpAndWaitingForLandingTask = UWKAT_JumpAndWaitForLanding::CreateTask(this);
+
+	// Landed 콜백 Delegate binding
+	JumpAndWaitingForLandingTask->OnComplete.AddDynamic(this, &UWKGA_Jump::OnLandedCallback);
+	JumpAndWaitingForLandingTask->ReadyForActivation();
 }
 
 void UWKGA_Jump::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
+	// 상태가 변하니까 const 없이
+	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
+	Character->StopJumping();
+}
+
+void UWKGA_Jump::OnLandedCallback()
+{
+	bool bReplicatedEndAbility = true;
+	bool bWasCancelled = false;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }

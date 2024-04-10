@@ -37,9 +37,6 @@ void UWKGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 void UWKGA_Attack::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	UE_LOG(LogTemp, Log, TEXT("Begin"));
-
-
 	if (!ComboTimerHandle.IsValid())
 	{
 		HasNextComboInput = false;
@@ -70,7 +67,7 @@ void UWKGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 
 void UWKGA_Attack::OnCompleteCallback()
 {
-	UE_LOG(LogTemp, Log, TEXT("OnCompleteCallback"));
+	//UE_LOG(LogTemp, Log, TEXT("OnCompleteCallback"));
 	bool bReplicatedEndAbility = true;
 	bool bWasCancelled = false;
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
@@ -78,7 +75,7 @@ void UWKGA_Attack::OnCompleteCallback()
 
 void UWKGA_Attack::OnInterruptedCallback()
 {
-	UE_LOG(LogTemp, Log, TEXT("OnInterruptedCallback"));
+	//UE_LOG(LogTemp, Log, TEXT("OnInterruptedCallback"));
 	bool bReplicatedEndAbility = true;
 
 	//취소된 것이기 때문에 Camcelled true 설정
@@ -90,8 +87,6 @@ FName UWKGA_Attack::GetNextSection()
 {
 	CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, CurrentComboData->MaxComboCount);
 	FName NextSection = *FString::Printf(TEXT("%s%d"), *CurrentComboData->MontageSectionNamePrefix, CurrentCombo);
-
-	UE_LOG(LogTemp, Log, TEXT("GetNextSection Name : %s"), *NextSection.ToString());
 	return NextSection;
 }
 
@@ -103,8 +98,6 @@ void UWKGA_Attack::StartComboTimer()
 	ensure(CurrentComboData->EffectiveFrameCount.IsValidIndex(ComboIndex));
 
 	const float ComboEffectiveTime = CurrentComboData->EffectiveFrameCount[ComboIndex] / CurrentComboData->FrameRate;
-
-	UE_LOG(LogTemp, Log, TEXT("ComboEffectiveTime : %f"), ComboEffectiveTime);
 	if (ComboEffectiveTime > 0.0f)
 	{
 		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &UWKGA_Attack::CheckComboInput, ComboEffectiveTime, false);
