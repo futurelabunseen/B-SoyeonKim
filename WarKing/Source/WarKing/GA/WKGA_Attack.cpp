@@ -65,24 +65,6 @@ void UWKGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 	HasNextComboInput = false;
 }
 
-void UWKGA_Attack::OnCompleteCallback()
-{
-	//UE_LOG(LogTemp, Log, TEXT("OnCompleteCallback"));
-	bool bReplicatedEndAbility = true;
-	bool bWasCancelled = false;
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
-}
-
-void UWKGA_Attack::OnInterruptedCallback()
-{
-	//UE_LOG(LogTemp, Log, TEXT("OnInterruptedCallback"));
-	bool bReplicatedEndAbility = true;
-
-	//취소된 것이기 때문에 Camcelled true 설정
-	bool bWasCancelled = true;
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
-}
-
 FName UWKGA_Attack::GetNextSection()
 {
 	CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, CurrentComboData->MaxComboCount);
@@ -113,7 +95,7 @@ void UWKGA_Attack::CheckComboInput()
 	{
 		if (CurrentCombo >= CurrentComboData->MaxComboCount)
 		{
-			OnInterruptedCallback();
+			OnCompleteCallback();
 		}
 		else
 		{
@@ -123,4 +105,34 @@ void UWKGA_Attack::CheckComboInput()
 			StartComboTimer();
 		}		
 	}
+}
+
+void UWKGA_Attack::OnRep_CanAttack()
+{
+	//if (!bCanAttack)
+	//{
+	//	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	//}
+	//else
+	//{
+	//	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	//}
+}
+
+void UWKGA_Attack::OnCompleteCallback()
+{
+	//UE_LOG(LogTemp, Log, TEXT("OnCompleteCallback"));
+	bool bReplicatedEndAbility = true;
+	bool bWasCancelled = false;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+}
+
+void UWKGA_Attack::OnInterruptedCallback()
+{
+	//UE_LOG(LogTemp, Log, TEXT("OnInterruptedCallback"));
+	bool bReplicatedEndAbility = true;
+
+	//취소된 것이기 때문에 Camcelled true 설정
+	bool bWasCancelled = true;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }

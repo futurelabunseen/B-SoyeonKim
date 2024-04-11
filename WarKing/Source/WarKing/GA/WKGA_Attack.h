@@ -33,6 +33,11 @@ protected:
 	void StartComboTimer();
 	void CheckComboInput();
 
+	UPROPERTY(ReplicatedUsing = OnRep_CanAttack)
+	uint8 bCanAttack : 1;
+
+	UFUNCTION()
+	void OnRep_CanAttack();
 protected:
 	UPROPERTY()
 	TObjectPtr<class UWKComboActionData> CurrentComboData;

@@ -10,6 +10,9 @@ AWKGASPlayerState::AWKGASPlayerState()
 
 	// 서버에서 클라로 계속 전송이 되어야 하므로 속성 설정
 	ASC->SetIsReplicated(true);
+
+	// Mixed모드로 설정해야 네트워크 대역폭에서 최고의 성능을 얻을 수 있다.
+	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 }
 
 UAbilitySystemComponent* AWKGASPlayerState::GetAbilitySystemComponent() const
