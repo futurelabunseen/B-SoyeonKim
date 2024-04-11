@@ -27,10 +27,10 @@ void UWKGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	UE_LOG(LogTemp, Log, TEXT("ActivateAbilityAttack : %s"), *WKCharacter->GetName());
 
 	// 정상적으로 동작
-	if (!WKCharacter->HasAuthority())
-	{
-		ServerRPCAttack(0.1f);
-	}
+	//if (!WKCharacter->HasAuthority())
+	//{
+	//	ServerRPCAttack(0.1f);
+	//}
 }
 void UWKGA_AttackHitCheck::InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {

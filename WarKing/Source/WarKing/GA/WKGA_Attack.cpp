@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Data/WKComboActionData.h"
 #include "Net/UnrealNetwork.h"
+#include "Abilities/Tasks/AbilityTask.h"
 #include "GameFramework/PlayerController.h"
 #include "GA/AT/WKAT_PlayMontageAndWait.h"
 #include "GameplayTask.h"
@@ -30,9 +31,12 @@ void UWKGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	WKCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 
 	//UAbilityTask_PlayMontageAndWait에 대한 Instance 생성
-	//UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), WKCharacter->GetComboActionMontage(), 1.0f, GetNextSection());
-	UWKAT_PlayMontageAndWait* PlayAttackTask = Cast<UWKAT_PlayMontageAndWait>(UWKAT_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), WKCharacter->GetComboActionMontage(), 1.0f, GetNextSection()));
+	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), WKCharacter->GetComboActionMontage(), 1.0f, GetNextSection());
 
+	//UWKAT_PlayMontageAndWait* PlayAttackTask = UAbilityTask::NewAbilityTask<UWKAT_PlayMontageAndWait>(UWKAT_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), WKCharacter->GetComboActionMontage(), 1.0f, GetNextSection()), FName(""));
+
+	//UWKAT_PlayMontageAndWait* PlayAttackTask = NewObject<UWKAT_PlayMontageAndWait>(UWKAT_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayAttack"), WKCharacter->GetComboActionMontage(), 1.0f, GetNextSection()), FName(""));
+	
 	//인자X 멀티캐스트 델리게이트 Binding
 	PlayAttackTask->OnCompleted.AddDynamic(this, &UWKGA_Attack::OnCompleteCallback);
 	PlayAttackTask->OnInterrupted.AddDynamic(this, &UWKGA_Attack::OnInterruptedCallback);
@@ -87,6 +91,7 @@ void UWKGA_Attack::CheckComboInput()
 		}
 		else
 		{
+			UE_LOG(LogTemp, Log, TEXT("GetLocalRole : %s"), GetOwningActorFromActorInfo()->GetLocalRole() == ROLE_Authority? TEXT("Authority") : TEXT("No Authority"));
 			// MontageJumpToSection 함수 자체는 Ability 클래스 안에 캐릭터를 아바타로 가지고 있는 경우 편하게 사용하도록 제공하고 있음
 			MontageJumpToSection(GetNextSection());
 			HasNextComboInput = false;
@@ -132,7 +137,7 @@ void UWKGA_Attack::ClientRPCPlayAnimation_Implementation()
 
 void UWKGA_Attack::OnCompleteCallback()
 {
-	//UE_LOG(LogTemp, Log, TEXT("OnCompleteCallback"));
+	UE_LOG(LogTemp, Log, TEXT("OnCompleteCallback"));
 	bool bReplicatedEndAbility = true;
 	bool bWasCancelled = false;
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
@@ -140,7 +145,7 @@ void UWKGA_Attack::OnCompleteCallback()
 
 void UWKGA_Attack::OnInterruptedCallback()
 {
-	//UE_LOG(LogTemp, Log, TEXT("OnInterruptedCallback"));
+	UE_LOG(LogTemp, Log, TEXT("OnInterruptedCallback"));
 	bool bReplicatedEndAbility = true;
 
 	//취소된 것이기 때문에 Camcelled true 설정
