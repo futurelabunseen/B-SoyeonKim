@@ -24,6 +24,8 @@ void UWKGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	//AttackTraceTask->ReadyForActivation();
 	AWKCharacterBase* WKCharacter = CastChecked<AWKCharacterBase>(ActorInfo->AvatarActor.Get());
 
+	UE_LOG(LogTemp, Log, TEXT("ActivateAbilityAttack : %s"), *WKCharacter->GetName());
+
 	// 정상적으로 동작
 	if (!WKCharacter->HasAuthority())
 	{
@@ -36,9 +38,11 @@ void UWKGA_AttackHitCheck::InputPressed(const FGameplayAbilitySpecHandle Handle,
 void UWKGA_AttackHitCheck::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
 {
 }
+
 void UWKGA_AttackHitCheck::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 }
+
 void UWKGA_AttackHitCheck::OnCompleteCallback()
 {
 }
@@ -48,6 +52,9 @@ void UWKGA_AttackHitCheck::OnInterruptedCallback()
 bool UWKGA_AttackHitCheck::ServerRPCAttack_Validate(float AttackStartTime)
 {
 	return true;
+	bool bReplicatedEndAbility = true;
+	bool bWasCancelled = false;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }
 
 void UWKGA_AttackHitCheck::ServerRPCAttack_Implementation(float AttackStartTime)
@@ -55,7 +62,9 @@ void UWKGA_AttackHitCheck::ServerRPCAttack_Implementation(float AttackStartTime)
 
 	UE_LOG(LogTemp, Log, TEXT("ServerRPCAttack_Implementation"));
 
-
+	bool bReplicatedEndAbility = true;
+	bool bWasCancelled = false;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }
 
 void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle)

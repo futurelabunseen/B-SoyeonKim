@@ -28,6 +28,7 @@ protected:
 
 	UFUNCTION()
 	void OnInterruptedCallback();
+
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerRPCAttack(float AttackStartTime);
 

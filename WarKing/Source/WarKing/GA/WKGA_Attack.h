@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Character/WKGASCharacterPlayer.h"
 #include "WKGA_Attack.generated.h"
 
 /**
@@ -33,11 +34,12 @@ protected:
 	void StartComboTimer();
 	void CheckComboInput();
 
-	UPROPERTY(ReplicatedUsing = OnRep_CanAttack)
-	uint8 bCanAttack : 1;
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerRPCPlayAnimation(AWKCharacterBase* Character);
 
-	UFUNCTION()
-	void OnRep_CanAttack();
+	UFUNCTION(Client, Unreliable)
+	void ClientRPCPlayAnimation();
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UWKComboActionData> CurrentComboData;
