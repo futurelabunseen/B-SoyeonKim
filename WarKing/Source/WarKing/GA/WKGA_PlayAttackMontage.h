@@ -3,39 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
 #include "GA/WKGameplayAbility.h"
-#include "WKGA_AttackHitCheck.generated.h"
+#include "WKGA_PlayAttackMontage.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WARKING_API UWKGA_AttackHitCheck : public UWKGameplayAbility
+class WARKING_API UWKGA_PlayAttackMontage : public UWKGameplayAbility
 {
 	GENERATED_BODY()
 	
 public:
-	UWKGA_AttackHitCheck();
+	UWKGA_PlayAttackMontage();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	UFUNCTION()
-	void OnCompleteCallback();
+	UPROPERTY()
+	TObjectPtr<class UWKComboActionData> CurrentComboData;
 
-	UFUNCTION()
-	void OnInterruptedCallback();
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerRPCAttack(float AttackStartTime);
-
-protected:
-
-	UFUNCTION()
-	void OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 };
-	

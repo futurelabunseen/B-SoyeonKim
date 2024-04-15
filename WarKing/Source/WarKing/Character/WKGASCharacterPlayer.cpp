@@ -6,6 +6,8 @@
 #include "Player/WKGASPlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "WarKing.h"
+#include "Tag/WKGameplayTag.h"
+#include "GameplayTagContainer.h"
 
 AWKGASCharacterPlayer::AWKGASCharacterPlayer()
 {
@@ -89,8 +91,9 @@ void AWKGASCharacterPlayer::GASAbilitySetting()
 	if (GASPS)
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
+		ensure(ASC);
 		ASC->InitAbilityActorInfo(GASPS, this);
-
+		
 		for (const auto& StartAbility : StartAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartAbility);
@@ -118,6 +121,14 @@ void AWKGASCharacterPlayer::ConsoleCommandSetting()
 	}
 }
 
+bool AWKGASCharacterPlayer::HasGameplayTag(FGameplayTag Tag) const
+{
+	if (IsValid(ASC))
+		return ASC->HasMatchingGameplayTag(Tag);
+	else
+		return false;
+}
+
 void AWKGASCharacterPlayer::SetupGASInputComponent()
 {
 	if (IsValid(ASC) && IsValid(InputComponent))
@@ -126,7 +137,7 @@ void AWKGASCharacterPlayer::SetupGASInputComponent()
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AWKGASCharacterPlayer::GASInputPressed, 0);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AWKGASCharacterPlayer::GASInputReleased, 0);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AWKGASCharacterPlayer::GASInputPressed, 1);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AWKGASCharacterPlayer::GASInputPressed, CHARACTER_ACTION_ATTACK);
 	}
 }
 
@@ -146,6 +157,13 @@ void AWKGASCharacterPlayer::GASInputPressed(int32 InputId)
 			ASC->TryActivateAbility(Spec->Handle);
 		}
 	}
+}
+
+void AWKGASCharacterPlayer::GASInputPressed(const FGameplayTag InputTag)
+{
+	FGameplayTagContainer Container;
+	Container.AddTag(InputTag);
+	ASC->TryActivateAbilitiesByTag(Container);
 }
 
 void AWKGASCharacterPlayer::GASInputReleased(int32 InputId)

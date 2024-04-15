@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "GA/WKGameplayAbility.h"
 #include "Character/WKGASCharacterPlayer.h"
 #include "WKGA_Attack.generated.h"
 
@@ -11,15 +12,14 @@
  * 
  */
 UCLASS()
-class WARKING_API UWKGA_Attack : public UGameplayAbility
+class WARKING_API UWKGA_Attack : public UWKGameplayAbility
 {
 	GENERATED_BODY()
-	
+
 public:
 	UWKGA_Attack();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
@@ -30,21 +30,25 @@ protected:
 	UFUNCTION()
 	void OnInterruptedCallback();
 
-	FName GetNextSection();
-	void StartComboTimer();
-	void CheckComboInput();
+	UFUNCTION()
+	void OnCancelledCallback();
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerRPCPlayAnimation(AWKCharacterBase* Character);
-
-	UFUNCTION(Client, Unreliable)
-	void ClientRPCPlayAnimation();
+	UFUNCTION()
+	void PlayMontage(FGameplayEventData Data);
 
 protected:
-	UPROPERTY()
-	TObjectPtr<class UWKComboActionData> CurrentComboData;
-
 	uint8 CurrentCombo = 0;
 	FTimerHandle ComboTimerHandle;
 	bool HasNextComboInput = false;
+
+
+private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	uint8 IsFirstAttack : 1;
+
+	UPROPERTY()
+	TObjectPtr<class UWKComboActionData> CurrentComboData;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> ComboAttackMontage;
 };

@@ -1,6 +1,4 @@
 #pragma once
 
-#include "GameplayTagContainer.h"
-
-//#define ABTAG_ACTOR_ROTATE FGameplayTag::RequestGameplayTag(FName("Actor.Action.Rotate"))
-//#define ABTAG_ACTOR_ISROTATING FGameplayTag::RequestGameplayTag(FName("Actor.State.IsRotating"))
+#define CHARACTER_ACTION_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack"))
+#define CHARACTER_ACTION_NEXTATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.NextAttack"))

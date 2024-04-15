@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "GA/WKGameplayAbility.h"
 #include "WKGA_Jump.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WARKING_API UWKGA_Jump : public UGameplayAbility
+class WARKING_API UWKGA_Jump : public UWKGameplayAbility
 {
 	GENERATED_BODY()
 	

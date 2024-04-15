@@ -7,8 +7,7 @@
 
 UWKGA_Jump::UWKGA_Jump()
 {
-	// 이렇게 액터마다 하나씩 존재하도록 해야 (Instance) 상태 보존 가능
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	
 }
 
 bool UWKGA_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
