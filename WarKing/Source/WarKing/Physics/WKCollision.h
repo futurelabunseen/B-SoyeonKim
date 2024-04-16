@@ -3,6 +3,6 @@
 
 #include "CoreMinimal.h"
 
-#define CPROFILE_ABCAPSULE TEXT("WKCapsule")
-#define CPROFILE_ABTRIGGER TEXT("WKTrigger")
-#define CCHANNEL_ABACTION ECC_GameTraceChannel1
+#define CPROFILE_WKCAPSULE TEXT("WKCapsule")
+#define CPROFILE_WKTRIGGER TEXT("WKTrigger")
+#define CCHANNEL_WKACTION ECC_GameTraceChannel1

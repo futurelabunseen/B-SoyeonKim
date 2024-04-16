@@ -47,7 +47,7 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 	const FVector Start = Character->GetActorLocation() + Forward * Character->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	const FVector End = Start + Forward * AttackRange;
 
-	bool HitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, CCHANNEL_ABACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
+	bool HitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, CCHANNEL_WKACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 

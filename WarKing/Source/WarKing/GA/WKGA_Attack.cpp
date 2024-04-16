@@ -51,9 +51,9 @@ void UWKGA_Attack::PlayMontage(FGameplayEventData Data)
 	UAbilityTask_PlayMontageAndWait* PlayAttackTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, TEXT("None"), ComboAttackMontage);
 	PlayAttackTask->OnCompleted.AddDynamic(this, &ThisClass::OnCompleteCallback);
-	PlayAttackTask->OnBlendOut.AddDynamic(this, &ThisClass::OnCompleteCallback);
-	PlayAttackTask->OnInterrupted.AddDynamic(this, &ThisClass::OnCompleteCallback);
-	PlayAttackTask->OnCancelled.AddDynamic(this, &ThisClass::OnCompleteCallback);
+	PlayAttackTask->OnBlendOut.AddDynamic(this, &ThisClass::OnCancelledCallback);
+	PlayAttackTask->OnInterrupted.AddDynamic(this, &ThisClass::OnInterruptedCallback);
+	PlayAttackTask->OnCancelled.AddDynamic(this, &ThisClass::OnCancelledCallback);
 	PlayAttackTask->ReadyForActivation();
 }
 

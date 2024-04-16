@@ -9,7 +9,7 @@ UWKAT_Trace::UWKAT_Trace()
 {
 }
 
-UWKAT_Trace* UWKAT_Trace::CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<class UWKAT_Trace> TargetActorClass)
+UWKAT_Trace* UWKAT_Trace::CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<class AWKTA_Trace> TargetActorClass)
 {
 	UWKAT_Trace* NewTask = NewAbilityTask<UWKAT_Trace>(OwningAbility);
 	NewTask->TargetActorClass = TargetActorClass;
@@ -40,7 +40,6 @@ void UWKAT_Trace::SpawnAndInitializeTargetActor()
 {
 	SpawnedTargetActor = Cast<AWKTA_Trace>(Ability->GetWorld()->SpawnActorDeferred<AGameplayAbilityTargetActor>(TargetActorClass, FTransform::Identity, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn));
 	
-	
 	if (SpawnedTargetActor)
 	{
 		SpawnedTargetActor->SetShowDebug(true);
@@ -60,14 +59,18 @@ void UWKAT_Trace::FinalizeTargetActor()
 	{
 		// 최종 Transform을 ASC의 Avatar의 Transform으로 바꿔치기
 		const FTransform SpawnTransform = ASC->GetAvatarActor()->GetTransform();
-		SpawnedTargetActor->FinishSpawning(SpawnTransform);
 
-		// 오류
-		ASC->SpawnedTargetActors.Push(SpawnedTargetActor);
-		SpawnedTargetActor->StartTargeting(Ability);
+		if (SpawnedTargetActor)
+		{
+			SpawnedTargetActor->FinishSpawning(SpawnTransform);
 
-		// TA의 ConfirmTargetingAndContinue가 실행됨
-		SpawnedTargetActor->ConfirmTargeting();
+			// 오류
+			ASC->SpawnedTargetActors.Push(SpawnedTargetActor);
+			SpawnedTargetActor->StartTargeting(Ability);
+
+			// TA의 ConfirmTargetingAndContinue가 실행됨
+			SpawnedTargetActor->ConfirmTargeting();
+		}	
 	}
 }
 

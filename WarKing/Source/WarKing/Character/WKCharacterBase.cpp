@@ -4,6 +4,7 @@
 #include "Character/WKCharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Physics/WKCollision.h"
 
 
 // Sets default values
@@ -16,7 +17,7 @@ AWKCharacterBase::AWKCharacterBase()
 
 	// Capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_WKCAPSULE);
 
 	// Movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -30,6 +31,8 @@ AWKCharacterBase::AWKCharacterBase()
 	// Mesh
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -100.0f), FRotator(0.0f, -90.0f, 0.0f));
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	//TODO : NoCollision으로 해야하는지 체크하기
 	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
 
  
