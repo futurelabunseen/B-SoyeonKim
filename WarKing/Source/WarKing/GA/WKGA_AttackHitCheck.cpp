@@ -9,6 +9,7 @@
 #include "Character/WKCharacterBase.h"
 #include "Warking.h"
 #include "Attribute/WKCharacterAttributeSet.h"
+#include "Tag/WKGameplayTag.h"
 
 UWKGA_AttackHitCheck::UWKGA_AttackHitCheck()
 {
@@ -34,27 +35,35 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		UE_LOG(LogTemp, Log, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
 		
 		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-		
-		if (!SourceASC || !TargetASC)
-		{
-			UE_LOG(LogTemp, Log, TEXT("UWKGA_AttackHitCheck::OnTraceResultCallback : ASC not Found!"));
-			return;
-		}
-		
+		//UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+		//
+		//if (!SourceASC || !TargetASC)
+		//{
+		//	UE_LOG(LogTemp, Log, TEXT("UWKGA_AttackHitCheck::OnTraceResultCallback : ASC not Found!"));
+		//	return;
+		//}
+		//
 		const UWKCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UWKCharacterAttributeSet>();
 
-		// GetSet은 const로 지정되어 있어서 값을 변경하기 위해 의도적으로 const_cast를 사용. 좋은방법이 아님 GameplayEffect로 변경할 예정
-		UWKCharacterAttributeSet* TargetAttribute = const_cast<UWKCharacterAttributeSet*>(TargetASC->GetSet<UWKCharacterAttributeSet>());
+		//// GetSet은 const로 지정되어 있어서 값을 변경하기 위해 의도적으로 const_cast를 사용. 좋은방법이 아님 GameplayEffect로 변경할 예정
+		//UWKCharacterAttributeSet* TargetAttribute = const_cast<UWKCharacterAttributeSet*>(TargetASC->GetSet<UWKCharacterAttributeSet>());
 
-		if (!SourceAttribute || !SourceAttribute)
+		//if (!SourceAttribute || !TargetAttribute)
+		//{
+		//	UE_LOG(LogTemp, Log, TEXT("UWKGA_AttackHitCheck::OnTraceResultCallback : Attribute not Found!"));
+		//	return;
+		//}
+		//
+		//const float AttackDamage = SourceAttribute->GetAttackRate();
+		//TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
+
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect);
+
+		if (EffectSpecHandle.IsValid())
 		{
-			UE_LOG(LogTemp, Log, TEXT("UWKGA_AttackHitCheck::OnTraceResultCallback : Attribute not Found!"));
-			return;
+			EffectSpecHandle.Data->SetSetByCallerMagnitude(DATA_DAMAGE, -SourceAttribute->GetAttackRate());
+			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
 		}
-		
-		const float AttackDamage = SourceAttribute->GetAttackRate();
-		TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
 	}
 
 	bool bReplicatedEndAbility = true;
