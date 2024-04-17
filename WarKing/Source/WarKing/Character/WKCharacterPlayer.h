@@ -5,23 +5,41 @@
 #include "CoreMinimal.h"
 #include "Character/WKCharacterBase.h"
 #include "InputActionValue.h"
+#include "AbilitySystemInterface.h"
 #include "WKCharacterPlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WARKING_API AWKCharacterPlayer : public AWKCharacterBase
+class WARKING_API AWKCharacterPlayer : public AWKCharacterBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-	public:
+private:
 	AWKCharacterPlayer();
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void OnRep_PlayerState() override;
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnRep_Owner() override;
+
+	void SetupGASInputComponent();
+
+	void GASInputPressed(int32 InputId);
+	void GASInputPressed(const FGameplayTag InputTag);
+	void GASInputReleased(int32 InputId);
+
+	void GASAbilitySetting();
+	void ConsoleCommandSetting();
 
 public:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UFUNCTION()
+	bool HasGameplayTag(FGameplayTag Tag) const;
+
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	// Camera Section
 protected:
@@ -50,4 +68,18 @@ protected:
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+
+// GAS Section
+protected:
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TObjectPtr<class UAbilitySystemComponent> ASC;
+
+	// 플레이어에게 부여할 어빌리티의 목록들
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
+
 };

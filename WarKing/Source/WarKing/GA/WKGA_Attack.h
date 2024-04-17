@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
 #include "GA/WKGameplayAbility.h"
-#include "Character/WKGASCharacterPlayer.h"
 #include "WKGA_Attack.generated.h"
 
 /**

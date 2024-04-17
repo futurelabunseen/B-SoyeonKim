@@ -64,7 +64,6 @@ void UWKAT_Trace::FinalizeTargetActor()
 		{
 			SpawnedTargetActor->FinishSpawning(SpawnTransform);
 
-			// ¿À·ù
 			ASC->SpawnedTargetActors.Push(SpawnedTargetActor);
 			SpawnedTargetActor->StartTargeting(Ability);
 

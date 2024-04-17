@@ -7,9 +7,17 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Player/WKGASPlayerState.h"
+#include "WarKing.h"
+#include "AbilitySystemComponent.h"
+#include "Tag/WKGameplayTag.h"
+#include "GameplayTagContainer.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
-{
+{	
+	// player가 빙의할 때 playerState에서 생성된 ASC값을 대입할 것임
+	ASC = nullptr;
+
 	// Camera
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -60,15 +68,71 @@ void AWKCharacterPlayer::BeginPlay()
 	// Client의 경우 PlayerController가 없으므로 Skip
 	if (PlayerController)
 	{
-		 //PlayerController = CastChecked<APlayerController>(GetController());
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->ClearAllMappings();
-
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-			//Subsystem->RemoveMappingContext(DefaultMappingContext);
 		}
 	}
+}
+
+UAbilitySystemComponent* AWKCharacterPlayer::GetAbilitySystemComponent() const
+{
+	return ASC;
+}
+
+void AWKCharacterPlayer::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));
+
+	// Owner 확인 Log
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("Owner : %s"), *OwnerActor->GetName());
+	}
+	else
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("No Owner"));
+	}
+
+	GASAbilitySetting();
+	ConsoleCommandSetting();
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
+}
+
+void AWKCharacterPlayer::OnRep_Owner()
+{
+	// 클라는 OnPossess() 호출 X -> PossessedBy 함수 호출되지 않음
+	// 클라에서 Owner값이 서버로부터 복제되며 함수 호출	
+	WK_LOG(LogWKNetwork, Log, TEXT("%s %s"), *GetName(), TEXT("Begin"));
+
+	Super::OnRep_Owner();
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("Owner : %s"), *OwnerActor->GetName());
+	}
+	else
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("No Owner"));
+	}
+
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
+
+	ConsoleCommandSetting();
+}
+
+void AWKCharacterPlayer::OnRep_PlayerState()
+{
+	// 클라 전용 
+	Super::OnRep_PlayerState();
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("OnRep_PlayerState"));
+
+	// 서버에서 복제한 PlayerState가 존재하고 나서 GAS를 연결해야 하므로 여기서 호출
+	GASAbilitySetting();
 }
 
 void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -78,10 +142,105 @@ void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* Player
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 
 	//GAS에서 Binding
-	//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-	//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AWKCharacterPlayer::Move);
-	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AWKCharacterPlayer::Look);
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
+
+	SetupGASInputComponent();
+}
+
+void AWKCharacterPlayer::SetupGASInputComponent()
+{
+	if (IsValid(ASC) && IsValid(InputComponent))
+	{
+		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, 0);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::GASInputReleased, 0);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, CHARACTER_ACTION_ATTACK);
+	}
+}
+
+void AWKCharacterPlayer::GASInputPressed(int32 InputId)
+{
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
+
+	if (Spec)
+	{
+		Spec->InputPressed = true;
+		if (Spec->IsActive())
+		{
+			ASC->AbilitySpecInputPressed(*Spec);
+		}
+		else
+		{
+			ASC->TryActivateAbility(Spec->Handle);
+		}
+	}
+}
+
+void AWKCharacterPlayer::GASInputPressed(const FGameplayTag InputTag)
+{
+	FGameplayTagContainer Container;
+	Container.AddTag(InputTag);
+	ASC->TryActivateAbilitiesByTag(Container);
+}
+
+void AWKCharacterPlayer::GASInputReleased(int32 InputId)
+{
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
+
+	if (Spec)
+	{
+		Spec->InputPressed = false;
+		if (Spec->IsActive())
+		{
+			ASC->AbilitySpecInputReleased(*Spec);
+		}
+	}
+}
+
+void AWKCharacterPlayer::GASAbilitySetting()
+{
+	AWKGASPlayerState* GASPS = GetPlayerState<AWKGASPlayerState>();
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("GASAbilitySetting"));
+
+	if (GASPS)
+	{
+		ASC = GASPS->GetAbilitySystemComponent();
+		ensure(ASC);
+		ASC->InitAbilityActorInfo(GASPS, this);
+
+		for (const auto& StartAbility : StartAbilities)
+		{
+			FGameplayAbilitySpec StartSpec(StartAbility);
+			ASC->GiveAbility(StartSpec);
+		}
+
+		for (const auto& StartInputAbility : StartInputAbilities)
+		{
+			FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
+			StartSpec.InputID = StartInputAbility.Key;
+			ASC->GiveAbility(StartSpec);
+		}
+	}
+}
+
+void AWKCharacterPlayer::ConsoleCommandSetting()
+{
+	APlayerController* PlayerController = CastChecked<APlayerController>(GetOwner());
+
+	if (ensure(PlayerController))
+	{
+		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	}
+}
+
+bool AWKCharacterPlayer::HasGameplayTag(FGameplayTag Tag) const
+{
+	if (IsValid(ASC))
+		return ASC->HasMatchingGameplayTag(Tag);
+	else
+		return false;
 }
 
 void AWKCharacterPlayer::Move(const FInputActionValue& Value)
