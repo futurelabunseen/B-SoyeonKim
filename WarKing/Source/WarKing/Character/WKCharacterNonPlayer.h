@@ -3,25 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerState.h"
+#include "Character/WKCharacterBase.h"
 #include "AbilitySystemInterface.h"
-#include "WKGASPlayerState.generated.h"
+#include "WKCharacterNonPlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WARKING_API AWKGASPlayerState : public APlayerState, public IAbilitySystemInterface
+class WARKING_API AWKCharacterNonPlayer : public AWKCharacterBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
-public:
-	AWKGASPlayerState();
+private:
 
+	AWKCharacterNonPlayer();
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void PossessedBy(AController* NewController) override;
+
 
 protected:
-
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
