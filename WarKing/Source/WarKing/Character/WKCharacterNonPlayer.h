@@ -21,11 +21,16 @@ private:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 
-
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
 	UPROPERTY()
 	TObjectPtr<class UWKCharacterAttributeSet> AttributeSet;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<class UGameplayEffect> InitStatEffect;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	float Level;
 };

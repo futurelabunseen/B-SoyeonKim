@@ -21,6 +21,8 @@ void UWKGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	UE_LOG(LogTemp, Log, TEXT("ActivateAbilityAttack========="));
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	CurrentLevel = TriggerEventData->EventMagnitude;
+
 	UWKAT_Trace* AttackTraceTask = UWKAT_Trace::CreateTask(this, AWKTA_Trace::StaticClass());
 	AttackTraceTask->OnComplete.AddDynamic(this, &UWKGA_AttackHitCheck::OnTraceResultCallback);
 	AttackTraceTask->ReadyForActivation();
@@ -57,7 +59,7 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		//const float AttackDamage = SourceAttribute->GetAttackRate();
 		//TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
 
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect);
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
 
 		if (EffectSpecHandle.IsValid())
 		{

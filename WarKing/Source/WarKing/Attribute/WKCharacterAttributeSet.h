@@ -31,9 +31,12 @@ public:
 	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, MaxAttackRate);
 	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, Damage);
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
 protected:
 
@@ -60,6 +63,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxHealth;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData Damage;
 
 	friend class UWKGE_AttackDamage;
 };

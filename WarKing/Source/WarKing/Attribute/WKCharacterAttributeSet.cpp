@@ -2,6 +2,7 @@
 
 
 #include "Attribute/WKCharacterAttributeSet.h"
+#include "GameplayEffectExtension.h"
 
 UWKCharacterAttributeSet::UWKCharacterAttributeSet() : 
 	AttackRange(100.0f),
@@ -10,23 +11,41 @@ UWKCharacterAttributeSet::UWKCharacterAttributeSet() :
 	MaxAttackRange(300.0f),
 	MaxAttackRadius(150.0f),
 	MaxAttackRate(100.0f),
-	MaxHealth(100.0f)
+	MaxHealth(100.0f),
+	Damage(0.0f)
 {
 	InitHealth(GetMaxHealth());
 }
 
 void UWKCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
-	if (Attribute == GetHealthAttribute())
+	//if (Attribute == GetHealthAttribute())
+	//{
+	//	NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+	//}
+
+	if (Attribute == GetDamageAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+		NewValue = NewValue < 0.0f ? 0.0f : NewValue;
 	}
 }
 
-void UWKCharacterAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	if (Attribute == GetHealthAttribute())
+	Super::PostGameplayEffectExecute(Data);
+
+	float MinHealth = 0.0f;
+
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		UE_LOG(LogTemp, Log, TEXT("Health : %f -> %f"), OldValue, NewValue);
+		UE_LOG(LogTemp, Warning, TEXT("Direct Health Access : %f"), GetHealth());
+		SetHealth(FMath::Clamp(GetHealth(), MinHealth, GetHealth()));
+	}
+	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Damage : %f"), GetDamage());
+		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinHealth, GetMaxHealth()));
+		SetDamage(0.0f);
 	}
 }
+
