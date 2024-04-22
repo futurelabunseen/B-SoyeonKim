@@ -69,6 +69,10 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
+	UFUNCTION()
+	virtual void OnOutOfHealth();
+
+	virtual void SetDead() override;
 // GAS Section
 protected:
 

@@ -24,6 +24,12 @@ void AWKCharacterNonPlayer::PossessedBy(AController* NewController)
 
 	ASC->InitAbilityActorInfo(this, this);
 
+	if (AttributeSet)
+	{
+		AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+	}
+
+
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
 
@@ -33,4 +39,22 @@ void AWKCharacterNonPlayer::PossessedBy(AController* NewController)
 	{
 		ASC->BP_ApplyGameplayEffectSpecToSelf(EffectSpecHandle);
 	}
+}
+
+void AWKCharacterNonPlayer::SetDead()
+{
+	Super::SetDead();
+
+	FTimerHandle DeadTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
+		[&]()
+		{
+			Destroy();
+		}
+	), DeadEventDelayTime, false);
+}
+
+void AWKCharacterNonPlayer::OnOutOfHealth()
+{
+	SetDead();
 }

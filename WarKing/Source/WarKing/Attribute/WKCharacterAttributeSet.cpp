@@ -3,6 +3,7 @@
 
 #include "Attribute/WKCharacterAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "Tag/WKGameplayTag.h"
 
 UWKCharacterAttributeSet::UWKCharacterAttributeSet() : 
 	AttackRange(100.0f),
@@ -30,6 +31,28 @@ void UWKCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attr
 	}
 }
 
+bool UWKCharacterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
+{
+	if (!Super::PreGameplayEffectExecute(Data))
+	{
+		return false;
+	}
+
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		if (Data.EvaluatedData.Magnitude > 0.0f)
+		{
+			if (Data.Target.HasMatchingGameplayTag(CHARACTER_STATE_INVISIBLE))
+			{
+				Data.EvaluatedData.Magnitude = 0.0f;
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
 void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -47,5 +70,14 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
+
+	if((GetHealth() <= 0.0f) && !bOutOfHealth)
+	{
+		// Á×À¸¸é ÇØ´ç Target¿¡´Â IsDead Tag°¡ ºÎÂø
+		Data.Target.AddLooseGameplayTag(CHARACTER_STATE_ISDEAD);
+		OnOutOfHealth.Broadcast();
+	}
+
+	bOutOfHealth = (GetHealth() <= 0.0f);
 }
 

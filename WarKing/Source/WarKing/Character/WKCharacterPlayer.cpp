@@ -12,6 +12,7 @@
 #include "AbilitySystemComponent.h"
 #include "Tag/WKGameplayTag.h"
 #include "GameplayTagContainer.h"
+#include "Attribute/WKCharacterAttributeSet.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
 {	
@@ -58,6 +59,7 @@ AWKCharacterPlayer::AWKCharacterPlayer()
 	{
 		AttackAction = InputActionAttackRef.Object;
 	}
+
 }
 void AWKCharacterPlayer::BeginPlay()
 {
@@ -210,6 +212,12 @@ void AWKCharacterPlayer::GASAbilitySetting()
 		ensure(ASC);
 		ASC->InitAbilityActorInfo(GASPS, this);
 
+		const UWKCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UWKCharacterAttributeSet>();
+		if (CurrentAttributeSet)
+		{
+			CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+		}
+
 		for (const auto& StartAbility : StartAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartAbility);
@@ -263,4 +271,20 @@ void AWKCharacterPlayer::Look(const FInputActionValue& Value)
 
 	AddControllerYawInput(LookAxisVector.X);
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void AWKCharacterPlayer::OnOutOfHealth()
+{
+	SetDead();
+}
+
+void AWKCharacterPlayer::SetDead()
+{
+	Super::SetDead();
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		DisableInput(PlayerController);
+	}
 }

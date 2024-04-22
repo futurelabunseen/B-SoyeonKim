@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UWKGASWidgetComponent> HpBar;
+
 // Dead Section
 protected:
 	virtual void SetDead();

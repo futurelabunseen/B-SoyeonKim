@@ -20,12 +20,18 @@ private:
 	AWKCharacterNonPlayer();
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void SetDead() override;
+
+	UFUNCTION()
+	virtual void OnOutOfHealth();
+
+	float DeadEventDelayTime = 5.0f;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UWKCharacterAttributeSet> AttributeSet;
 
 	UPROPERTY(EditAnywhere, Category = GAS)

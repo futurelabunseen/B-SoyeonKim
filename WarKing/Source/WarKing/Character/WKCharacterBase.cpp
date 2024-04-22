@@ -5,6 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Physics/WKCollision.h"
+#include "UI/WKGASWidgetComponent.h"
+#include "UI/WKGASUserWidget.h"
 
 
 // Sets default values
@@ -16,7 +18,7 @@ AWKCharacterBase::AWKCharacterBase()
 	bUseControllerRotationRoll = false;
 
 	// Capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(50.f, 110.0f);
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_WKCAPSULE);
 
 	// Movement
@@ -58,6 +60,20 @@ AWKCharacterBase::AWKCharacterBase()
 	if (DeadMontageRef.Object)
 	{
 		DeadMontage = DeadMontageRef.Object;
+	}
+
+	// HpBar
+	HpBar = CreateDefaultSubobject<UWKGASWidgetComponent>(TEXT("Widget"));
+	HpBar->SetupAttachment(GetMesh());
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 210.0f));
+	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/WarKing/UI/WBP_HpBar.WBP_HpBar_C"));
+
+	if (HpBarWidgetRef.Class)
+	{
+		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
+		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
+		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
+		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
