@@ -63,7 +63,7 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 
 		if (EffectSpecHandle.IsValid())
 		{
-			//EffectSpecHandle.Data->SetSetByCallerMagnitude(DATA_DAMAGE, -SourceAttribute->GetAttackRate());
+			//EffectSpecHandle.Data->SetSetByCallerMagnitude(WKTAG_DATA_DAMAGE, -SourceAttribute->GetAttackRate());
 			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
 			
 			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);	
@@ -71,7 +71,7 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 			FGameplayCueParameters CueParams;
 			CueParams.EffectContext = CueContextHandle;
 
-			TargetASC->ExecuteGameplayCue(GC_CHARACTER_ATTACKHIT, CueParams);
+			TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
 		}
 
 		FGameplayEffectSpecHandle BuffEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackBuffEffect, CurrentLevel);

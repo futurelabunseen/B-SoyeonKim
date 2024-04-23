@@ -20,7 +20,7 @@ void UWKGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 			.AddUObject(this, &ThisClass::OnMaxHealthChanged);
 
 		// RegisterGameplayTagEvent : 해당 태그가 부착, 떨어질때 지정한 함수 호출 델리게이트
-		ASC->RegisterGameplayTagEvent(CHARACTER_STATE_INVISIBLE, EGameplayTagEventType::NewOrRemoved)
+		ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_INVISIBLE, EGameplayTagEventType::NewOrRemoved)
 			.AddUObject(this, &ThisClass::OnInvinsibleTagChanged);
 		PbHpBar->SetFillColorAndOpacity(HealthColor);
 

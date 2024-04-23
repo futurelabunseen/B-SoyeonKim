@@ -8,5 +8,5 @@
 void UWKANS_BranchAttack::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
 	FGameplayEventData Payload;
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), CHARACTER_ACTION_NEXTATTACK, Payload);
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(MeshComp->GetOwner(), WKTAG_CHARACTER_ACTION_NEXTATTACK, Payload);
 }

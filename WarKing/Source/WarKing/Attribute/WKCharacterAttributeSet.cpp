@@ -42,7 +42,7 @@ bool UWKCharacterAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallba
 	{
 		if (Data.EvaluatedData.Magnitude > 0.0f)
 		{
-			if (Data.Target.HasMatchingGameplayTag(CHARACTER_STATE_INVISIBLE))
+			if (Data.Target.HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_INVISIBLE))
 			{
 				Data.EvaluatedData.Magnitude = 0.0f;
 				return false;
@@ -74,7 +74,7 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	if((GetHealth() <= 0.0f) && !bOutOfHealth)
 	{
 		// Á×À¸¸é ÇØ´ç Target¿¡´Â IsDead Tag°¡ ºÎÂø
-		Data.Target.AddLooseGameplayTag(CHARACTER_STATE_ISDEAD);
+		Data.Target.AddLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);
 		OnOutOfHealth.Broadcast();
 	}
 

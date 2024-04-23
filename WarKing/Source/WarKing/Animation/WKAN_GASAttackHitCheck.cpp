@@ -27,7 +27,7 @@ void UWKAN_GASAttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 			FGameplayEventData PayloadData;
 			PayloadData.EventMagnitude = ComboAttackLevel;
 			// 내가 지정한 특정한 Actor (ASC) 태그를 넣어서 이벤트 발동 -> 추가적 데이터 지정 가능
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggetGameplayTag, PayloadData);
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, TriggerGameplayTag, PayloadData);
 			UE_LOG(LogTemp, Log, TEXT("Notify SendGameplayEventToActor"));
 		}
 	}

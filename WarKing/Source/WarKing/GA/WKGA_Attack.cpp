@@ -17,7 +17,7 @@
 UWKGA_Attack::UWKGA_Attack()
 {
 	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateNo;
-	AbilityTags.AddTag(CHARACTER_ACTION_ATTACK);
+	AbilityTags.AddTag(WKTAG_CHARACTER_ACTION_ATTACK);
 }
 
 void UWKGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -39,7 +39,7 @@ void UWKGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	else
 	{
 		UAbilityTask_WaitGameplayEvent* WaitEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this,
-			CHARACTER_ACTION_NEXTATTACK, nullptr, true, true);
+			WKTAG_CHARACTER_ACTION_NEXTATTACK, nullptr, true, true);
 		WaitEvent->EventReceived.AddDynamic(this, &ThisClass::PlayMontage);
 		WaitEvent->ReadyForActivation();
 	}
