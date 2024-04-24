@@ -3,6 +3,8 @@
 
 #include "Player/WKGASPlayerState.h"
 #include "AbilitySystemComponent.h"
+#include "Attribute//WKCharacterAttributeSet.h"
+#include "Character/WKCharacterBase.h"
 
 AWKGASPlayerState::AWKGASPlayerState()
 {
@@ -23,4 +25,27 @@ AWKGASPlayerState::AWKGASPlayerState()
 UAbilitySystemComponent* AWKGASPlayerState::GetAbilitySystemComponent() const
 {
 	return ASC;
+}
+
+UWKCharacterAttributeSet* AWKGASPlayerState::GetAttributeSet() const
+{
+	return AttributeSet;
+}
+
+UWKCharacterSkillAttributeSet* AWKGASPlayerState::GetSkillAttributeSet() const
+{
+	return SkillAttributeSet;
+}
+
+void AWKGASPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//if (ASC)
+	//{
+	//	// Attribute change callbacks
+	//	HealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AWKGASPlayerState::HealthChanged);
+	//	MaxHealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &AWKGASPlayerState::MaxHealthChanged);
+	//
+	//}
 }

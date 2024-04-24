@@ -3,6 +3,8 @@
 
 #include "Attribute/WKCharacterAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "GameplayEffect.h"
+#include "Net/UnrealNetwork.h"
 #include "Tag/WKGameplayTag.h"
 
 UWKCharacterAttributeSet::UWKCharacterAttributeSet() : 
@@ -16,6 +18,15 @@ UWKCharacterAttributeSet::UWKCharacterAttributeSet() :
 	Damage(0.0f)
 {
 	InitHealth(GetMaxHealth());
+}
+
+void UWKCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// 오류 발생
+	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 }
 
 void UWKCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -79,5 +90,29 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	}
 
 	bOutOfHealth = (GetHealth() <= 0.0f);
+}
+
+void UWKCharacterAttributeSet::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty)
+{
+	UAbilitySystemComponent* AbilityComp = GetOwningAbilitySystemComponent();
+	const float CurrentMaxValue = MaxAttribute.GetCurrentValue();
+	if (!FMath::IsNearlyEqual(CurrentMaxValue, NewMaxValue) && AbilityComp)
+	{
+		// Change current value to maintain the current Val / Max percent
+		const float CurrentValue = AffectedAttribute.GetCurrentValue();
+		float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) - CurrentValue : NewMaxValue;
+
+		AbilityComp->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
+	}
+}
+
+void UWKCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UWKCharacterAttributeSet, Health, OldHealth);
+}
+
+void UWKCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UWKCharacterAttributeSet, MaxHealth, OldMaxHealth);
 }
 

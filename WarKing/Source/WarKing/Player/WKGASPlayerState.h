@@ -20,6 +20,9 @@ public:
 
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	class UWKCharacterAttributeSet* GetAttributeSet() const;
+	class UWKCharacterSkillAttributeSet* GetSkillAttributeSet() const;
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
@@ -30,4 +33,13 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UWKCharacterSkillAttributeSet> SkillAttributeSet;
+
+	FDelegateHandle HealthChangedDelegateHandle;
+	FDelegateHandle MaxHealthChangedDelegateHandle;
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	//virtual void HealthChanged(const FOnAttributeChangeData& Data);
+	//virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
 };
