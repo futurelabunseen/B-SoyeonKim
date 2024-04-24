@@ -17,6 +17,7 @@ AWKGASPlayerState::AWKGASPlayerState()
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	AttributeSet = CreateDefaultSubobject<UWKCharacterAttributeSet>(TEXT("AttributeSet"));
+	SkillAttributeSet = CreateDefaultSubobject<UWKCharacterSkillAttributeSet>(TEXT("SkillAttributeSet"));
 }
 
 UAbilitySystemComponent* AWKGASPlayerState::GetAbilitySystemComponent() const

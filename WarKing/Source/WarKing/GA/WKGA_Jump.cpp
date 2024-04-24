@@ -4,6 +4,7 @@
 #include "GA/WKGA_Jump.h"
 #include "GameFramework/Character.h"
 #include "GA/AT/WKAT_JumpAndWaitForLanding.h"
+#include "WarKing.h"
 
 UWKGA_Jump::UWKGA_Jump()
 {
@@ -27,6 +28,8 @@ void UWKGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	WKGAS_LOG(LogWKGAS, Log, TEXT(""));
+
 	//ability Task로 Jump하도록
 	UWKAT_JumpAndWaitForLanding* JumpAndWaitingForLandingTask = UWKAT_JumpAndWaitForLanding::CreateTask(this);
 
@@ -37,6 +40,8 @@ void UWKGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 
 void UWKGA_Jump::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
+	WKGAS_LOG(LogWKGAS, Log, TEXT(""));
+
 	// 상태가 변하니까 const 없이
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
 	Character->StopJumping();

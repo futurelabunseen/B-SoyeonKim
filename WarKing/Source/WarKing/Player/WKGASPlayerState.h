@@ -27,4 +27,7 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UWKCharacterAttributeSet> AttributeSet;
+
+	UPROPERTY()
+	TObjectPtr<class UWKCharacterSkillAttributeSet> SkillAttributeSet;
 };
