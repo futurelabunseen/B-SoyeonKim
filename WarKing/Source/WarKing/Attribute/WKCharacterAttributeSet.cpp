@@ -9,10 +9,10 @@
 
 UWKCharacterAttributeSet::UWKCharacterAttributeSet() : 
 	AttackRange(100.0f),
-	AttackRadius(50.f),
-	AttackRate(30.0f),
 	MaxAttackRange(300.0f),
+	AttackRadius(50.f),
 	MaxAttackRadius(150.0f),
+	AttackRate(30.0f),
 	MaxAttackRate(100.0f),
 	MaxHealth(100.0f),
 	Damage(0.0f)
@@ -31,11 +31,6 @@ void UWKCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 void UWKCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
-	//if (Attribute == GetHealthAttribute())
-	//{
-	//	NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
-	//}
-
 	if (Attribute == GetDamageAttribute())
 	{
 		NewValue = NewValue < 0.0f ? 0.0f : NewValue;

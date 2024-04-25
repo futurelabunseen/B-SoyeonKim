@@ -16,4 +16,7 @@ class WARKING_API UWKGASWidgetComponent : public UWidgetComponent
 	
 protected:
 	virtual void InitWidget() override;
+
+public:
+	void InitGASWidget();
 };

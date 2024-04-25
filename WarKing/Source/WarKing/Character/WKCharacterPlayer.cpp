@@ -219,12 +219,6 @@ void AWKCharacterPlayer::GASAbilitySetting()
 		ensure(ASC);
 		ASC->InitAbilityActorInfo(GASPS, this);
 
-		const UWKCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UWKCharacterAttributeSet>();
-		if (CurrentAttributeSet)
-		{
-			CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-		}
-
 		for (const auto& StartAbility : StartAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartAbility);
@@ -237,7 +231,16 @@ void AWKCharacterPlayer::GASAbilitySetting()
 			StartSpec.InputID = StartInputAbility.Key;
 			ASC->GiveAbility(StartSpec);
 		}
+
+		const UWKCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UWKCharacterAttributeSet>();
+		if (CurrentAttributeSet)
+		{
+			CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+		}
 	}
+
+	// Widget 초기화 작업
+	HpBar->InitGASWidget();
 }
 
 void AWKCharacterPlayer::ConsoleCommandSetting()

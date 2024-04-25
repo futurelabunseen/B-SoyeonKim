@@ -7,6 +7,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Tag/WKGameplayTag.h"
+#include "WarKing.h"
 
 void UWKGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
@@ -35,6 +36,10 @@ void UWKGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 				UpdateHpBar();
 			}
 		}
+	}
+	else
+	{
+		UE_LOG(LogWKNetwork, Log, TEXT("[%s][%s]NO ASC"), InOwner->HasAuthority()? TEXT("SERVER") : TEXT("CLIENT"), *InOwner->GetName());
 	}
 }
 
@@ -67,6 +72,15 @@ void UWKGASHpBarUserWidget::OnInvinsibleTagChanged(const FGameplayTag CallbackTa
 
 void UWKGASHpBarUserWidget::UpdateHpBar()
 {
+	if(ASC)
+	{
+		UE_LOG(LogWKNetwork, Log, TEXT("[%s][%s]UpdateHpBar"), ASC->GetOwnerActor()->HasAuthority() ? TEXT("SERVER") : TEXT("CLIENT"), *ASC->GetOwnerActor()->GetName());
+	}	
+	else
+	{
+		UE_LOG(LogWKNetwork, Log, TEXT("[No ASC][%s]UpdateHpBar"), *ASC->GetOwnerActor()->GetName());
+	}
+		
 	if (PbHpBar)
 	{
 		PbHpBar->SetPercent(CurrentHealth / CurrentMaxHealth);
@@ -77,6 +91,4 @@ void UWKGASHpBarUserWidget::UpdateHpBar()
 		TxtHpStat->SetText(FText::FromString(
 			FString::Printf(TEXT("%.0f/%.0f"), CurrentHealth, CurrentMaxHealth)));
 	}
-
-
 }

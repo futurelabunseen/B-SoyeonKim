@@ -36,16 +36,3 @@ UWKCharacterSkillAttributeSet* AWKGASPlayerState::GetSkillAttributeSet() const
 {
 	return SkillAttributeSet;
 }
-
-void AWKGASPlayerState::BeginPlay()
-{
-	Super::BeginPlay();
-
-	//if (ASC)
-	//{
-	//	// Attribute change callbacks
-	//	HealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AWKGASPlayerState::HealthChanged);
-	//	MaxHealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &AWKGASPlayerState::MaxHealthChanged);
-	//
-	//}
-}

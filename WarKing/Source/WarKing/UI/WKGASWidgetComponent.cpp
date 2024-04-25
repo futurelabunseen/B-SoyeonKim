@@ -15,3 +15,8 @@ void UWKGASWidgetComponent::InitWidget()
 		GASUserWidget->SetAbilitySystemComponent(GetOwner());
 	}
 }
+
+void UWKGASWidgetComponent::InitGASWidget()
+{
+	InitWidget();
+}
