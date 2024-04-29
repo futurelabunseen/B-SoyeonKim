@@ -31,6 +31,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
+	// 플레이어에게 부여할 어빌리티의 목록들
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
+
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UWKCharacterAttributeSet> AttributeSet;
 

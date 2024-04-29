@@ -45,6 +45,9 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	uint8 IsFirstAttack : 1;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	FGameplayTag NextAttackTag;
+
 	UPROPERTY()
 	TObjectPtr<class UWKComboActionData> CurrentComboData;
 

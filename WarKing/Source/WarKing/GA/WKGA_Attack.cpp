@@ -93,6 +93,21 @@ void UWKGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
+	UAbilitySystemComponent* AvaterActorASC = GetAbilitySystemComponentFromActorInfo();
+
+	if (!NextAttackTag.MatchesTag(WKTAG_CHARACTER_ACTION_ATTACK_LASTCOMBO))
+	{
+		if (AvaterActorASC)
+		{
+			if (AvaterActorASC->HasMatchingGameplayTag(NextAttackTag))
+			{
+				return;
+			}
+		}
+	}
+
 	AWKCharacterBase* WKCharacter = CastChecked<AWKCharacterBase>(ActorInfo->AvatarActor.Get());
 	WKCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	
 }
+	

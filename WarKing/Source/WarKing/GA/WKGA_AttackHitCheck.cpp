@@ -70,7 +70,6 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 			CueContextHandle.AddHitResult(HitResult);
 			FGameplayCueParameters CueParams;
 			CueParams.EffectContext = CueContextHandle;
-
 			TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
 		}
 		
@@ -80,6 +79,11 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		{
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, BuffEffectSpecHandle);
 		}
+
+
+		FGameplayTagContainer Container;
+		Container.AddTag(WKTAG_CHARACTER_ACTION_HITREACT);
+		TargetASC->TryActivateAbilitiesByTag(Container);
 	}
 	else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{

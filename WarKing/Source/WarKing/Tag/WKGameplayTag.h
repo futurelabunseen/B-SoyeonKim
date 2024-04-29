@@ -4,7 +4,8 @@
 #define WKTAG_CHARACTER_ACTION_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack"))
 #define WKTAG_CHARACTER_ACTION_NEXTATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.NextAttack"))
 #define WKTAG_CHARACTER_ACTION_SKILL_AOE FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.AOE"))
-
+#define WKTAG_CHARACTER_ACTION_ATTACK_LASTCOMBO FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack.LastCombo"))
+#define WKTAG_CHARACTER_ACTION_HITREACT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact"))
 
 // Data
 #define WKTAG_DATA_DAMAGE FGameplayTag::RequestGameplayTag(FName("Data.Damage"))
