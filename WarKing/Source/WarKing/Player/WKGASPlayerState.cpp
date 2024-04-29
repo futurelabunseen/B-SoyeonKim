@@ -20,6 +20,8 @@ AWKGASPlayerState::AWKGASPlayerState()
 
 	AttributeSet = CreateDefaultSubobject<UWKCharacterAttributeSet>(TEXT("AttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<UWKCharacterSkillAttributeSet>(TEXT("SkillAttributeSet"));
+	
+	NetUpdateFrequency = 100.0f;
 }
 
 UAbilitySystemComponent* AWKGASPlayerState::GetAbilitySystemComponent() const
