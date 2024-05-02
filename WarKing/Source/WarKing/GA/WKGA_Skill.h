@@ -30,6 +30,6 @@ protected:
 	void OnInterruptedCallback();
 
 protected:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> ActiveSkillActionMontage;
 };

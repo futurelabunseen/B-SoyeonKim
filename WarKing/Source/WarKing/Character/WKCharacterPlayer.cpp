@@ -59,12 +59,6 @@ AWKCharacterPlayer::AWKCharacterPlayer()
 	{
 		AttackAction = InputActionAttackRef.Object;
 	}
-
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SkillActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_Skill_AOE.AM_Skill_AOE'"));
-	if (nullptr != SkillActionMontageRef.Object)
-	{
-		SkillActionMontage = SkillActionMontageRef.Object;
-	}
 }
 
 void AWKCharacterPlayer::BeginPlay()
@@ -165,7 +159,12 @@ void AWKCharacterPlayer::SetupGASInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, 0);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::GASInputReleased, 0);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_ATTACK);
-		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_AOE);
+
+		// Blade Skill Q BlockAttack
+		EnhancedInputComponent->BindAction(SkillAction1, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_BLOCKATTACK);
+		
+		// Blade Skill R AOE
+		EnhancedInputComponent->BindAction(SkillActionUlt, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_AOE);
 	}
 }
 
@@ -244,6 +243,10 @@ void AWKCharacterPlayer::GASAbilitySetting()
 		}
 
 		GASPS->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+
+
+		//TODO : TestCode
+		ASC->AddLooseGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK);
 	}
 
 	// Widget 초기화 작업

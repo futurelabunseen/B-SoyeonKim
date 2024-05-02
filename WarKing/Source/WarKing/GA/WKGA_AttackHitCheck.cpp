@@ -49,16 +49,30 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
 
+
 		if (EffectSpecHandle.IsValid())
 		{
-			//EffectSpecHandle.Data->SetSetByCallerMagnitude(WKTAG_DATA_DAMAGE, -SourceAttribute->GetAttackRate());
-			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
-			
-			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);	
+			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);
 			CueContextHandle.AddHitResult(HitResult);
 			FGameplayCueParameters CueParams;
 			CueParams.EffectContext = CueContextHandle;
-			TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
+
+			if (!TargetASC->HasMatchingGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK))
+			{
+				ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
+	
+				TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
+
+				FGameplayTagContainer Container;
+				Container.AddTag(WKTAG_CHARACTER_ACTION_HITREACT);	
+				TargetASC->TryActivateAbilitiesByTag(Container);
+			}
+			else
+			{
+				// Block Attack GC ¹ßµ¿
+				TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_BLOCKATTACK, CueParams);
+			}
+
 		}
 		
 		FGameplayEffectSpecHandle BuffEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackBuffEffect, CurrentLevel);
@@ -69,9 +83,6 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		}
 
 
-		FGameplayTagContainer Container;
-		Container.AddTag(WKTAG_CHARACTER_ACTION_HITREACT);
-		TargetASC->TryActivateAbilitiesByTag(Container);
 	}
 	else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{

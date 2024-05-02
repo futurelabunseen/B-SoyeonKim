@@ -21,7 +21,6 @@ void UWKGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		return;
 	}
 
-	ActiveSkillActionMontage = TargetCharacter->GetSkillActionMontage();
 	if (!ActiveSkillActionMontage)
 	{
 		return;

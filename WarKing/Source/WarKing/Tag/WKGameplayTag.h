@@ -4,6 +4,7 @@
 #define WKTAG_CHARACTER_ACTION_ATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack"))
 #define WKTAG_CHARACTER_ACTION_NEXTATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.NextAttack"))
 #define WKTAG_CHARACTER_ACTION_SKILL_AOE FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.AOE"))
+#define WKTAG_CHARACTER_ACTION_SKILL_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.BlockAttack"))
 #define WKTAG_CHARACTER_ACTION_ATTACK_LASTCOMBO FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack.LastCombo"))
 #define WKTAG_CHARACTER_ACTION_HITREACT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact"))
 
@@ -17,7 +18,9 @@
 // GameplayCue
 #define WKTAG_GC_CHARACTER_ATTACKHIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.AttackHit"))
 #define WKTAG_GC_SKILL_AOE FGameplayTag::RequestGameplayTag(FName("GameplayCue.Skill.AOE"))
+#define WKTAG_GC_CHARACTER_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.BlockAttack"))
 
 // Evnet
 #define WKTAG_EVENT_CHARACTER_WEAPON_EQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.Equip"))
 #define WKTAG_EVENT_CHARACTER_WEAPON_UNEQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.UnEquip"))
+#define WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("Event.Character.Action.BlockAttackCheck"))
