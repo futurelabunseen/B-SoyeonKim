@@ -24,7 +24,6 @@ void UWKCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// 오류 발생
 	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 }
@@ -77,14 +76,16 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		SetDamage(0.0f);
 	}
 
-	if((GetHealth() <= 0.0f) && !bOutOfHealth)
-	{
-		// 죽으면 해당 Target에는 IsDead Tag가 부착
-		Data.Target.AddLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);
-		OnOutOfHealth.Broadcast();
-	}
 
-	bOutOfHealth = (GetHealth() <= 0.0f);
+	//if((GetHealth() <= 0.0f) && !bOutOfHealth)
+	//{
+	//	UE_LOG(LogTemp, Log, TEXT(" PostGameplayEffectExecute DEAD : %f"), GetDamage());
+	//	// 죽으면 해당 Target에는 IsDead Tag가 부착
+	//	Data.Target.AddLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);
+	//	OnOutOfHealth.Broadcast();
+	//}
+
+	//bOutOfHealth = (GetHealth() <= 0.0f);
 }
 
 void UWKCharacterAttributeSet::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty)

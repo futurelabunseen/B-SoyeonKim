@@ -216,27 +216,34 @@ void AWKCharacterPlayer::GASAbilitySetting()
 	if (GASPS)
 	{
 		ASC = GASPS->GetAbilitySystemComponent();
-		ensure(ASC);
+
 		ASC->InitAbilityActorInfo(GASPS, this);
 
-		for (const auto& StartAbility : StartAbilities)
+		// Server에서만 수행
+		if (HasAuthority())
 		{
-			FGameplayAbilitySpec StartSpec(StartAbility);
-			ASC->GiveAbility(StartSpec);
+			for (const auto& StartAbility : StartAbilities)
+			{
+				FGameplayAbilitySpec StartSpec(StartAbility);
+				ASC->GiveAbility(StartSpec);
+			}
+
+			for (const auto& StartInputAbility : StartInputAbilities)
+			{
+				FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
+				StartSpec.InputID = StartInputAbility.Key;
+				ASC->GiveAbility(StartSpec);
+			}
+
+			// Old Code
+			/*	const UWKCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UWKCharacterAttributeSet>();
+			if (CurrentAttributeSet)
+			{
+				CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+			}*/
 		}
 
-		for (const auto& StartInputAbility : StartInputAbilities)
-		{
-			FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
-			StartSpec.InputID = StartInputAbility.Key;
-			ASC->GiveAbility(StartSpec);
-		}
-
-		const UWKCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UWKCharacterAttributeSet>();
-		if (CurrentAttributeSet)
-		{
-			CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-		}
+		GASPS->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 	}
 
 	// Widget 초기화 작업

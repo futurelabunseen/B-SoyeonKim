@@ -47,18 +47,6 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		
 		const UWKCharacterAttributeSet* SourceAttribute = SourceASC->GetSet<UWKCharacterAttributeSet>();
 
-		//// GetSet은 const로 지정되어 있어서 값을 변경하기 위해 의도적으로 const_cast를 사용. 좋은방법이 아님 GameplayEffect로 변경할 예정
-		//UWKCharacterAttributeSet* TargetAttribute = const_cast<UWKCharacterAttributeSet*>(TargetASC->GetSet<UWKCharacterAttributeSet>());
-
-		//if (!SourceAttribute || !TargetAttribute)
-		//{
-		//	UE_LOG(LogTemp, Log, TEXT("UWKGA_AttackHitCheck::OnTraceResultCallback : Attribute not Found!"));
-		//	return;
-		//}
-		//
-		//const float AttackDamage = SourceAttribute->GetAttackRate();
-		//TargetAttribute->SetHealth(TargetAttribute->GetHealth() - AttackDamage);
-
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
 
 		if (EffectSpecHandle.IsValid())

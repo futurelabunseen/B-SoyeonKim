@@ -35,5 +35,4 @@ protected:
 protected:
 	virtual void SetDead();
 	void PlayDeadAnimation();
-	
 };

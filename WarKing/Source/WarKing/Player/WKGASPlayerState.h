@@ -7,6 +7,8 @@
 #include "AbilitySystemInterface.h"
 #include "WKGASPlayerState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOutOfHealthDelegate);
+
 /**
  * 
  */
@@ -23,6 +25,8 @@ public:
 	class UWKCharacterAttributeSet* GetAttributeSet() const;
 	class UWKCharacterSkillAttributeSet* GetSkillAttributeSet() const;
 
+	mutable FOutOfHealthDelegate OnOutOfHealth;
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
@@ -33,4 +37,14 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UWKCharacterSkillAttributeSet> SkillAttributeSet;
+
+protected:
+	FDelegateHandle HealthChangedDelegateHandle;
+	FDelegateHandle MaxHealthChangedDelegateHandle;
+
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
 };

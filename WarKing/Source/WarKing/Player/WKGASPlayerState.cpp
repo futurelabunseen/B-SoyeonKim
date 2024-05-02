@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "Attribute//WKCharacterAttributeSet.h"
 #include "Character/WKCharacterBase.h"
+#include "Tag/WKGameplayTag.h"
 
 AWKGASPlayerState::AWKGASPlayerState()
 {
@@ -21,7 +22,8 @@ AWKGASPlayerState::AWKGASPlayerState()
 	AttributeSet = CreateDefaultSubobject<UWKCharacterAttributeSet>(TEXT("AttributeSet"));
 	SkillAttributeSet = CreateDefaultSubobject<UWKCharacterSkillAttributeSet>(TEXT("SkillAttributeSet"));
 	
-	NetUpdateFrequency = 100.0f;
+	// 값 조정 필요
+	NetUpdateFrequency = 80.0f;
 }
 
 UAbilitySystemComponent* AWKGASPlayerState::GetAbilitySystemComponent() const
@@ -38,3 +40,34 @@ UWKCharacterSkillAttributeSet* AWKGASPlayerState::GetSkillAttributeSet() const
 {
 	return SkillAttributeSet;
 }
+
+void AWKGASPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (ASC)
+	{
+		// Attribute change callbacks
+		HealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AWKGASPlayerState::HealthChanged);
+		MaxHealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &AWKGASPlayerState::MaxHealthChanged);
+	}
+}
+
+void AWKGASPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
+{
+	float Health = Data.NewValue;
+
+	if ((Health <= 0.0f) && !ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AWKGASPlayerState::HealthChanged Dead : %f, %f"), Health, AttributeSet->GetHealth());
+		// 죽으면 해당 Target에는 IsDead Tag가 부착
+		ASC->AddLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);
+		OnOutOfHealth.Broadcast();
+	}
+}
+
+void AWKGASPlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data)
+{
+}
+
+

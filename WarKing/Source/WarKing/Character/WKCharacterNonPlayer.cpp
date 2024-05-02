@@ -4,6 +4,7 @@
 #include "Character/WKCharacterNonPlayer.h"
 #include "AbilitySystemComponent.h"
 #include "Attribute/WKCharacterAttributeSet.h"
+#include "Tag/WKGameplayTag.h"
 
 AWKCharacterNonPlayer::AWKCharacterNonPlayer()
 {
@@ -12,8 +13,20 @@ AWKCharacterNonPlayer::AWKCharacterNonPlayer()
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	AttributeSet = CreateDefaultSubobject<UWKCharacterAttributeSet>(TEXT("AttributeSet"));
-
+	UE_LOG(LogTemp, Warning, TEXT(" AWKCharacterNonPlayer::AWKCharacterNonPlayer"));
 	Level = 1;
+}
+
+void AWKCharacterNonPlayer::BeginPlay()
+{
+	// Server Client 모두 수행
+	Super::BeginPlay();
+	UE_LOG(LogTemp, Warning, TEXT(" AWKCharacterNonPlayer::BeginPlay"));
+	if (AttributeSet)
+	{
+		// Attribute change callbacks
+		HealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AWKCharacterNonPlayer::HealthChanged);
+	}
 }
 
 UAbilitySystemComponent* AWKCharacterNonPlayer::GetAbilitySystemComponent() const
@@ -23,15 +36,10 @@ UAbilitySystemComponent* AWKCharacterNonPlayer::GetAbilitySystemComponent() cons
 
 void AWKCharacterNonPlayer::PossessedBy(AController* NewController)
 {
+	// 서버에서만 수행
 	Super::PossessedBy(NewController);
-
+	UE_LOG(LogTemp, Warning, TEXT(" AWKCharacterNonPlayer::PossessedBy"));
 	ASC->InitAbilityActorInfo(this, this);
-
-	if (AttributeSet)
-	{
-		AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-	}
-
 
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
@@ -63,7 +71,12 @@ void AWKCharacterNonPlayer::SetDead()
 	), DeadEventDelayTime, false);
 }
 
-void AWKCharacterNonPlayer::OnOutOfHealth()
+void AWKCharacterNonPlayer::HealthChanged(const FOnAttributeChangeData& Data)
 {
-	SetDead();
+	if ((Data.NewValue <= 0.0f) && !ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+	{
+		// 죽으면 해당 Target에는 IsDead Tag가 부착
+		ASC->AddLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);
+		SetDead();
+	}
 }

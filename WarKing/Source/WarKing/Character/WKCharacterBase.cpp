@@ -7,6 +7,8 @@
 #include "Physics/WKCollision.h"
 #include "UI/WKGASWidgetComponent.h"
 #include "UI/WKGASUserWidget.h"
+#include "WarKing.h"
+#include <EngineUtils.h>
 
 
 // Sets default values
@@ -90,6 +92,3 @@ void AWKCharacterBase::PlayDeadAnimation()
 	AnimInstance->StopAllMontages(0.0f);
 	AnimInstance->Montage_Play(DeadMontage, 1.0f);
 }
-
-
-

@@ -8,15 +8,15 @@ void UWKGASWidgetComponent::InitWidget()
 {
 	Super::InitWidget();
 
+	InitGASWidget();
+}
+
+void UWKGASWidgetComponent::InitGASWidget()
+{
 	UWKGASUserWidget* GASUserWidget = Cast<UWKGASUserWidget>(GetWidget());
 
 	if (GASUserWidget)
 	{
 		GASUserWidget->SetAbilitySystemComponent(GetOwner());
 	}
-}
-
-void UWKGASWidgetComponent::InitGASWidget()
-{
-	InitWidget();
 }

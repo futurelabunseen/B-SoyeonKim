@@ -18,16 +18,16 @@ class WARKING_API AWKCharacterNonPlayer : public AWKCharacterBase, public IAbili
 private:
 
 	AWKCharacterNonPlayer();
+	virtual void BeginPlay() override;
+
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetDead() override;
 
-	UFUNCTION()
-	virtual void OnOutOfHealth();
-
 	float DeadEventDelayTime = 5.0f;
 
 protected:
+
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 
@@ -43,4 +43,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	float Level;
+
+protected:
+
+	FDelegateHandle HealthChangedDelegateHandle;
+
+	// Attribute changed callbacks
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
 };
