@@ -12,7 +12,7 @@
 void UWKGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
 	Super::SetAbilitySystemComponent(InOwner);
-
+	
 	if (ASC)
 	{
 		ASC->GetGameplayAttributeValueChangeDelegate(UWKCharacterAttributeSet::GetHealthAttribute())

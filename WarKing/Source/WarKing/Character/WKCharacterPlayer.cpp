@@ -10,9 +10,12 @@
 #include "Player/WKGASPlayerState.h"
 #include "WarKing.h"
 #include "AbilitySystemComponent.h"
+#include "UI/WKGASWidgetComponent.h"
 #include "Tag/WKGameplayTag.h"
 #include "GameplayTagContainer.h"
 #include "Attribute/WKCharacterAttributeSet.h"
+#include "UI/WKHUDWidget.h"
+#include "Player/WKPlayerController.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
 {	
@@ -65,6 +68,7 @@ void AWKCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("BeginPlay"));
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	
 	// Client의 경우 PlayerController가 없으므로 Skip
@@ -251,6 +255,12 @@ void AWKCharacterPlayer::GASAbilitySetting()
 
 	// Widget 초기화 작업
 	HpBar->InitGASWidget();
+
+
+	if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
+	{
+		WKPlayerController->InitOverlay();
+	}
 }
 
 void AWKCharacterPlayer::ConsoleCommandSetting()

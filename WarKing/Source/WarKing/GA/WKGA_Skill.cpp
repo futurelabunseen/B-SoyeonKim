@@ -14,7 +14,6 @@ UWKGA_Skill::UWKGA_Skill()
 void UWKGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	WKGAS_LOG(LogWKGAS, Log, TEXT(""));
 	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(ActorInfo->AvatarActor.Get());
 	if (!TargetCharacter)
 	{
@@ -37,7 +36,6 @@ void UWKGA_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 
 void UWKGA_Skill::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	WKGAS_LOG(LogWKGAS, Log, TEXT(""));
 	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(ActorInfo->AvatarActor.Get());
 	if (TargetCharacter)
 	{

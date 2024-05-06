@@ -13,5 +13,23 @@ UCLASS()
 class WARKING_API AWKPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	AWKPlayerController();
+
+	void InitOverlay();
+
+protected:
+	virtual void BeginPlay() override;
+
+
+// HUD Section
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HUD)
+	TSubclassOf<class UWKHUDWidget> WKHUDWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD)
+	TObjectPtr<class UWKHUDWidget> WKHUDWidget;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UWKGASWidgetComponent> HUDHpBarComponent;
 };
