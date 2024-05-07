@@ -14,8 +14,8 @@
 #include "Tag/WKGameplayTag.h"
 #include "GameplayTagContainer.h"
 #include "Attribute/WKCharacterAttributeSet.h"
-#include "UI/WKHUDWidget.h"
 #include "Player/WKPlayerController.h"
+#include "UI/WKHUD.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
 {	
@@ -250,17 +250,25 @@ void AWKCharacterPlayer::GASAbilitySetting()
 
 
 		//TODO : TestCode
-		ASC->AddLooseGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK);
+		//ASC->AddLooseGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK);
+
+		// HUD Set
+		UWKCharacterAttributeSet* CurrentAttributeSet = GASPS->GetAttributeSet();
+
+		if (AWKPlayerController* AuraPlayerController = Cast<AWKPlayerController>(GetController()))
+		{
+			if (ensure(CurrentAttributeSet))
+			{
+				if (AWKHUD* WKHUD = Cast<AWKHUD>(AuraPlayerController->GetHUD()))
+				{
+					WKHUD->InitOverlay(AuraPlayerController, GASPS, ASC, CurrentAttributeSet);
+				}
+			}	
+		}
 	}
 
 	// Widget 초기화 작업
 	HpBar->InitGASWidget();
-
-
-	if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
-	{
-		WKPlayerController->InitOverlay();
-	}
 }
 
 void AWKCharacterPlayer::ConsoleCommandSetting()

@@ -34,6 +34,8 @@ public:
 	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, MaxAttackRate);
 	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, Stamina);
+	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, MaxStamina);
 	ATTRIBUTE_ACCESSORS(UWKCharacterAttributeSet, Damage);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -70,6 +72,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Stamina", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_Stamina)
+	FGameplayAttributeData Stamina;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Stamina", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MaxStamina)
+	FGameplayAttributeData MaxStamina;
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
 
@@ -91,5 +99,11 @@ protected:
 
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
+
+	UFUNCTION()
+	virtual void OnRep_Stamina(const FGameplayAttributeData& OldStamina);
+
+	UFUNCTION()
+	virtual void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina);
 
 };

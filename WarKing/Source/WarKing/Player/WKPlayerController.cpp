@@ -25,15 +25,16 @@ void AWKPlayerController::BeginPlay()
 
 void AWKPlayerController::InitOverlay()
 {
-	if (IsLocalController())
-	{
-		WKHUDWidget = CreateWidget<UWKHUDWidget>(this, WKHUDWidgetClass);
-		if (WKHUDWidget)
-		{
-			WKHUDWidget->HUDHpBarComponent = this->HUDHpBarComponent;
-		/*	WKHUDWidget->InitHUDWidget();*/
-			// 애셋을 초기화해서 화면에 띄움
-			WKHUDWidget->AddToViewport();
-		}
-	}
+	//TODO : Overlay OldCode
+	//if (IsLocalController())
+	//{
+	//	WKHUDWidget = CreateWidget<UWKHUDWidget>(this, WKHUDWidgetClass);
+	//	if (WKHUDWidget)
+	//	{
+	//		WKHUDWidget->HUDHpBarComponent = this->HUDHpBarComponent;
+	//	/*	WKHUDWidget->InitHUDWidget();*/
+	//		// 애셋을 초기화해서 화면에 띄움
+	//		WKHUDWidget->AddToViewport();
+	//	}
+	//}
 }

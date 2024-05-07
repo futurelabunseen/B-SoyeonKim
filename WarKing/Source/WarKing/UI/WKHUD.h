@@ -6,9 +6,11 @@
 #include "GameFramework/HUD.h"
 #include "WKHUD.generated.h"
 
+class UWKOverlayWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
-class UWKGASUserWidget;
+class UWKUserWidget;
+struct FWidgetControllerParams;
 /**
  * 
  */
@@ -18,19 +20,21 @@ class WARKING_API AWKHUD : public AHUD
 	GENERATED_BODY()
 public:
 
+	UWKOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
+
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 private:
 
 	UPROPERTY()
-	TObjectPtr<UWKGASUserWidget>  OverlayWidget;
+	TObjectPtr<UWKUserWidget>  OverlayWidget;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UWKGASUserWidget> OverlayWidgetClass;
+	TSubclassOf<UWKUserWidget> OverlayWidgetClass;
 
-	//UPROPERTY()
-	//TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
+	UPROPERTY()
+	TObjectPtr<UWKOverlayWidgetController> OverlayWidgetController;
 
-	//UPROPERTY(EditAnywhere)
-	//TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UWKOverlayWidgetController> OverlayWidgetControllerClass;
 };

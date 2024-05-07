@@ -15,9 +15,11 @@ UWKCharacterAttributeSet::UWKCharacterAttributeSet() :
 	AttackRate(30.0f),
 	MaxAttackRate(100.0f),
 	MaxHealth(100.0f),
-	Damage(0.0f)
+	Damage(0.0f),
+	MaxStamina(100.0f)
 {
 	InitHealth(GetMaxHealth());
+	InitStamina(GetMaxStamina());
 }
 
 void UWKCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -26,6 +28,8 @@ void UWKCharacterAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UWKCharacterAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
 }
 
 void UWKCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -75,6 +79,11 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 	}
+	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+	{
+		// Handle stamina changes.
+		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
+	}
 
 
 	//if((GetHealth() <= 0.0f) && !bOutOfHealth)
@@ -110,5 +119,15 @@ void UWKCharacterAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHea
 void UWKCharacterAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UWKCharacterAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UWKCharacterAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStamina)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UWKCharacterAttributeSet, Stamina, OldStamina);
+}
+
+void UWKCharacterAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UWKCharacterAttributeSet, MaxStamina, OldMaxStamina);
 }
 

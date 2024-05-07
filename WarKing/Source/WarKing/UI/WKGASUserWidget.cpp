@@ -6,6 +6,7 @@
 
 void UWKGASUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
+	UE_LOG(LogTemp, Log, TEXT("UWKGASUserWidget::SetAbilitySystemComponent : %s"), *(InOwner->GetName()));
 	if (IsValid(InOwner))
 	{
 		ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner);
