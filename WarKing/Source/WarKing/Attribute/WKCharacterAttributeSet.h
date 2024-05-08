@@ -81,6 +81,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
 
+	//UPROPERTY(BlueprintReadOnly, Category = "MoveSpeed", Meta = (AllowPrivateAccess = true), ReplicatedUsing = OnRep_MoveSpeed)
+	//FGameplayAttributeData MoveSpeed;
+
 	bool bOutOfHealth = false;
 
 	friend class UWKGE_AttackDamage;
@@ -106,4 +109,6 @@ protected:
 	UFUNCTION()
 	virtual void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina);
 
+	//UFUNCTION()
+	//virtual void OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed);
 };

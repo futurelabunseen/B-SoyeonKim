@@ -4,6 +4,7 @@
 #include "Character/WKCharacterPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -162,6 +163,10 @@ void AWKCharacterPlayer::SetupGASInputComponent()
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, 0);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::GASInputReleased, 0);
+
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, 1);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::GASInputReleased, 1);
+
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_ATTACK);
 
 		// Blade Skill Q BlockAttack
@@ -246,8 +251,21 @@ void AWKCharacterPlayer::GASAbilitySetting()
 			}*/
 		}
 
-		GASPS->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+		// Init Effect Setting
+		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
 
+		for (TSubclassOf<UGameplayEffect> GameplayEffect : StartEffects)
+		{
+			FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(GameplayEffect, 1.f, EffectContext);
+			if (NewHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle ActiveGEHandle = 
+					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
+			}
+		}
+
+		GASPS->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
 		//TODO : TestCode
 		//ASC->AddLooseGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK);
@@ -309,6 +327,18 @@ void AWKCharacterPlayer::Look(const FInputActionValue& Value)
 
 	AddControllerYawInput(LookAxisVector.X);
 	AddControllerPitchInput(LookAxisVector.Y);
+}
+
+void AWKCharacterPlayer::Sprint(bool IsSprint)
+{
+	if (IsSprint)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 800.f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 400.0;
+	}
 }
 
 void AWKCharacterPlayer::OnOutOfHealth()

@@ -42,6 +42,8 @@ public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	//FORCEINLINE virtual class UAnimMontage* GetSkillActionMontage() const { return SkillActionMontage; }
+	UFUNCTION()
+	void Sprint(bool IsSprint);
 
 // Camera Section
 protected:
@@ -67,6 +69,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> AttackAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> SprintAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> SkillAction1;
@@ -97,4 +102,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
+
+	// Init Effects
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TArray<TSubclassOf<class UGameplayEffect>> StartEffects;
 };
