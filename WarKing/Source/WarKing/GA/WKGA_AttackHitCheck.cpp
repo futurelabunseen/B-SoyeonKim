@@ -60,8 +60,17 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 			{
 				ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
 	
-				TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
+				
+				if (SourceASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISFLAMING))
+				{
+					FGameplayEffectSpecHandle DotEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDotDamageEffect, CurrentLevel);
+					FGameplayEffectContextHandle DotCueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(DotEffectSpecHandle);
+					ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, DotEffectSpecHandle, TargetDataHandle);
+				}
 
+				TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
+				
+				// TODO : Hit React 방향대로 발동하도록 변경, RPC 날려 동기화
 				FGameplayTagContainer Container;
 				Container.AddTag(WKTAG_CHARACTER_ACTION_HITREACT);	
 				TargetASC->TryActivateAbilitiesByTag(Container);
@@ -107,3 +116,5 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 	bool bWasCancelled = false;
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }
+
+

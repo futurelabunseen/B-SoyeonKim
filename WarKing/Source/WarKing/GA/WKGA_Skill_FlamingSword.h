@@ -28,7 +28,16 @@ protected:
 	UFUNCTION()
 	void OnInterruptedCallback();
 
+	UFUNCTION()
+	void OnCompleteAbility();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> ActiveSkillActionMontage;
+
+	UPROPERTY()
+	FTimerHandle AbilityEndTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AbilityEndTimeRate = 6.0f;
 };

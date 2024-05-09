@@ -32,29 +32,35 @@ void UWKGA_Skill_FlamingSword::ActivateAbility(const FGameplayAbilitySpecHandle 
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &UWKGA_Skill_FlamingSword::OnInterruptedCallback);
 
 	PlayMontageTask->ReadyForActivation();
+
+	GetWorld()->GetTimerManager().
+		SetTimer(AbilityEndTimer, this, &UWKGA_Skill_FlamingSword::OnCompleteAbility, AbilityEndTimeRate);
 }
 
 void UWKGA_Skill_FlamingSword::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(ActorInfo->AvatarActor.Get());
-	if (TargetCharacter)
-	{
-		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	}
-
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UWKGA_Skill_FlamingSword::OnCompleteCallback()
 {
-	bool bReplicatedEndAbility = true;
-	bool bWasCancelled = false;
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(GetActorInfo().AvatarActor.Get());
+	if (TargetCharacter)
+	{
+		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}	
 }
 
 void UWKGA_Skill_FlamingSword::OnInterruptedCallback()
 {
 	bool bReplicatedEndAbility = true;
 	bool bWasCancelled = true;
+	//EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+}
+
+void UWKGA_Skill_FlamingSword::OnCompleteAbility()
+{
+	bool bReplicatedEndAbility = true;
+	bool bWasCancelled = false;
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
 }

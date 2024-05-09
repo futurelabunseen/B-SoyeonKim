@@ -5,6 +5,7 @@
 #define WKTAG_CHARACTER_ACTION_NEXTATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.NextAttack"))
 #define WKTAG_CHARACTER_ACTION_SKILL_AOE FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.AOE"))
 #define WKTAG_CHARACTER_ACTION_SKILL_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.BlockAttack"))
+#define WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.FlamingSword"))
 #define WKTAG_CHARACTER_ACTION_ATTACK_LASTCOMBO FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack.LastCombo"))
 #define WKTAG_CHARACTER_ACTION_HITREACT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact"))
 
@@ -14,6 +15,7 @@
 // Character State
 #define WKTAG_CHARACTER_STATE_ISDEAD FGameplayTag::RequestGameplayTag(FName("Character.State.IsDead"))
 #define WKTAG_CHARACTER_STATE_INVISIBLE FGameplayTag::RequestGameplayTag(FName("Character.State.Invisible"))
+#define WKTAG_CHARACTER_STATE_ISFLAMING FGameplayTag::RequestGameplayTag(FName("Character.State.IsFlaming"))
 
 // GameplayCue
 #define WKTAG_GC_CHARACTER_ATTACKHIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.AttackHit"))

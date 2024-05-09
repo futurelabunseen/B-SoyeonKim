@@ -16,6 +16,7 @@ UWKGC_AttackHit::UWKGC_AttackHit()
 
 bool UWKGC_AttackHit::OnExecute_Implementation(AActor* Target, const FGameplayCueParameters& Parameters) const
 {
+	UE_LOG(LogTemp, Log, TEXT("UWKGC_AttackHit::OnExecute_Implementation"));
 	const FHitResult* HitResult = Parameters.EffectContext.GetHitResult();
 	if (HitResult)
 	{

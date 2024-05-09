@@ -172,6 +172,9 @@ void AWKCharacterPlayer::SetupGASInputComponent()
 		// Blade Skill Q BlockAttack
 		EnhancedInputComponent->BindAction(SkillAction1, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_BLOCKATTACK);
 		
+		// Blade Skill E FlamingSword
+		EnhancedInputComponent->BindAction(SkillAction2, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD);
+
 		// Blade Skill R AOE
 		EnhancedInputComponent->BindAction(SkillActionUlt, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_AOE);
 	}

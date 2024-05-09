@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TSubclassOf<class UGameplayEffect> AttackBuffEffect;
 
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<class UGameplayEffect> AttackDotDamageEffect;
+
 	float CurrentLevel;
 
 	UPROPERTY(EditAnywhere, Category = "GAS")
