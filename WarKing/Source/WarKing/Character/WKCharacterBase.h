@@ -35,4 +35,8 @@ protected:
 protected:
 	virtual void SetDead();
 	void PlayDeadAnimation();
+
+// Stun Section
+protected:
+	 void SetStun(bool IsStun);
 };

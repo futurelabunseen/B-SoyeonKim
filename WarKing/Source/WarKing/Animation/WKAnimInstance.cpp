@@ -43,7 +43,11 @@ void UWKAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// 이동 모드의 Falling모드인지만 조사하면 됨
 		bIsFalling = Movement->IsFalling();
 
-
 		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshould);
 	}
+}
+
+void UWKAnimInstance::SetStun(bool IsStun)
+{
+	bIsStunned = IsStun;
 }

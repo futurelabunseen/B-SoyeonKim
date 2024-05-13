@@ -147,7 +147,7 @@ void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* Player
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetupPlayerInputComponent"));
 	//GAS에서 Binding
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
@@ -252,6 +252,9 @@ void AWKCharacterPlayer::GASAbilitySetting()
 			{
 				CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 			}*/
+
+			ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_DEBUFF_STUN,
+				EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);
 		}
 
 		// Init Effect Setting
@@ -357,5 +360,42 @@ void AWKCharacterPlayer::SetDead()
 	if (PlayerController)
 	{
 		DisableInput(PlayerController);
+	}
+}
+
+void AWKCharacterPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bool bIsCheckStun = NewCount > 0;
+
+	if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("NoDead"));
+
+		// Muticast RPC 호출
+		MulticastSetStun(bIsCheckStun);
+
+		// Server 수행
+		SetStun(bIsCheckStun);
+
+		if (bIsCheckStun)
+		{
+			// 어빌리티 취소 코드
+			FGameplayTagContainer AbilityTagsToCancel;
+			AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill")));
+
+			FGameplayTagContainer AbilityTagsToIgnore;
+			//AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.NotCanceledByStun")));
+
+			ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
+		}
+	}
+}
+
+void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
+{
+	// Server 외
+	if (!HasAuthority())
+	{
+		SetStun(bIsStun);
 	}
 }

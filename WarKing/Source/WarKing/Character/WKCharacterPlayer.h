@@ -90,6 +90,9 @@ protected:
 
 	virtual void SetDead() override;
 
+	// Tag change callbacks
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
 // GAS Section
 protected:
 
@@ -106,4 +109,12 @@ protected:
 	// Init Effects
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TArray<TSubclassOf<class UGameplayEffect>> StartEffects;
+
+// RPC Section
+protected:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSetStun(bool bIsStun);
+
+	void MulticastSetStun_Implementation(bool bIsStun);
 };

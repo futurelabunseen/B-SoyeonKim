@@ -50,4 +50,15 @@ protected:
 
 	// Attribute changed callbacks
 	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+
+	// Tag change callbacks
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+// RPC Section
+protected:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSetStun(bool	 bIsStun);
+
+	void MulticastSetStun_Implementation(bool bIsStun);
 };

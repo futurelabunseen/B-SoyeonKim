@@ -13,7 +13,14 @@
 
 UWKGA_AttackHitCheck::UWKGA_AttackHitCheck()
 {
-	
+
+	// TOOD : 블루프린트에서 연결하는게 왜 nullptr로 잡히는지.. 체크하기
+	static ConstructorHelpers::FClassFinder<UGameplayEffect> StunEffectClassRef(TEXT("/Game/WarKing/Blueprint/GE/BPGE_Stun.BPGE_Stun_C"));
+
+	if (StunEffectClassRef.Class)
+	{
+		StunEffect = StunEffectClassRef.Class;
+	}
 }
 
 void UWKGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -60,11 +67,10 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 			{
 				ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
 	
-				
+				// 불검일 경우
 				if (SourceASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISFLAMING))
 				{
 					FGameplayEffectSpecHandle DotEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDotDamageEffect, CurrentLevel);
-					FGameplayEffectContextHandle DotCueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(DotEffectSpecHandle);
 					ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, DotEffectSpecHandle, TargetDataHandle);
 				}
 
@@ -82,31 +88,40 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 			}
 		}
 		
+		// ComboAttack AttackRange Buff Effect
 		FGameplayEffectSpecHandle BuffEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackBuffEffect, CurrentLevel);
 
 		if (BuffEffectSpecHandle.IsValid())
 		{
 			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, BuffEffectSpecHandle);
 		}
-	}
+	} 
 	else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))
 	{
-		// Actors 정보가 있는지 확인
+		// Actors 정보가 있는지 확인		
+		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();		 
 		
-		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
+		// StunEffect
+		FGameplayEffectSpecHandle StunEffectSpecHandle = MakeOutgoingGameplayEffectSpec(StunEffect, CurrentLevel);
 
+		if (StunEffectSpecHandle.IsValid())
+		{
+			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, StunEffectSpecHandle, TargetDataHandle);
+		}
+
+		// DamageEffect
 		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
-
-
+	
 		if (EffectSpecHandle.IsValid())
 		{
 			ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
 
 			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);
 			CueContextHandle.AddActors(TargetDataHandle.Data[0].Get()->GetActors(), false);
+
+			//TODO: 이펙트로 발동 -> 이펙트의 Target Tag를 활용하기
 			FGameplayCueParameters CueParam;
 			CueParam.EffectContext = CueContextHandle;
-
 			SourceASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParam);
 		}
 	}

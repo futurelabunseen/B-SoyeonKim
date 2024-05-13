@@ -58,8 +58,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 	uint8 bIsJumping : 1;
 
+	// 스턴인지 상태 bool
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+	uint8 bIsStunned : 1;
+
 	// 점프중인지를 나타내기 위한 값
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 	float JumpingThreshould;
 
+public:
+	void SetStun(bool IsStun);
 };

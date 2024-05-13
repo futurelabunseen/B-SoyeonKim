@@ -23,7 +23,7 @@ void UWKGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 }
 
 void UWKGA_Sprint::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
-{
+{		
 	ServerSetStopSprint();
 	StopSrpint();
 	bool bReplicatedEndAbility = true;

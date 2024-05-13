@@ -16,14 +16,14 @@
 #define WKTAG_CHARACTER_STATE_ISDEAD FGameplayTag::RequestGameplayTag(FName("Character.State.IsDead"))
 #define WKTAG_CHARACTER_STATE_INVISIBLE FGameplayTag::RequestGameplayTag(FName("Character.State.Invisible"))
 #define WKTAG_CHARACTER_STATE_ISFLAMING FGameplayTag::RequestGameplayTag(FName("Character.State.IsFlaming"))
+#define WKTAG_CHARACTER_STATE_DEBUFF_STUN FGameplayTag::RequestGameplayTag(FName("Character.State.Debuff.Stun"))
+
 
 // GameplayCue
 #define WKTAG_GC_CHARACTER_ATTACKHIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.AttackHit"))
 #define WKTAG_GC_SKILL_AOE FGameplayTag::RequestGameplayTag(FName("GameplayCue.Skill.AOE"))
 #define WKTAG_GC_SKILL_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("GameplayCue.Skill.BlockAttack"))
 #define WKTAG_GC_CHARACTER_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.BlockAttack"))
-
-
 
 // Evnet
 #define WKTAG_EVENT_CHARACTER_WEAPON_EQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.Equip"))

@@ -7,6 +7,7 @@
 #include "Physics/WKCollision.h"
 #include "UI/WKGASWidgetComponent.h"
 #include "UI/WKGASUserWidget.h"
+#include "Animation/WKAnimInstance.h"
 #include "WarKing.h"
 #include <EngineUtils.h>
 
@@ -20,7 +21,7 @@ AWKCharacterBase::AWKCharacterBase()
 	bUseControllerRotationRoll = false;
 
 	// Capsule
-	GetCapsuleComponent()->InitCapsuleSize(50.f, 110.0f);
+	GetCapsuleComponent()->InitCapsuleSize(50.f, 100.0f);
 	GetCapsuleComponent()->SetCollisionProfileName(CPROFILE_WKCAPSULE);
 
 	// Movements
@@ -91,4 +92,24 @@ void AWKCharacterBase::PlayDeadAnimation()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	AnimInstance->StopAllMontages(0.0f);
 	AnimInstance->Montage_Play(DeadMontage, 1.0f);
+}
+
+void AWKCharacterBase::SetStun(bool IsStun)
+{
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetStun"));
+	UWKAnimInstance* AnimInstance = Cast<UWKAnimInstance>(GetMesh()->GetAnimInstance());
+
+	if (AnimInstance)
+	{
+		AnimInstance->SetStun(IsStun);
+
+		if (IsStun)
+		{
+			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+		}
+		else
+		{
+			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		}
+	}
 }
