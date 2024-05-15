@@ -246,13 +246,6 @@ void AWKCharacterPlayer::GASAbilitySetting()
 				ASC->GiveAbility(StartSpec);
 			}
 
-			// Old Code
-			/*	const UWKCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UWKCharacterAttributeSet>();
-			if (CurrentAttributeSet)
-			{
-				CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-			}*/
-
 			ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_DEBUFF_STUN,
 				EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);
 		}
