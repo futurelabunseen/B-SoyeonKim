@@ -9,9 +9,10 @@
 #include "UI/WKGASUserWidget.h"
 #include "Animation/WKAnimInstance.h"
 #include "WarKing.h"
+#include "GameplayTagContainer.h"
+#include "Enum/WKCharacterHitType.h"
+#include "Enum/WKTEnumToName.h"
 #include <EngineUtils.h>
-
-
 // Sets default values
 AWKCharacterBase::AWKCharacterBase()
 {
@@ -65,6 +66,12 @@ AWKCharacterBase::AWKCharacterBase()
 		DeadMontage = DeadMontageRef.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> HitReactMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_HitReact.AM_HitReact'"));
+	if (HitReactMontageRef.Object)
+	{
+		HitReactMontage = HitReactMontageRef.Object;
+	}
+
 	// HpBar
 	HpBar = CreateDefaultSubobject<UWKGASWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
@@ -78,6 +85,61 @@ AWKCharacterBase::AWKCharacterBase()
 		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+
+EWKHitReactDirection AWKCharacterBase::GetHitReactDirection(const FVector& ImpactPoint)
+{
+	const FVector& ActorLocation = GetActorLocation();
+	// PointPlaneDist is super cheap - 1 vector subtraction, 1 dot product.
+	float DistanceToFrontBackPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorRightVector());
+	float DistanceToRightLeftPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorForwardVector());
+
+
+	if (FMath::Abs(DistanceToFrontBackPlane) <= FMath::Abs(DistanceToRightLeftPlane))
+	{
+		if (DistanceToRightLeftPlane >= 0)
+		{
+			return EWKHitReactDirection::Front;
+		}
+		else
+		{
+			return EWKHitReactDirection::Back;
+		}
+	}
+	else
+	{
+		// Determine if Right or Left
+
+		if (DistanceToFrontBackPlane >= 0)
+		{
+			return EWKHitReactDirection::Right;
+		}
+		else
+		{
+			return EWKHitReactDirection::Left;
+		}
+	}
+
+	return EWKHitReactDirection::Front;
+}
+
+void AWKCharacterBase::PlayHitReact_Implementation(EWKHitReactDirection HitDirectionType)
+{
+	PlayHitReactAnimation(HitDirectionType);
+}
+
+bool AWKCharacterBase::PlayHitReact_Validate(EWKHitReactDirection HitDirectionType)
+{
+	return true;
+}
+
+void AWKCharacterBase::PlayHitReactAnimation(EWKHitReactDirection HitDirectionType)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(HitReactMontage, 1.0f);
+	AnimInstance->Montage_JumpToSection(*GetEnumDisplayName(HitDirectionType), HitReactMontage);
 }
 
 void AWKCharacterBase::SetDead()

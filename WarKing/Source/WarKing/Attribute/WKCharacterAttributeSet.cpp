@@ -4,7 +4,9 @@
 #include "Attribute/WKCharacterAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
+#include "Character/WKCharacterBase.h"
 #include "Net/UnrealNetwork.h"
+#include "Enum/WKCharacterHitType.h"
 #include "Tag/WKGameplayTag.h"
 
 UWKCharacterAttributeSet::UWKCharacterAttributeSet() : 
@@ -68,6 +70,13 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 
 	float MinHealth = 0.0f;
 
+	AWKCharacterBase* TargetCharacter = nullptr;
+
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		TargetCharacter = Cast<AWKCharacterBase>(Data.Target.AbilityActorInfo->AvatarActor.Get());
+	}
+
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Direct Health Access : %f"), GetHealth());
@@ -78,6 +87,19 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		UE_LOG(LogTemp, Log, TEXT("Damage : %f"), GetDamage());
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinHealth, GetMaxHealth()));
 		SetDamage(0.0f);
+
+		if (GetHealth() > UE_KINDA_SMALL_NUMBER)
+		{
+			// HitReact -> Animation Multicast RPC
+			const FHitResult* Hit = Data.EffectSpec.GetContext().GetHitResult();
+
+			if (Hit)
+			{
+				EWKHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(Data.EffectSpec.GetContext().GetHitResult()->Location);
+
+				TargetCharacter->PlayHitReact(HitDirection);
+			}
+		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{

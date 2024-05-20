@@ -28,8 +28,24 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UAnimMontage> HitReactMontage;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UWKGASWidgetComponent> HpBar;
+
+// HitReact Section
+public:
+	UFUNCTION(BlueprintCallable)
+	EWKHitReactDirection GetHitReactDirection(const FVector& ImpactPoint);
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void PlayHitReact(EWKHitReactDirection HitDirectionType);
+	void PlayHitReact_Implementation(EWKHitReactDirection HitDirectionType);
+	bool PlayHitReact_Validate(EWKHitReactDirection HitDirectionType);
+
+protected:
+	void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType);
 
 // Dead Section
 protected:
