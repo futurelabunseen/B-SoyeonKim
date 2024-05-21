@@ -90,7 +90,7 @@ AWKCharacterBase::AWKCharacterBase()
 EWKHitReactDirection AWKCharacterBase::GetHitReactDirection(const FVector& ImpactPoint)
 {
 	const FVector& ActorLocation = GetActorLocation();
-	// PointPlaneDist is super cheap - 1 vector subtraction, 1 dot product.
+	
 	float DistanceToFrontBackPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorRightVector());
 	float DistanceToRightLeftPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorForwardVector());
 
@@ -108,8 +108,6 @@ EWKHitReactDirection AWKCharacterBase::GetHitReactDirection(const FVector& Impac
 	}
 	else
 	{
-		// Determine if Right or Left
-
 		if (DistanceToFrontBackPlane >= 0)
 		{
 			return EWKHitReactDirection::Right;
@@ -123,14 +121,9 @@ EWKHitReactDirection AWKCharacterBase::GetHitReactDirection(const FVector& Impac
 	return EWKHitReactDirection::Front;
 }
 
-void AWKCharacterBase::PlayHitReact_Implementation(EWKHitReactDirection HitDirectionType)
+void AWKCharacterBase::MultiPlayHitReact_Implementation(EWKHitReactDirection HitDirectionType)
 {
 	PlayHitReactAnimation(HitDirectionType);
-}
-
-bool AWKCharacterBase::PlayHitReact_Validate(EWKHitReactDirection HitDirectionType)
-{
-	return true;
 }
 
 void AWKCharacterBase::PlayHitReactAnimation(EWKHitReactDirection HitDirectionType)

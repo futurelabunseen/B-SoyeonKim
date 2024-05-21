@@ -39,10 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EWKHitReactDirection GetHitReactDirection(const FVector& ImpactPoint);
 
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
-	void PlayHitReact(EWKHitReactDirection HitDirectionType);
-	void PlayHitReact_Implementation(EWKHitReactDirection HitDirectionType);
-	bool PlayHitReact_Validate(EWKHitReactDirection HitDirectionType);
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiPlayHitReact(EWKHitReactDirection HitDirectionType);
+	void MultiPlayHitReact_Implementation(EWKHitReactDirection HitDirectionType);
 
 protected:
 	void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType);

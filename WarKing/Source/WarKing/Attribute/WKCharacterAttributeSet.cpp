@@ -97,7 +97,7 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 			{
 				EWKHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(Data.EffectSpec.GetContext().GetHitResult()->Location);
 
-				TargetCharacter->PlayHitReact(HitDirection);
+				TargetCharacter->MultiPlayHitReact(HitDirection);
 			}
 		}
 	}
