@@ -272,13 +272,13 @@ void AWKCharacterPlayer::GASAbilitySetting()
 		// HUD Set
 		UWKCharacterAttributeSet* CurrentAttributeSet = GASPS->GetAttributeSet();
 
-		if (AWKPlayerController* AuraPlayerController = Cast<AWKPlayerController>(GetController()))
+		if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
 		{
 			if (ensure(CurrentAttributeSet))
 			{
-				if (AWKHUD* WKHUD = Cast<AWKHUD>(AuraPlayerController->GetHUD()))
+				if (AWKHUD* WKHUD = Cast<AWKHUD>(WKPlayerController->GetHUD()))
 				{
-					WKHUD->InitOverlay(AuraPlayerController, GASPS, ASC, CurrentAttributeSet);
+					WKHUD->InitOverlay(WKPlayerController, GASPS, ASC, CurrentAttributeSet);
 				}
 			}	
 		}
@@ -292,10 +292,10 @@ void AWKCharacterPlayer::ConsoleCommandSetting()
 {
 	APlayerController* PlayerController = CastChecked<APlayerController>(GetOwner());
 
-	if (ensure(PlayerController))
+	/*if (ensure(PlayerController))
 	{
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
-	}
+	}*/
 }
 
 bool AWKCharacterPlayer::HasGameplayTag(FGameplayTag Tag) const
