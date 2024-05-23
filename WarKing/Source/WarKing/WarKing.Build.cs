@@ -11,7 +11,8 @@ public class WarKing : ModuleRules
         PublicIncludePaths.AddRange(new string[] { "WarKing" });
 
         PublicDependencyModuleNames.AddRange(new string[] {
-            "Core", "CoreUObject", "Engine", "InputCore", 
+            "Core", "CoreUObject", "Engine", "InputCore",
+            "MultiplayerSessions",
             "EnhancedInput", "OnlineSubSystemSteam", "OnlineSubSystem"
         });
 
