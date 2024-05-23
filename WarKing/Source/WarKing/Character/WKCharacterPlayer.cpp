@@ -292,10 +292,10 @@ void AWKCharacterPlayer::ConsoleCommandSetting()
 {
 	APlayerController* PlayerController = CastChecked<APlayerController>(GetOwner());
 
-	/*if (ensure(PlayerController))
+	if (ensure(PlayerController))
 	{
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
-	}*/
+	}
 }
 
 bool AWKCharacterPlayer::HasGameplayTag(FGameplayTag Tag) const

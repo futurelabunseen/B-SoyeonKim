@@ -24,6 +24,7 @@
 #define WKTAG_GC_SKILL_AOE FGameplayTag::RequestGameplayTag(FName("GameplayCue.Skill.AOE"))
 #define WKTAG_GC_SKILL_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("GameplayCue.Skill.BlockAttack"))
 #define WKTAG_GC_CHARACTER_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.BlockAttack"))
+#define WKTAG_GC_CHARACTER_BURN FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.Burn"))
 
 // Evnet
 #define WKTAG_EVENT_CHARACTER_WEAPON_EQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.Equip"))

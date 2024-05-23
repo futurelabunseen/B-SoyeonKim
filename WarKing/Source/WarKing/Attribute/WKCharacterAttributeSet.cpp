@@ -16,7 +16,7 @@ UWKCharacterAttributeSet::UWKCharacterAttributeSet() :
 	MaxAttackRadius(150.0f),
 	AttackRate(30.0f),
 	MaxAttackRate(100.0f),
-	MaxHealth(100.0f),
+	MaxHealth(300.0f),
 	Damage(0.0f),
 	MaxStamina(100.0f)
 {
@@ -80,7 +80,7 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Direct Health Access : %f"), GetHealth());
-		SetHealth(FMath::Clamp(GetHealth(), MinHealth, GetHealth()));
+		SetHealth(FMath::Clamp(GetHealth(), MinHealth, GetMaxHealth()));
 	}
 	else if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{

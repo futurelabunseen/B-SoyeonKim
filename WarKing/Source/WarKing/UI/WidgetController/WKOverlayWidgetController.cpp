@@ -11,8 +11,8 @@ void UWKOverlayWidgetController::BroadcastInitialValues()
 
 	OnHealthChanged.Broadcast(WKAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(WKAttributeSet->GetMaxHealth());
-	OnStaminaChanged.Broadcast(WKAttributeSet->GetHealth());
-	OnMaxStaminaChanged.Broadcast(WKAttributeSet->GetMaxHealth());
+	OnStaminaChanged.Broadcast(WKAttributeSet->GetStamina());
+	OnMaxStaminaChanged.Broadcast(WKAttributeSet->GetMaxStamina());
 
 }
 
