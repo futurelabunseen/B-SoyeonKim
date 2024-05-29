@@ -18,7 +18,6 @@ public:
 	FORCEINLINE class UWKComboActionData* GetComboActionData() const { return ComboActionData; }
 
 protected:
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> ComboActionMontage;
 

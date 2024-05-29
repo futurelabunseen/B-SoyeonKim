@@ -45,6 +45,9 @@ public:
 	UFUNCTION()
 	void Sprint(bool IsSprint);
 
+	UFUNCTION()
+	bool GetIsMoving();
+
 // Camera Section
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))

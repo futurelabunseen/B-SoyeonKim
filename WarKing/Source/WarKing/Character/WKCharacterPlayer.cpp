@@ -340,6 +340,11 @@ void AWKCharacterPlayer::Sprint(bool IsSprint)
 	}
 }
 
+bool AWKCharacterPlayer::GetIsMoving()
+{
+	return GetVelocity().Size() > 0.f && GetCharacterMovement()->IsMovingOnGround();
+}
+
 void AWKCharacterPlayer::OnOutOfHealth()
 {
 	SetDead();

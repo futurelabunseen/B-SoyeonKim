@@ -3,6 +3,7 @@
 
 #include "UI/WKHUD.h"
 #include "UI/Widget/WKUserWidget.h"
+#include "Components/TextBlock.h"
 #include "UI/WidgetController/WKOverlayWidgetController.h"
 
 UWKOverlayWidgetController* AWKHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
@@ -18,8 +19,8 @@ UWKOverlayWidgetController* AWKHUD::GetOverlayWidgetController(const FWidgetCont
 
 void AWKHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
-	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_AWKHUD"));
-	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_AuraHUD"));
+	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized, please fill out BP_WKHUD"));
+	checkf(OverlayWidgetControllerClass, TEXT("Overlay Widget Controller Class uninitialized, please fill out BP_WKHUD"));
 
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), OverlayWidgetClass);
 	OverlayWidget = Cast<UWKUserWidget>(Widget);

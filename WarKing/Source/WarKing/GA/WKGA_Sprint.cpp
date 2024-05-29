@@ -12,23 +12,29 @@ UWKGA_Sprint::UWKGA_Sprint()
 void UWKGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
 
 	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(ActorInfo->AvatarActor.Get());
 
-	if(TargetCharacter)
+	if (TargetCharacter)
+	{
 		TargetCharacter->Sprint(true);
 
-	TargetASC = ActorInfo->AbilitySystemComponent.Get();
+		if (TargetCharacter->GetIsMoving())
+		{
+			CommitAbility(Handle, ActorInfo, ActivationInfo);
+		}
+		else
+		{
+			EndSprintAbility(Handle, ActorInfo, ActivationInfo);
+		}
+
+		TargetASC = ActorInfo->AbilitySystemComponent.Get();
+	}
 }
 
 void UWKGA_Sprint::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {		
-	ServerSetStopSprint();
-	StopSrpint();
-	bool bReplicatedEndAbility = true;
-	bool bWasCancelled = false;
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
+	EndSprintAbility(Handle, ActorInfo, ActivationInfo);
 }
 
 void UWKGA_Sprint::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -39,6 +45,13 @@ void UWKGA_Sprint::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 void UWKGA_Sprint::ServerSetStopSprint_Implementation()
 {
 	StopSrpint();
+}
+
+void UWKGA_Sprint::EndSprintAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	ServerSetStopSprint();
+	StopSrpint();
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void UWKGA_Sprint::StopSrpint()

@@ -47,30 +47,30 @@ AWKCharacterBase::AWKCharacterBase()
 		GetMesh()->SetSkeletalMesh(CharacterMeshRef.Object);
 	}
 	 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Game/WarKing/Animation/ABP_WKCharacter.ABP_WKCharacter_C"));
+	//static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassRef(TEXT("/Game/WarKing/Animation/ABP_WKCharacter.ABP_WKCharacter_C"));
 
-	if (AnimInstanceClassRef.Class)
-	{
-		GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
-	}
+	//if (AnimInstanceClassRef.Class)
+	//{
+	//	GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_ComboAttack.AM_ComboAttack'"));
-	if (ComboActionMontageRef.Object)
-	{
-		ComboActionMontage = ComboActionMontageRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_ComboAttack.AM_ComboAttack'"));
+	//if (ComboActionMontageRef.Object)
+	//{
+	//	ComboActionMontage = ComboActionMontageRef.Object;
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_Dead.AM_Dead'"));
-	if (DeadMontageRef.Object)
-	{
-		DeadMontage = DeadMontageRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_Dead.AM_Dead'"));
+	//if (DeadMontageRef.Object)
+	//{
+	//	DeadMontage = DeadMontageRef.Object;
+	//}
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> HitReactMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_HitReact.AM_HitReact'"));
-	if (HitReactMontageRef.Object)
-	{
-		HitReactMontage = HitReactMontageRef.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> HitReactMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/WarKing/Animation/AM_HitReact.AM_HitReact'"));
+	//if (HitReactMontageRef.Object)
+	//{
+	//	HitReactMontage = HitReactMontageRef.Object;
+	//}
 
 	// HpBar
 	HpBar = CreateDefaultSubobject<UWKGASWidgetComponent>(TEXT("Widget"));

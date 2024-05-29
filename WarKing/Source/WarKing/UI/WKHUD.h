@@ -27,7 +27,7 @@ public:
 private:
 
 	UPROPERTY()
-	TObjectPtr<UWKUserWidget>  OverlayWidget;
+	TObjectPtr<UWKUserWidget> OverlayWidget;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UWKUserWidget> OverlayWidgetClass;

@@ -25,6 +25,7 @@ public:
 	void ServerSetStopSprint();
 	void ServerSetStopSprint_Implementation();
 
+	void EndSprintAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo);
 	void StopSrpint();
 	void CancelCost();
 
