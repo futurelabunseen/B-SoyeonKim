@@ -18,10 +18,11 @@ class WARKING_API AWKGameState : public AGameStateBase, public IAbilitySystemInt
 
 public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const;
+	UWKGameAttributeSet* GetAttributeSet() const;
 
 protected:
 	AWKGameState(const FObjectInitializer& ObjectInitializer);
+	virtual void PostInitializeComponents() override;
 
 	virtual void HandleBeginPlay() override;
 	virtual void OnRep_ReplicatedHasBegunPlay() override;
@@ -44,6 +45,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UWKGameAttributeSet> AttributeSet;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TArray<TSubclassOf<class UGameplayEffect>> StartEffects;
 
 public:
 	UPROPERTY(EditDefaultsOnly)

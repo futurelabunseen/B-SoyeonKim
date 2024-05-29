@@ -18,12 +18,37 @@ AWKGameState::AWKGameState(const FObjectInitializer& ObjectInitializer) : Super(
 	NetUpdateFrequency = 100.f;
 }
 
+void AWKGameState::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (ensure(ASC))
+	{
+		ASC->InitAbilityActorInfo(this, this);
+	
+	
+		// Init Effect Setting
+		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		for (TSubclassOf<UGameplayEffect> GameplayEffect : StartEffects)
+		{
+			FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(GameplayEffect, 1.f, EffectContext);
+			if (NewHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle ActiveGEHandle =
+					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
+			}
+		}
+	}
+}
+
 UAbilitySystemComponent* AWKGameState::GetAbilitySystemComponent() const
 {
 	return ASC;
 }
 
-UAttributeSet* AWKGameState::GetAttributeSet() const
+UWKGameAttributeSet* AWKGameState::GetAttributeSet() const
 {
 	return AttributeSet;
 }

@@ -30,3 +30,7 @@
 #define WKTAG_EVENT_CHARACTER_WEAPON_EQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.Equip"))
 #define WKTAG_EVENT_CHARACTER_WEAPON_UNEQUIP FGameplayTag::RequestGameplayTag(FName("Event.Character.Weapon.UnEquip"))
 #define WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK FGameplayTag::RequestGameplayTag(FName("Event.Character.Action.BlockAttackCheck"))
+
+//Game Control
+#define WKTAG_GAME_CONTROL_BLUETEAMPLAYER FGameplayTag::RequestGameplayTag(FName("Game.Control.BlueTeamPlayer"))
+#define WKTAG_GAME_CONTROL_REDTEAMPLAYER FGameplayTag::RequestGameplayTag(FName("Game.Control.RedTeamPlayer"))
