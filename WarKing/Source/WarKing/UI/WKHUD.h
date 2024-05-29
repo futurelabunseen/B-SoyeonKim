@@ -9,7 +9,8 @@
 class UWKOverlayWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
-class UWKUserWidget;
+class UWKUserOverlayWidget;
+class UWKGameWIdgetController;
 struct FWidgetControllerParams;
 /**
  * 
@@ -21,20 +22,28 @@ class WARKING_API AWKHUD : public AHUD
 public:
 
 	UWKOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
+	UWKGameWIdgetController* GetGameOverlayWidgetController(const FWidgetControllerParams& WCParams);
 
-	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
+	void InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Player_AS,
+		UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS);
 
 private:
 
 	UPROPERTY()
-	TObjectPtr<UWKUserWidget> OverlayWidget;
+	TObjectPtr<UWKUserOverlayWidget> OverlayWidget;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UWKUserWidget> OverlayWidgetClass;
+	TSubclassOf<UWKUserOverlayWidget> OverlayWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UWKOverlayWidgetController> OverlayWidgetController;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UWKOverlayWidgetController> OverlayWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UWKGameWIdgetController> GameOverlayWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UWKGameWIdgetController> GameOverlayWidgetControllerClass;
 };

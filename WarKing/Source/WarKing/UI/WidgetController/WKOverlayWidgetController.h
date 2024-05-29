@@ -6,7 +6,7 @@
 #include "UI/WidgetController/WKWidgetController.h"
 #include "WKOverlayWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameAttributeChangedSignature, float, NewValue);
 /**
  * 
  */
@@ -20,15 +20,14 @@ public:
 	virtual void BindCallbacksToDependencies() override;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FOnAttributeChangedSignature OnHealthChanged;
+	FOnGameAttributeChangedSignature OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FOnAttributeChangedSignature OnMaxHealthChanged;
-
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FOnAttributeChangedSignature OnStaminaChanged;
+	FOnGameAttributeChangedSignature OnMaxHealthChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
-	FOnAttributeChangedSignature OnMaxStaminaChanged;
+	FOnGameAttributeChangedSignature OnStaminaChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FOnGameAttributeChangedSignature OnMaxStaminaChanged;
 };

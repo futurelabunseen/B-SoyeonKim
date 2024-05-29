@@ -3,18 +3,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UI/Widget/WKUserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "WKUserOverlayWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WARKING_API UWKUserOverlayWidget : public UWKUserWidget
+class WARKING_API UWKUserOverlayWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* GameTimerText;
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerWidgetController(UObject* InWidgetController);
 
+	UFUNCTION(BlueprintCallable)
+	void SetGameWidgetController(UObject* InWidgetController);
+
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UObject> PlayerOvelayWidgetController;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UObject> GameOvelayWidgetController;
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayerWidgetControllerSet();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void GameWidgetControllerSet();
 };

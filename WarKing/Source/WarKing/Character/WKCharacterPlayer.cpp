@@ -12,6 +12,7 @@
 #include "WarKing.h"
 #include "AbilitySystemComponent.h"
 #include "UI/WKGASWidgetComponent.h"
+#include "Game/WKGameState.h"
 #include "Tag/WKGameplayTag.h"
 #include "GameplayTagContainer.h"
 #include "Attribute/WKCharacterAttributeSet.h"
@@ -266,19 +267,19 @@ void AWKCharacterPlayer::GASAbilitySetting()
 
 		GASPS->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
-		//TODO : TestCode
-		//ASC->AddLooseGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK);
-
+		// TODO : PlayerController로 옮기기
 		// HUD Set
 		UWKCharacterAttributeSet* CurrentAttributeSet = GASPS->GetAttributeSet();
-
+		AWKGameState* CurrentGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
+		
 		if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
 		{
-			if (ensure(CurrentAttributeSet))
+			if (ensure(CurrentAttributeSet) && ensure(CurrentGameState))
 			{
 				if (AWKHUD* WKHUD = Cast<AWKHUD>(WKPlayerController->GetHUD()))
 				{
-					WKHUD->InitOverlay(WKPlayerController, GASPS, ASC, CurrentAttributeSet);
+					WKHUD->InitOverlay(ASC, CurrentAttributeSet,
+						CurrentGameState->GetAbilitySystemComponent(), CurrentGameState->GetAttributeSet());
 				}
 			}	
 		}

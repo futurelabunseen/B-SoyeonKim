@@ -3,3 +3,14 @@
 
 #include "UI/Widget/WKUserOverlayWidget.h"
 
+void UWKUserOverlayWidget::SetPlayerWidgetController(UObject* InWidgetController)
+{
+	PlayerOvelayWidgetController = InWidgetController;
+	PlayerWidgetControllerSet();
+}
+
+void UWKUserOverlayWidget::SetGameWidgetController(UObject* InWidgetController)
+{
+	GameOvelayWidgetController = InWidgetController;
+	GameWidgetControllerSet();
+}

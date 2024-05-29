@@ -7,16 +7,21 @@
 #include "AbilitySystemInterface.h"
 #include "WKGameState.generated.h"
 
+class UWKGameAttributeSet;
 /**
  * 
  */
 UCLASS()
-class WARKING_API AWKGameState : public AGameStateBase
+class WARKING_API AWKGameState : public AGameStateBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
+public:
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const;
 
 protected:
+	AWKGameState(const FObjectInitializer& ObjectInitializer);
 
 	virtual void HandleBeginPlay() override;
 	virtual void OnRep_ReplicatedHasBegunPlay() override;
@@ -29,6 +34,16 @@ protected:
 	void SetHUDTime();
 
 	void SetHUDMatchCountdown(const float CountdownTime);
+
+
+
+//GAS Section
+protected:
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TObjectPtr<class UAbilitySystemComponent> ASC;
+
+	UPROPERTY()
+	TObjectPtr<UWKGameAttributeSet> AttributeSet;
 
 public:
 	UPROPERTY(EditDefaultsOnly)

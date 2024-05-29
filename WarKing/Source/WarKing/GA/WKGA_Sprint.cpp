@@ -61,8 +61,6 @@ void UWKGA_Sprint::StopSrpint()
 	{
 		CancelCost();
 		TargetCharacter->Sprint(false);
-		//WKGAS_LOG(LogWKGAS, Log, TEXT("%s"), *(UEnum::GetValueAsString(TEXT("Engine.ENetRole"),
-		//	CurrentActorInfo->AvatarActor.Get()->GetOwner()->GetLocalRole())));
 	}
 }
 

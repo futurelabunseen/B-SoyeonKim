@@ -16,14 +16,16 @@ struct FWidgetControllerParams
 	GENERATED_BODY()
 
 	FWidgetControllerParams() {}
-	FWidgetControllerParams(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
-		: PlayerController(PC), PlayerState(PS), AbilitySystemComponent(ASC), AttributeSet(AS) {}
+	/*FWidgetControllerParams(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
+		: PlayerController(PC), PlayerState(PS), AbilitySystemComponent(ASC), AttributeSet(AS) {}*/
+	FWidgetControllerParams(UAbilitySystemComponent* ASC, UAttributeSet* AS)
+		: AbilitySystemComponent(ASC), AttributeSet(AS) {}
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<APlayerController> PlayerController = nullptr;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TObjectPtr<APlayerController> PlayerController = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<APlayerState> PlayerState = nullptr;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//TObjectPtr<APlayerState> PlayerState = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent = nullptr;
@@ -50,11 +52,11 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
-	TObjectPtr<APlayerController> PlayerController;
+	//UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
+	//TObjectPtr<APlayerController> PlayerController;
 
-	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
-	TObjectPtr<APlayerState> PlayerState;
+	//UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
+	//TObjectPtr<APlayerState> PlayerState;
 
 	UPROPERTY(BlueprintReadOnly, Category = "WidgetController")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
