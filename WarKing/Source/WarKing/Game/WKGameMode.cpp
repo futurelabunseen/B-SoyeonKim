@@ -2,9 +2,15 @@
 
 
 #include "Game/WKGameMode.h"
+
 #include "WarKing.h"
 #include "WKGameState.h"
+#include "AbilitySystemComponent.h"
 #include "Player/WKGASPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "Tag/WKGameplayTag.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/PlayerStart.h"
 
 AWKGameMode::AWKGameMode()
 {
@@ -56,6 +62,7 @@ void AWKGameMode::PostLogin(APlayerController* NewPlayer)
 
 	Super::PostLogin(NewPlayer);
 
+#pragma region Logging
 	UNetDriver* NetDriver = GetNetDriver();
 	if (NetDriver)
 	{
@@ -77,6 +84,36 @@ void AWKGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
+#pragma endregion
+
+	//Team Setting
+	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
+
+	if (WKGameState)
+	{
+		AWKGASPlayerState* WKPlayerState = NewPlayer->GetPlayerState<AWKGASPlayerState>();
+		if (WKPlayerState)
+		{
+			UAbilitySystemComponent* PlayerASC = WKPlayerState->GetAbilitySystemComponent();
+
+			if (PlayerASC)
+			{
+				if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
+				{
+					WKGameState->RedTeam.AddUnique(WKPlayerState);
+					PlayerASC->AddLooseGameplayTag(WKTAG_GAME_TEAM_RED);
+					PlayerASC->AddReplicatedLooseGameplayTag(WKTAG_GAME_TEAM_RED);
+				}
+				else
+				{
+					WKGameState->BlueTeam.AddUnique(WKPlayerState);
+					PlayerASC->AddLooseGameplayTag(WKTAG_GAME_TEAM_BLUE);
+					PlayerASC->AddReplicatedLooseGameplayTag(WKTAG_GAME_TEAM_BLUE);
+				}
+			}
+		}	
+	}
+
 }
 
 void AWKGameMode::StartPlay()
@@ -86,4 +123,39 @@ void AWKGameMode::StartPlay()
 	Super::StartPlay();
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
+}
+
+void AWKGameMode::Logout(AController* Exiting)
+{
+	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
+	AWKGASPlayerState* WKPlayerState = Exiting->GetPlayerState<AWKGASPlayerState>();
+
+	if (WKGameState && WKPlayerState)
+	{
+		if (WKGameState->RedTeam.Contains(WKPlayerState))
+		{
+			WKGameState->RedTeam.Remove(WKPlayerState);
+		}
+		if (WKGameState->BlueTeam.Contains(WKPlayerState))
+		{
+			WKGameState->BlueTeam.Remove(WKPlayerState);
+		}
+	}
+}
+
+void AWKGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
+{
+	if (ElimmedCharacter)
+	{
+		ElimmedCharacter->Reset();
+		ElimmedCharacter->Destroy();
+	}
+
+	if (ElimmedController)
+	{
+		TArray<AActor*> PlayerStarts;
+		UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
+		int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
+		RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
+	}
 }

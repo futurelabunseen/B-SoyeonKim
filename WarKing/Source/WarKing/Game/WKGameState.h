@@ -8,6 +8,7 @@
 #include "WKGameState.generated.h"
 
 class UWKGameAttributeSet;
+class AWKGASPlayerState;
 /**
  * 
  */
@@ -18,7 +19,7 @@ class WARKING_API AWKGameState : public AGameStateBase, public IAbilitySystemInt
 
 public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UWKGameAttributeSet* GetAttributeSet() const;
+	UAttributeSet* GetAttributeSet() const;
 
 protected:
 	AWKGameState(const FObjectInitializer& ObjectInitializer);
@@ -50,6 +51,10 @@ protected:
 	TArray<TSubclassOf<class UGameplayEffect>> StartEffects;
 
 public:
+
+	TArray<AWKGASPlayerState*> RedTeam;
+	TArray<AWKGASPlayerState*> BlueTeam;
+
 	UPROPERTY(EditDefaultsOnly)
 	float MatchTime = 120.f;
 };

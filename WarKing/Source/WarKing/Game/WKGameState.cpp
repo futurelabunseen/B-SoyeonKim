@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Attribute/WKGameAttributeSet.h"
 #include "WarKing.h"
+#include "Tag/WKGameplayTag.h"
 
 AWKGameState::AWKGameState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -40,6 +41,9 @@ void AWKGameState::PostInitializeComponents()
 					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
 			}
 		}
+
+		/*ASC->RegisterGameplayTagEvent(WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM,
+			EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);*/
 	}
 }
 
@@ -48,7 +52,7 @@ UAbilitySystemComponent* AWKGameState::GetAbilitySystemComponent() const
 	return ASC;
 }
 
-UWKGameAttributeSet* AWKGameState::GetAttributeSet() const
+UAttributeSet* AWKGameState::GetAttributeSet() const
 {
 	return AttributeSet;
 }

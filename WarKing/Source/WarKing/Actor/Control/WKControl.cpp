@@ -4,6 +4,7 @@
 #include "Actor/Control/WKControl.h"
 
 #include "Components/BoxComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Attribute/WKGameAttributeSet.h"
 #include "Physics/WKCollision.h"
 #include "Game/WKGameState.h"
@@ -34,24 +35,44 @@ UAbilitySystemComponent* AWKControl::GetAbilitySystemComponent() const
 void AWKControl::NotifyActorBeginOverlap(AActor* Other)
 {
 	Super::NotifyActorBeginOverlap(Other);
-	
+
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other);
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("NotifyActorBeginOverlap"));
 
 	if (ASC)
 	{
-		ASC->AddLooseGameplayTag(WKTAG_GAME_CONTROL_BLUETEAMPLAYER);
-		AttributeSet->SetControlPlayerNumBlue(AttributeSet->GetControlPlayerNumBlue() + 1);
-	}	
+		if (TargetASC)
+		{
+			if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_BLUE))
+			{
+				AddToBlueTeamPlayerNum(1);
+			}
+			else if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_RED))
+			{
+				AddToRedTeamPlayerNum(1);
+			}
+		}
+	}
 }
 
 void AWKControl::NotifyActorEndOverlap(AActor* Other)
 {
 	Super::NotifyActorEndOverlap(Other);
 
+	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other);
 	if (ASC)
 	{
-		AttributeSet->SetControlPlayerNumBlue(AttributeSet->GetControlPlayerNumBlue() - 1);
-		ASC->RemoveLooseGameplayTag(WKTAG_GAME_CONTROL_BLUETEAMPLAYER);
+		if (TargetASC)
+		{
+			if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_BLUE))
+			{
+				AddToBlueTeamPlayerNum(-1);
+			}
+			else if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_RED))
+			{
+				AddToRedTeamPlayerNum(-1);
+			}
+		}
 	}
 }
 
@@ -62,7 +83,28 @@ void AWKControl::BeginPlay()
 	AWKGameState* CurrentGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
 
 	ASC = CurrentGameState->GetAbilitySystemComponent();
-	AttributeSet = CurrentGameState->GetAttributeSet();
+
+	UWKGameAttributeSet* WKAttribute = Cast<UWKGameAttributeSet>(CurrentGameState->GetAttributeSet());
+	if (WKAttribute)
+	{
+		AttributeSet = WKAttribute;
+	}
+}
+
+void AWKControl::AddToBlueTeamPlayerNum(int Count)
+{
+	AttributeSet->SetControlPlayerNumBlue(AttributeSet->GetControlPlayerNumBlue() + Count);
+
+	// Count -> 양수면 Add, 음수면 Loose
+	ASC->UpdateTagMap(WKTAG_GAME_CONTROL_BLUETEAMPLAYER, Count);
+}
+
+void AWKControl::AddToRedTeamPlayerNum(int Count)
+{
+	AttributeSet->SetControlPlayerNumRed(AttributeSet->GetControlPlayerNumRed() + Count);
+
+	// Count -> 양수면 Add, 음수면 Loose
+	ASC->UpdateTagMap(WKTAG_GAME_CONTROL_REDTEAMPLAYER, Count);
 }
 
 

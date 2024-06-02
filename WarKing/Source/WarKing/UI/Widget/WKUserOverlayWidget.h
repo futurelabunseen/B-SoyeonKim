@@ -21,7 +21,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetGameWidgetController(UObject* InWidgetController);
 
-
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> PlayerOvelayWidgetController;
 

@@ -22,6 +22,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void AddToBlueTeamPlayerNum(int Count);
+	void AddToRedTeamPlayerNum(int Count);
+
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 

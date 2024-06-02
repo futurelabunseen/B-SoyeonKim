@@ -34,3 +34,14 @@
 //Game Control
 #define WKTAG_GAME_CONTROL_BLUETEAMPLAYER FGameplayTag::RequestGameplayTag(FName("Game.Control.BlueTeamPlayer"))
 #define WKTAG_GAME_CONTROL_REDTEAMPLAYER FGameplayTag::RequestGameplayTag(FName("Game.Control.RedTeamPlayer"))
+
+#define WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM FGameplayTag::RequestGameplayTag(FName("Game.Control.Dominate.BlueTeam"))
+#define WKTAG_GAME_CONTROL_DOMINATE_REDTEAM FGameplayTag::RequestGameplayTag(FName("Game.Control.Dominate.RedTeam"))
+
+#define WKTAG_GAME_CONTROL_BLUEGAUGEZERO FGameplayTag::RequestGameplayTag(FName("Game.Control.BlueGaugeZero"))
+#define WKTAG_GAME_CONTROL_REDGAUGEZERO FGameplayTag::RequestGameplayTag(FName("Game.Control.RedGaugeZero"))
+
+
+//Game Team
+#define WKTAG_GAME_TEAM_BLUE FGameplayTag::RequestGameplayTag(FName("Game.Team.Blue"))
+#define WKTAG_GAME_TEAM_RED FGameplayTag::RequestGameplayTag(FName("Game.Team.Red"))

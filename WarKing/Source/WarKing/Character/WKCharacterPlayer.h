@@ -120,4 +120,13 @@ protected:
 	void MulticastSetStun(bool bIsStun);
 
 	void MulticastSetStun_Implementation(bool bIsStun);
+
+// Elim Section
+protected:
+	FTimerHandle ElimTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+
+	void ElimTimerFinished();
 };

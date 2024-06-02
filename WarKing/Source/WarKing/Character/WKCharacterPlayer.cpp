@@ -13,6 +13,7 @@
 #include "AbilitySystemComponent.h"
 #include "UI/WKGASWidgetComponent.h"
 #include "Game/WKGameState.h"
+#include "Game/WKGameMode.h"
 #include "Tag/WKGameplayTag.h"
 #include "GameplayTagContainer.h"
 #include "Attribute/WKCharacterAttributeSet.h"
@@ -360,6 +361,13 @@ void AWKCharacterPlayer::SetDead()
 	{
 		DisableInput(PlayerController);
 	}
+
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&AWKCharacterPlayer::ElimTimerFinished,
+		ElimDelay
+	);
 }
 
 void AWKCharacterPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
@@ -396,5 +404,15 @@ void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 	if (!HasAuthority())
 	{
 		SetStun(bIsStun);
+	}
+}
+
+void AWKCharacterPlayer::ElimTimerFinished()
+{
+	AWKGameMode* WKGameMode = GetWorld()->GetAuthGameMode<AWKGameMode>();
+
+	if (WKGameMode)
+	{
+		WKGameMode->RequestRespawn(this, Controller);
 	}
 }

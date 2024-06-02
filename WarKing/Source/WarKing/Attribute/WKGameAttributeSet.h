@@ -40,6 +40,8 @@ public:
 
 protected:
 
+	UAbilitySystemComponent* ASC;
+
 	/// <summary>
 	/// RedTeam 거점 인원 수
 	/// </summary>

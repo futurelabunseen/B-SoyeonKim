@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Attribute/WKGameAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
 #include "Net/UnrealNetwork.h"
+#include "Tag/WKGameplayTag.h"
 
 
 UWKGameAttributeSet::UWKGameAttributeSet() :
@@ -17,7 +18,6 @@ UWKGameAttributeSet::UWKGameAttributeSet() :
 	ControlGaugeBlue(0.0f),
 	MaxControlGauge(1.0f)
 {
-
 
 }
 
@@ -38,7 +38,6 @@ void UWKGameAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void UWKGameAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 
-
 }
 
 bool UWKGameAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
@@ -55,8 +54,82 @@ void UWKGameAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 {
 	Super::PostGameplayEffectExecute(Data);
 
+	if (!ASC)
+	{
+		ASC = GetOwningAbilitySystemComponentChecked();
+	}
 
-	//TODO : °ÅÁ¡ Á¡·É Á¡¼ö ´Þ¼ºÇÑ ÆÀ Win Ã³¸®
+	//TODO : ê±°ì  ì ë ¹ ì ìˆ˜ ë‹¬ì„±í•œ íŒ€ Win ì²˜ë¦¬
+	if (Data.EvaluatedData.Attribute == GetControlScoreBlueAttribute())
+	{
+		SetControlScoreBlue(FMath::Clamp(GetControlScoreBlue(), 0.0f, GetMaxControlScore()));
+	}
+	else if (Data.EvaluatedData.Attribute == GetControlScoreRedAttribute())
+	{
+		SetControlScoreRed(FMath::Clamp(GetControlScoreRed(), 0.0f, GetMaxControlScore()));
+	}
+	else if (Data.EvaluatedData.Attribute == GetControlGaugeBlueAttribute())
+	{
+		float GaugeBlueValue = GetControlGaugeBlue();
+		float MaxGaugeValue = GetMaxControlGauge();
+		// Blue Team ì ë ¹ë¥  ë‹¬ì„±
+		if (GaugeBlueValue >= MaxGaugeValue)
+		{
+			if (ASC->HasMatchingGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_REDTEAM))
+			{
+				ASC->RemoveLooseGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_REDTEAM);
+			}
+
+			if (!ASC->HasMatchingGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM))
+			{
+				ASC->AddLooseGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM);
+			}
+		}
+		else if (GaugeBlueValue < UE_KINDA_SMALL_NUMBER)
+		{
+			ASC->AddLooseGameplayTag(WKTAG_GAME_CONTROL_BLUEGAUGEZERO);
+		}
+		else
+		{
+			if (ASC->HasMatchingGameplayTag(WKTAG_GAME_CONTROL_BLUEGAUGEZERO))
+			{
+				ASC->RemoveLooseGameplayTag(WKTAG_GAME_CONTROL_BLUEGAUGEZERO);
+			}
+		}
+	
+		SetControlGaugeBlue(FMath::Clamp(GaugeBlueValue, 0.0f, MaxGaugeValue));
+	}
+	else if (Data.EvaluatedData.Attribute == GetControlGaugeRedAttribute())
+	{
+		float GaugeRedValue = GetControlGaugeRed();
+		float MaxGaugeValue = GetMaxControlGauge();
+
+		// Red Team ì ë ¹ë¥  ë‹¬ì„±
+		if (GaugeRedValue >= MaxGaugeValue)
+		{
+			if (ASC->HasMatchingGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM))
+			{
+				ASC->RemoveLooseGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM);
+			}
+			
+			if (!ASC->HasMatchingGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_REDTEAM))
+			{
+				ASC->AddLooseGameplayTag(WKTAG_GAME_CONTROL_DOMINATE_REDTEAM);
+			}
+		}
+		else if (GaugeRedValue < UE_KINDA_SMALL_NUMBER)
+		{
+			ASC->AddLooseGameplayTag(WKTAG_GAME_CONTROL_REDGAUGEZERO);
+		}
+		else
+		{
+			if (ASC->HasMatchingGameplayTag(WKTAG_GAME_CONTROL_REDGAUGEZERO))
+			{
+				ASC->RemoveLooseGameplayTag(WKTAG_GAME_CONTROL_REDGAUGEZERO);
+			}
+		}
+		SetControlGaugeRed(FMath::Clamp(GaugeRedValue, 0.0f, MaxGaugeValue));
+	}
 }
 
 void UWKGameAttributeSet::OnRep_ControlPlayerNumRed(const FGameplayAttributeData& OldControlPlayerNumRed)
