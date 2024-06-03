@@ -23,6 +23,27 @@ void AWKPlayerController::BeginPlay()
 	SetInputMode(GameOnlyInputMode);
 }
 
+void AWKPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	SetHUDTime();
+}
+
+void AWKPlayerController::SetHUDTime()
+{
+}
+
+void AWKPlayerController::CheckTimeSync(float DeltaTime)
+{
+	TimeSyncRunningTime += DeltaTime;
+	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+		TimeSyncRunningTime = 0.f;
+	}
+}
+
 void AWKPlayerController::InitOverlay()
 {
 	//TODO : Overlay OldCode
@@ -38,3 +59,4 @@ void AWKPlayerController::InitOverlay()
 	//	}
 	//}
 }
+

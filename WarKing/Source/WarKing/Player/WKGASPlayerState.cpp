@@ -6,6 +6,7 @@
 #include "Attribute//WKCharacterAttributeSet.h"
 #include "Character/WKCharacterBase.h"
 #include "Tag/WKGameplayTag.h"
+#include "Net/UnrealNetwork.h"
 
 AWKGASPlayerState::AWKGASPlayerState()
 {
@@ -24,6 +25,14 @@ AWKGASPlayerState::AWKGASPlayerState()
 	
 	// 값 조정 필요
 	NetUpdateFrequency = 100.f;
+}
+
+void AWKGASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWKGASPlayerState, TeamTag);
+	DOREPLIFETIME(AWKGASPlayerState, WKCharacter);
 }
 
 UAbilitySystemComponent* AWKGASPlayerState::GetAbilitySystemComponent() const
@@ -51,6 +60,8 @@ void AWKGASPlayerState::BeginPlay()
 		HealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute()).AddUObject(this, &AWKGASPlayerState::HealthChanged);
 		MaxHealthChangedDelegateHandle = ASC->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute()).AddUObject(this, &AWKGASPlayerState::MaxHealthChanged);
 	}
+
+	WKCharacter = Cast <AWKCharacterBase>(GetPawn());
 }
 
 void AWKGASPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
@@ -68,6 +79,27 @@ void AWKGASPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 
 void AWKGASPlayerState::MaxHealthChanged(const FOnAttributeChangeData& Data)
 {
+}
+
+void AWKGASPlayerState::OnRep_Team()
+{
+	if (WKCharacter)
+	{
+		WKCharacter->SetTeamColor(TeamTag);
+	}
+}
+
+void AWKGASPlayerState::SetTeam(FGameplayTag TeamToSet)
+{
+	WKCharacter = WKCharacter == nullptr ? Cast<AWKCharacterBase>(GetPawn()) : WKCharacter;
+	TeamTag = TeamToSet;
+	ASC->AddLooseGameplayTag(TeamToSet);
+	ASC->AddReplicatedLooseGameplayTag(TeamToSet);
+
+	if (WKCharacter)
+	{
+		WKCharacter->SetTeamColor(TeamToSet);
+	}
 }
 
 

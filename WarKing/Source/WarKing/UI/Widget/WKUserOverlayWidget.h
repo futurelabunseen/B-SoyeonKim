@@ -27,6 +27,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UObject> GameOvelayWidgetController;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* Timer;
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayerWidgetControllerSet();

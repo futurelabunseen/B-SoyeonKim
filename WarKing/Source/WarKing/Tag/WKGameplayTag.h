@@ -41,7 +41,7 @@
 #define WKTAG_GAME_CONTROL_BLUEGAUGEZERO FGameplayTag::RequestGameplayTag(FName("Game.Control.BlueGaugeZero"))
 #define WKTAG_GAME_CONTROL_REDGAUGEZERO FGameplayTag::RequestGameplayTag(FName("Game.Control.RedGaugeZero"))
 
-
 //Game Team
 #define WKTAG_GAME_TEAM_BLUE FGameplayTag::RequestGameplayTag(FName("Game.Team.Blue"))
 #define WKTAG_GAME_TEAM_RED FGameplayTag::RequestGameplayTag(FName("Game.Team.Red"))
+#define WKTAG_GAME_TEAM_NONE FGameplayTag::RequestGameplayTag(FName("Game.Team.None"))

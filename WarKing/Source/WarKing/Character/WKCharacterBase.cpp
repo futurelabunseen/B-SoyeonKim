@@ -12,7 +12,10 @@
 #include "GameplayTagContainer.h"
 #include "Enum/WKCharacterHitType.h"
 #include "Enum/WKTEnumToName.h"
+#include "Player/WKGASPlayerState.h"
+#include "Tag/WKGameplayTag.h"
 #include <EngineUtils.h>
+
 // Sets default values
 AWKCharacterBase::AWKCharacterBase()
 {
@@ -87,13 +90,19 @@ AWKCharacterBase::AWKCharacterBase()
 	}
 }
 
+FGameplayTag AWKCharacterBase::GetTeam()
+{
+	WKPlayerState = WKPlayerState == nullptr ? GetPlayerState<AWKGASPlayerState>() : WKPlayerState;
+	if (WKPlayerState == nullptr) return WKTAG_GAME_TEAM_NONE;
+	return WKPlayerState->GetTeam();
+}
+
 EWKHitReactDirection AWKCharacterBase::GetHitReactDirection(const FVector& ImpactPoint)
 {
 	const FVector& ActorLocation = GetActorLocation();
 	
 	float DistanceToFrontBackPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorRightVector());
 	float DistanceToRightLeftPlane = FVector::PointPlaneDist(ImpactPoint, ActorLocation, GetActorForwardVector());
-
 
 	if (FMath::Abs(DistanceToFrontBackPlane) <= FMath::Abs(DistanceToRightLeftPlane))
 	{
@@ -124,6 +133,20 @@ EWKHitReactDirection AWKCharacterBase::GetHitReactDirection(const FVector& Impac
 void AWKCharacterBase::MultiPlayHitReact_Implementation(EWKHitReactDirection HitDirectionType)
 {
 	PlayHitReactAnimation(HitDirectionType);
+}
+
+void AWKCharacterBase::SetTeamColor(FGameplayTag Team)
+{
+	if (GetMesh() == nullptr || RedMaterial == nullptr || BlueMaterial == nullptr) return;
+
+	if (Team == WKTAG_GAME_TEAM_RED)
+	{
+		GetMesh()->SetSkeletalMesh(RedMaterial);
+	}
+	else if (Team == WKTAG_GAME_TEAM_BLUE)
+	{
+		GetMesh()->SetSkeletalMesh(BlueMaterial);
+	}
 }
 
 void AWKCharacterBase::PlayHitReactAnimation(EWKHitReactDirection HitDirectionType)

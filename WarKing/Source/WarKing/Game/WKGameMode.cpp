@@ -94,26 +94,18 @@ void AWKGameMode::PostLogin(APlayerController* NewPlayer)
 		AWKGASPlayerState* WKPlayerState = NewPlayer->GetPlayerState<AWKGASPlayerState>();
 		if (WKPlayerState)
 		{
-			UAbilitySystemComponent* PlayerASC = WKPlayerState->GetAbilitySystemComponent();
-
-			if (PlayerASC)
+			if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
 			{
-				if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
-				{
-					WKGameState->RedTeam.AddUnique(WKPlayerState);
-					PlayerASC->AddLooseGameplayTag(WKTAG_GAME_TEAM_RED);
-					PlayerASC->AddReplicatedLooseGameplayTag(WKTAG_GAME_TEAM_RED);
-				}
-				else
-				{
-					WKGameState->BlueTeam.AddUnique(WKPlayerState);
-					PlayerASC->AddLooseGameplayTag(WKTAG_GAME_TEAM_BLUE);
-					PlayerASC->AddReplicatedLooseGameplayTag(WKTAG_GAME_TEAM_BLUE);
-				}
+				WKGameState->RedTeam.AddUnique(WKPlayerState);
+				WKPlayerState->SetTeam(WKTAG_GAME_TEAM_RED);
+			}
+			else
+			{
+				WKGameState->BlueTeam.AddUnique(WKPlayerState);
+				WKPlayerState->SetTeam(WKTAG_GAME_TEAM_BLUE);
 			}
 		}	
 	}
-
 }
 
 void AWKGameMode::StartPlay()
@@ -157,5 +149,32 @@ void AWKGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* Elim
 		UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
 		int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
 		RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
+	}
+}
+
+void AWKGameMode::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
+
+	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
+	if (WKGameState)
+	{
+		for (auto PState : WKGameState->PlayerArray)
+		{
+			AWKGASPlayerState* WKPlayerState = Cast<AWKGASPlayerState>(PState.Get());
+			if (WKPlayerState)
+			{
+				if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
+				{
+					WKGameState->RedTeam.AddUnique(WKPlayerState);
+					WKPlayerState->SetTeam(WKTAG_GAME_TEAM_RED);
+				}
+				else
+				{
+					WKGameState->BlueTeam.AddUnique(WKPlayerState);
+					WKPlayerState->SetTeam(WKTAG_GAME_TEAM_BLUE);
+				}
+			}
+		}
 	}
 }

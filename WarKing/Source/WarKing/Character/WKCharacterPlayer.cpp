@@ -8,7 +8,6 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Player/WKGASPlayerState.h"
 #include "WarKing.h"
 #include "AbilitySystemComponent.h"
 #include "UI/WKGASWidgetComponent.h"
@@ -18,6 +17,7 @@
 #include "GameplayTagContainer.h"
 #include "Attribute/WKCharacterAttributeSet.h"
 #include "Player/WKPlayerController.h"
+#include "Player/WKGASPlayerState.h"
 #include "UI/WKHUD.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
@@ -223,14 +223,14 @@ void AWKCharacterPlayer::GASInputReleased(int32 InputId)
 
 void AWKCharacterPlayer::GASAbilitySetting()
 {
-	AWKGASPlayerState* GASPS = GetPlayerState<AWKGASPlayerState>();
+	WKPlayerState = GetPlayerState<AWKGASPlayerState>();
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("GASAbilitySetting"));
 
-	if (GASPS)
+	if (WKPlayerState)
 	{
-		ASC = GASPS->GetAbilitySystemComponent();
+		ASC = WKPlayerState->GetAbilitySystemComponent();
 
-		ASC->InitAbilityActorInfo(GASPS, this);
+		ASC->InitAbilityActorInfo(WKPlayerState, this);
 
 		// Server에서만 수행
 		if (HasAuthority())
@@ -261,21 +261,21 @@ void AWKCharacterPlayer::GASAbilitySetting()
 			FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(GameplayEffect, 1.f, EffectContext);
 			if (NewHandle.IsValid())
 			{
-				FActiveGameplayEffectHandle ActiveGEHandle = 
+				FActiveGameplayEffectHandle ActiveGEHandle =
 					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
 			}
 		}
 
-		GASPS->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+		WKPlayerState->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
 		// TODO : PlayerController로 옮기기
 		// HUD Set
-		UWKCharacterAttributeSet* CurrentAttributeSet = GASPS->GetAttributeSet();
+		UWKCharacterAttributeSet* CurrentAttributeSet = WKPlayerState->GetAttributeSet();
 		AWKGameState* CurrentGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
 		
 		if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
 		{
-			if (ensure(CurrentAttributeSet) && ensure(CurrentGameState))
+			if (CurrentAttributeSet && CurrentGameState)
 			{
 				if (AWKHUD* WKHUD = Cast<AWKHUD>(WKPlayerController->GetHUD()))
 				{

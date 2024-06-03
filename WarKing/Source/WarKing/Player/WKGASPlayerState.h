@@ -20,6 +20,8 @@ class WARKING_API AWKGASPlayerState : public APlayerState, public IAbilitySystem
 public:
 	AWKGASPlayerState();
 
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	class UWKCharacterAttributeSet* GetAttributeSet() const;
@@ -28,6 +30,8 @@ public:
 	mutable FOutOfHealthDelegate OnOutOfHealth;
 
 protected:
+	UPROPERTY(ReplicatedUsing = OnRep_Team)
+	FGameplayTag TeamTag;
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TObjectPtr<class UAbilitySystemComponent> ASC;
@@ -47,4 +51,16 @@ protected:
 
 	virtual void HealthChanged(const FOnAttributeChangeData& Data);
 	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
+
+	UFUNCTION()
+	void OnRep_Team();
+
+private:
+	UPROPERTY(Replicated)
+	class AWKCharacterBase* WKCharacter;
+
+public:
+	FORCEINLINE FGameplayTag GetTeam() const { return TeamTag; }
+	void SetTeam(FGameplayTag TeamToSet);
+
 };

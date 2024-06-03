@@ -10,6 +10,8 @@
 #include "AbilitySystemComponent.h"
 #include "Attribute/WKCharacterAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Character/WKCharacterBase.h"
+#include "Tag/WKGameplayTag.h"
 
 AWKTA_Trace::AWKTA_Trace()
 {
@@ -34,8 +36,7 @@ void AWKTA_Trace::ConfirmTargetingAndContinue()
 
 FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 {
-	// Character 가져오기 
-	ACharacter* Character = CastChecked<ACharacter>(SourceActor);
+	AWKCharacterBase* SourceCharacter = CastChecked<AWKCharacterBase>(SourceActor);
 
 	//AttributeSet
 #pragma region AttributeSet
@@ -57,32 +58,22 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 #pragma endregion
 
 	FHitResult OutHitResult;
-
 	// TODO: 후에 Attribute로 옮길 예정
 	const float AttackRange = AttributeSet->GetAttackRange();
 	const float AttackRadius = AttributeSet->GetAttackRadius();
 
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(UABTA_Trace), false, Character);
-	const FVector Forward = Character->GetActorForwardVector();
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(UABTA_Trace), false, SourceCharacter);
+	const FVector Forward = SourceCharacter->GetActorForwardVector();
 
 	// 캡슐의 위치부터 시작
-	const FVector Start = Character->GetActorLocation() + Forward * Character->GetCapsuleComponent()->GetScaledCapsuleRadius();
+	const FVector Start = SourceCharacter->GetActorLocation() + Forward * SourceCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	const FVector End = Start + Forward * AttackRange;
 
 	bool HitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, CCHANNEL_WKACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 
-	// 맞았을 때
-	if (HitDetected)
-	{
-		// HitResilt를 넣어주면 시작지점과 끝 지점에 대한 것을 굳이 따로 설정하지 않아도 알아서 지정해준다.
-		FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(OutHitResult);
-		DataHandle.Add(TargetData);
-	}
-
 #if ENABLE_DRAW_DEBUG
-
 	if (bShowDebug)
 	{
 		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
@@ -90,8 +81,23 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
 		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
 	}
-
 #endif
+
+	// 맞았을 때
+	if (HitDetected)
+	{
+		AWKCharacterBase* TargetCharacter = CastChecked<AWKCharacterBase>(OutHitResult.GetActor());
+
+		if (TargetCharacter)
+		{
+			if (SourceCharacter->GetTeam() != TargetCharacter->GetTeam() || TargetCharacter->GetTeam() == WKTAG_GAME_TEAM_NONE)
+			{
+				// HitResilt를 넣어주면 시작지점과 끝 지점에 대한 것을 굳이 따로 설정하지 않아도 알아서 지정해준다.
+				FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(OutHitResult);
+				DataHandle.Add(TargetData);
+			}
+		}
+	}
 
 	return DataHandle;
 }

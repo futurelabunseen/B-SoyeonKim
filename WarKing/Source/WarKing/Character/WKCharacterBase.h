@@ -30,17 +30,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UAnimMontage> HitReactMontage;
 
+	UPROPERTY(EditAnywhere, Category = Mesh)
+	TObjectPtr<USkeletalMesh> RedMaterial;
+
+	UPROPERTY(EditAnywhere, Category = Mesh)
+	TObjectPtr<USkeletalMesh> BlueMaterial;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UWKGASWidgetComponent> HpBar;
 
+	UPROPERTY()
+	class AWKGASPlayerState* WKPlayerState;
+
 // HitReact Section
 public:
+	
+	FGameplayTag GetTeam();
+
 	UFUNCTION(BlueprintCallable)
 	EWKHitReactDirection GetHitReactDirection(const FVector& ImpactPoint);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MultiPlayHitReact(EWKHitReactDirection HitDirectionType);
 	void MultiPlayHitReact_Implementation(EWKHitReactDirection HitDirectionType);
+
+	void SetTeamColor(FGameplayTag Team);
 
 protected:
 	void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType);

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/GameMode.h"
 #include "WKGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class WARKING_API AWKGameMode : public AGameModeBase
+class WARKING_API AWKGameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
@@ -29,4 +29,5 @@ private:
 
 public:
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
+	virtual void HandleMatchHasStarted() override;
 };

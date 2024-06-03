@@ -9,15 +9,16 @@
 #include "Attribute/WKCharacterSkillAttributeSet.h"
 #include "Physics/WKCollision.h"
 #include "DrawDebugHelpers.h"
+#include "Character/WKCharacterBase.h"
+#include "Tag/WKGameplayTag.h"
 
 FGameplayAbilityTargetDataHandle AWKTA_SphereMultiTrace::MakeTargetData() const
 {
-	ACharacter* Character = CastChecked<ACharacter>(SourceActor);
+	AWKCharacterBase* SourceCharacter = CastChecked<AWKCharacterBase>(SourceActor);
 
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
 	if (!ASC)
 	{
-		
 		UE_LOG(LogWKGAS, Log, TEXT("[%s] ASC not found!"), SourceActor->GetOwner()->GetRemoteRole());
 		return FGameplayAbilityTargetDataHandle();
 	}
@@ -32,8 +33,8 @@ FGameplayAbilityTargetDataHandle AWKTA_SphereMultiTrace::MakeTargetData() const
 	TArray<FOverlapResult> Overlaps;
 	const float SkillRadius = SkillAttribute->GetSkillRange();
 
-	FVector Origin = Character->GetActorLocation();
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(AWKTA_SphereMultiTrace), false, Character);
+	FVector Origin = SourceCharacter->GetActorLocation();
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(AWKTA_SphereMultiTrace), false, SourceCharacter);
 	GetWorld()->OverlapMultiByChannel(Overlaps, Origin, FQuat::Identity, CCHANNEL_WKACTION, FCollisionShape::MakeSphere(SkillRadius), Params);
 
 	TArray<TWeakObjectPtr<AActor>> HitActors;
@@ -42,7 +43,15 @@ FGameplayAbilityTargetDataHandle AWKTA_SphereMultiTrace::MakeTargetData() const
 		AActor* HitActor = Overlap.OverlapObjectHandle.FetchActor<AActor>();
 		if (HitActor && !HitActors.Contains(HitActor))
 		{
-			HitActors.Add(HitActor);
+			AWKCharacterBase* TargetCharacter = CastChecked<AWKCharacterBase>(HitActor);
+
+			if (TargetCharacter)
+			{
+				if (SourceCharacter->GetTeam() != TargetCharacter->GetTeam() || TargetCharacter->GetTeam() == WKTAG_GAME_TEAM_NONE)
+				{
+					HitActors.Add(HitActor);
+				}
+			}
 		}
 	}
 

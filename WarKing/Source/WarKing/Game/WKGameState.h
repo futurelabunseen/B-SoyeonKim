@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
 #include "AbilitySystemInterface.h"
 #include "WKGameState.generated.h"
 
@@ -13,7 +13,7 @@ class AWKGASPlayerState;
  * 
  */
 UCLASS()
-class WARKING_API AWKGameState : public AGameStateBase, public IAbilitySystemInterface
+class WARKING_API AWKGameState : public AGameState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -27,17 +27,8 @@ protected:
 
 	virtual void HandleBeginPlay() override;
 	virtual void OnRep_ReplicatedHasBegunPlay() override;
-	
-	virtual void Tick(float DeltaTime) override;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-protected:
-
-	void SetHUDTime();
-
-	void SetHUDMatchCountdown(const float CountdownTime);
-
-
 
 //GAS Section
 protected:
