@@ -34,6 +34,12 @@ AWKGameMode::AWKGameMode()
 	//PlayerStateClass = AWKGASPlayerState::StaticClass();
 }
 
+void AWKGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
+}
+
 void AWKGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("============================================================"));
@@ -115,6 +121,12 @@ void AWKGameMode::StartPlay()
 	Super::StartPlay();
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
+}
+
+void AWKGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	CountdownTime = MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
 }
 
 void AWKGameMode::Logout(AController* Exiting)

@@ -18,7 +18,6 @@
 #include "Attribute/WKCharacterAttributeSet.h"
 #include "Player/WKPlayerController.h"
 #include "Player/WKGASPlayerState.h"
-#include "UI/WKHUD.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
 {	
@@ -65,6 +64,8 @@ AWKCharacterPlayer::AWKCharacterPlayer()
 	{
 		AttackAction = InputActionAttackRef.Object;
 	}
+
+	
 }
 
 void AWKCharacterPlayer::BeginPlay()
@@ -277,11 +278,8 @@ void AWKCharacterPlayer::GASAbilitySetting()
 		{
 			if (CurrentAttributeSet && CurrentGameState)
 			{
-				if (AWKHUD* WKHUD = Cast<AWKHUD>(WKPlayerController->GetHUD()))
-				{
-					WKHUD->InitOverlay(ASC, CurrentAttributeSet,
-						CurrentGameState->GetAbilitySystemComponent(), CurrentGameState->GetAttributeSet());
-				}
+				WKPlayerController->InitOverlay(ASC, CurrentAttributeSet,
+					CurrentGameState->GetAbilitySystemComponent(), CurrentGameState->GetAttributeSet());
 			}	
 		}
 	}
