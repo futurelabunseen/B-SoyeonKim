@@ -77,16 +77,22 @@ AWKCharacterBase::AWKCharacterBase()
 
 	// HpBar
 	HpBar = CreateDefaultSubobject<UWKGASWidgetComponent>(TEXT("Widget"));
-	HpBar->SetupAttachment(GetMesh());
-	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 210.0f));
+	HpBar->SetupAttachment(GetMesh());	
+	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 220.0f));
+
 	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/WarKing/UI/WBP_HpBar.WBP_HpBar_C"));
 
 	if (HpBarWidgetRef.Class)
 	{
 		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
-		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
-		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
+
+		// TODO : 카메라 방향으로 회전
+		HpBar->SetWidgetSpace(EWidgetSpace::World);
+		HpBar->SetDrawSize(FVector2D(100.0f, 10.f));
+		HpBar->SetDrawAtDesiredSize(false);
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		HpBar->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+		HpBar->SetTintColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 0.5f));
 	}
 }
 

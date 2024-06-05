@@ -25,10 +25,11 @@ public:
 	UWKGameWIdgetController* GetGameOverlayWidgetController(const FWidgetControllerParams& WCParams);
 
 	void InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Player_AS,
-		UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS);
+		UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS);	
+
+	void SetTimerText(FString CountdownText);
 
 private:
-
 	UPROPERTY()
 	TObjectPtr<UWKUserOverlayWidget> OverlayWidget;
 

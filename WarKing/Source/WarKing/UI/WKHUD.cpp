@@ -52,3 +52,11 @@ void AWKHUD::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Pla
 
 	Widget->AddToViewport();
 }
+
+void AWKHUD::SetTimerText(FString CountdownText)
+{
+	if (OverlayWidget)
+	{
+		OverlayWidget->Timer->SetText(FText::FromString(CountdownText));
+	}
+}

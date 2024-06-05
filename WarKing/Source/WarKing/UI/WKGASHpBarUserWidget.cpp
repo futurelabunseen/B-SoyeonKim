@@ -41,8 +41,8 @@ void UWKGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 	{
 		UE_LOG(LogWKNetwork, Log, TEXT("[%s][%s]NO ASC"), InOwner->HasAuthority()? TEXT("SERVER") : TEXT("CLIENT"), *InOwner->GetName());
 	}
-}
 
+}
 void UWKGASHpBarUserWidget::OnHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
 	CurrentHealth = ChangeData.NewValue;
