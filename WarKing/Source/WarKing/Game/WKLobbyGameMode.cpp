@@ -12,7 +12,7 @@ void AWKLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	// 게임에 접속한 Player 갯수 확인
 	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
 
-	if (NumberOfPlayers == 2)
+	if (NumberOfPlayers == GameStartPlayerNum)
 	{
 		UWorld* World = GetWorld();
 		if (World)

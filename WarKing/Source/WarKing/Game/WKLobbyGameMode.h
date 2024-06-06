@@ -16,4 +16,7 @@ class WARKING_API AWKLobbyGameMode : public AGameMode
 
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 GameStartPlayerNum = 2;
 };

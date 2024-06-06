@@ -242,7 +242,6 @@ FString AWKPlayerController::GetWinnerText()
 
 void AWKPlayerController::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Player_AS, UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS)
 {
-	//WKHUD = Cast<AWKHUD>(GetHUD());
 	if (WKHUD)
 	{
 		WKHUD->InitOverlay(Player_ASC, Player_AS, Game_ASC, Game_AS);
