@@ -25,6 +25,8 @@ AWKGASPlayerState::AWKGASPlayerState()
 	
 	// 값 조정 필요
 	NetUpdateFrequency = 100.f;
+
+	TeamTag = WKTAG_GAME_TEAM_NONE;
 }
 
 void AWKGASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -92,9 +94,13 @@ void AWKGASPlayerState::OnRep_Team()
 void AWKGASPlayerState::SetTeam(FGameplayTag TeamToSet)
 {
 	WKCharacter = WKCharacter == nullptr ? Cast<AWKCharacterBase>(GetPawn()) : WKCharacter;
-	TeamTag = TeamToSet;
-	ASC->AddLooseGameplayTag(TeamToSet);
-	ASC->AddReplicatedLooseGameplayTag(TeamToSet);
+
+	if (TeamTag == WKTAG_GAME_TEAM_NONE)
+	{
+		TeamTag = TeamToSet;
+		ASC->AddLooseGameplayTag(TeamToSet);
+		ASC->AddReplicatedLooseGameplayTag(TeamToSet);
+	}
 
 	if (WKCharacter)
 	{

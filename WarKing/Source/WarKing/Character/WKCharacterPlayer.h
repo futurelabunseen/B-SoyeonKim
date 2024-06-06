@@ -35,6 +35,8 @@ protected:
 	void GASAbilitySetting();
 	void ConsoleCommandSetting();
 
+	void InitializeInput();
+
 public:
 	UFUNCTION()
 	bool HasGameplayTag(FGameplayTag Tag) const;

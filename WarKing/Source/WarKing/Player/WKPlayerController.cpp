@@ -6,6 +6,7 @@
 #include "UI/WKHUD.h"
 #include "Game/WKGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AWKPlayerController::AWKPlayerController()
 {
@@ -22,8 +23,10 @@ void AWKPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameOnly GameOnlyInputMode;
-	SetInputMode(GameOnlyInputMode);
+	if (!WKHUD)
+	{
+		WKHUD = Cast<AWKHUD>(GetHUD());
+	}
 	ServerCheckMatchState();
 }
 
@@ -34,6 +37,13 @@ void AWKPlayerController::Tick(float DeltaTime)
 	SetHUDTime();
 	CheckTimeSync(DeltaTime);
 }
+
+void AWKPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWKPlayerController, MatchState);
+}
  
 void AWKPlayerController::SetHUDTime()
 {
@@ -41,6 +51,36 @@ void AWKPlayerController::SetHUDTime()
 	TimeLeft = MatchTime - GetServerTime();
 
 	SetHUDMatchCountdown(TimeLeft);
+}
+
+void AWKPlayerController::OnMatchStateSet(FName State)
+{
+	MatchState = State;
+
+	OnRep_MatchState();
+}
+
+void AWKPlayerController::HandleMatchHasStarted()
+{
+	//GameStart
+}
+
+void AWKPlayerController::HandleCooldown()
+{
+	//Cooldown
+
+}
+
+void AWKPlayerController::OnRep_MatchState()
+{
+	if (MatchState == MatchState::InProgress)
+	{
+		HandleMatchHasStarted();
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		HandleCooldown();
+	}
 }
 
 void AWKPlayerController::ClientJoinMidgame_Implementation(float Match)
@@ -87,7 +127,6 @@ float AWKPlayerController::GetServerTime()
 	if (HasAuthority()) return GetWorld()->GetTimeSeconds();
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("ClientServerDelta : %f"), ClientServerDelta);
 		return GetWorld()->GetTimeSeconds() + ClientServerDelta;
 	}
 }
@@ -115,7 +154,7 @@ void AWKPlayerController::SetHUDMatchCountdown(float CountdownTime)
 
 void AWKPlayerController::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Player_AS, UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS)
 {
-	WKHUD = Cast<AWKHUD>(GetHUD());
+	//WKHUD = Cast<AWKHUD>(GetHUD());
 	if (WKHUD)
 	{
 		WKHUD->InitOverlay(Player_ASC, Player_AS, Game_ASC, Game_AS);

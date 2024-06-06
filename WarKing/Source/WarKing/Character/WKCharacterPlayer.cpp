@@ -73,17 +73,6 @@ void AWKCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("BeginPlay"));
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	
-	// Client의 경우 PlayerController가 없으므로 Skip
-	if (PlayerController)
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->ClearAllMappings();
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
 }
 
 UAbilitySystemComponent* AWKCharacterPlayer::GetAbilitySystemComponent() const
@@ -109,6 +98,7 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 
 	GASAbilitySetting();
 	ConsoleCommandSetting();
+	SetTeamColor(GetTeam());
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
@@ -143,19 +133,14 @@ void AWKCharacterPlayer::OnRep_PlayerState()
 
 	// 서버에서 복제한 PlayerState가 존재하고 나서 GAS를 연결해야 하므로 여기서 호출
 	GASAbilitySetting();
+	SetTeamColor(GetTeam());
 }
 
 void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetupPlayerInputComponent"));
-	//GAS에서 Binding
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
-	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
-
-	SetupGASInputComponent();
+	InitializeInput();
 }
 
 void AWKCharacterPlayer::SetupGASInputComponent()
@@ -295,6 +280,29 @@ void AWKCharacterPlayer::ConsoleCommandSetting()
 	if (ensure(PlayerController))
 	{
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	}
+}
+
+void AWKCharacterPlayer::InitializeInput()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerController->InputComponent);
+
+		if (EnhancedInputComponent)
+		{
+			InputSubsystem->ClearAllMappings();
+			InputSubsystem->AddMappingContext(DefaultMappingContext, 0);
+
+			WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetupPlayerInputComponent"));
+
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
+
+			SetupGASInputComponent();
+		}
 	}
 }
 

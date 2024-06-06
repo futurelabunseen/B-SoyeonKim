@@ -92,7 +92,6 @@ AWKCharacterBase::AWKCharacterBase()
 		HpBar->SetDrawAtDesiredSize(false);
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		HpBar->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-		HpBar->SetTintColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 0.5f));
 	}
 }
 

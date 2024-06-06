@@ -19,9 +19,21 @@ public:
 
 	void InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Player_AS, UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS);
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void OnMatchStateSet(FName State);
+
 protected:
 	virtual void BeginPlay() override;
 	void SetHUDTime();
+
+	void HandleMatchHasStarted();
+	void HandleCooldown();
+
+	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
+	FName MatchState;
+
+	UFUNCTION()
+	void OnRep_MatchState();
 
 	UFUNCTION(Server, Reliable)
 	void ServerCheckMatchState();

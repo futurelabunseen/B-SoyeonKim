@@ -6,6 +6,10 @@
 #include "GameFramework/GameMode.h"
 #include "WKGameMode.generated.h"
 
+namespace MatchState
+{
+	extern WARKING_API const FName Cooldown;
+}
 /**
  * 
  */
@@ -25,9 +29,16 @@ private:
 	virtual void StartPlay() override;
 	virtual void BeginPlay() override;
 	virtual void Logout(AController* Exiting) override;
+	virtual void OnMatchStateSet() override;
+
+	UPROPERTY(EditDefaultsOnly)
+	float WarmupTime = 10.f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float MatchTime = 120.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float CooldownTime = 10.f;
 
 	float LevelStartingTime = 0.f;
 public:

@@ -7,10 +7,16 @@
 #include "WKGameState.h"
 #include "AbilitySystemComponent.h"
 #include "Player/WKGASPlayerState.h"
+#include "Player/WKPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tag/WKGameplayTag.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerStart.h"
+
+namespace MatchState
+{
+	const FName Cooldown = FName("Cooldown");
+}
 
 AWKGameMode::AWKGameMode()
 {
@@ -32,6 +38,8 @@ AWKGameMode::AWKGameMode()
 	//
 	//GameStateClass = AWKGameState::StaticClass();
 	//PlayerStateClass = AWKGASPlayerState::StaticClass();
+
+	bDelayedStart = true;
 }
 
 void AWKGameMode::BeginPlay()
@@ -98,7 +106,7 @@ void AWKGameMode::PostLogin(APlayerController* NewPlayer)
 	if (WKGameState)
 	{
 		AWKGASPlayerState* WKPlayerState = NewPlayer->GetPlayerState<AWKGASPlayerState>();
-		if (WKPlayerState)
+		if (WKPlayerState && WKPlayerState->GetTeam() == WKTAG_GAME_TEAM_NONE)
 		{
 			if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
 			{
@@ -126,7 +134,32 @@ void AWKGameMode::StartPlay()
 void AWKGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CountdownTime = MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		CountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (CountdownTime <= 0.f)
+		{
+			StartMatch();
+		}
+	}
+	else if (MatchState == MatchState::InProgress)
+	{
+		CountdownTime = WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+
+		if (CountdownTime <= 0.f)
+		{
+			SetMatchState(MatchState::Cooldown);
+		}
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		CountdownTime = CooldownTime + WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (CountdownTime <= 0.f)
+		{
+			RestartGame();
+		}
+	}
 }
 
 void AWKGameMode::Logout(AController* Exiting)
@@ -143,6 +176,20 @@ void AWKGameMode::Logout(AController* Exiting)
 		if (WKGameState->BlueTeam.Contains(WKPlayerState))
 		{
 			WKGameState->BlueTeam.Remove(WKPlayerState);
+		}
+	}
+}
+
+void AWKGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		AWKPlayerController* WKPlayer = Cast<AWKPlayerController>(*It);
+		if (WKPlayer)
+		{
+			WKPlayer->OnMatchStateSet(MatchState);
 		}
 	}
 }
@@ -174,7 +221,7 @@ void AWKGameMode::HandleMatchHasStarted()
 		for (auto PState : WKGameState->PlayerArray)
 		{
 			AWKGASPlayerState* WKPlayerState = Cast<AWKGASPlayerState>(PState.Get());
-			if (WKPlayerState)
+			if (WKPlayerState && WKPlayerState->GetTeam() == WKTAG_GAME_TEAM_NONE)
 			{
 				if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
 				{
