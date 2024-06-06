@@ -192,6 +192,27 @@ void AWKGameMode::OnMatchStateSet()
 			WKPlayer->OnMatchStateSet(MatchState);
 		}
 	}
+
+	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
+	
+	if (WKGameState)
+	{
+		UAbilitySystemComponent* PSASC = WKGameState->GetAbilitySystemComponent();
+
+		if (PSASC)
+		{
+			if (MatchState == MatchState::InProgress)
+			{
+				PSASC->AddLooseGameplayTag(WKTAG_GAME_STATE_INPROGRESS);
+				PSASC->AddReplicatedLooseGameplayTag(WKTAG_GAME_STATE_INPROGRESS);
+			}
+			else if (MatchState == MatchState::Cooldown)
+			{
+				PSASC->RemoveLooseGameplayTag(WKTAG_GAME_STATE_INPROGRESS);
+				PSASC->RemoveReplicatedLooseGameplayTag(WKTAG_GAME_STATE_INPROGRESS);
+			}
+		}
+	}
 }
 
 void AWKGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
@@ -221,6 +242,7 @@ void AWKGameMode::HandleMatchHasStarted()
 		for (auto PState : WKGameState->PlayerArray)
 		{
 			AWKGASPlayerState* WKPlayerState = Cast<AWKGASPlayerState>(PState.Get());
+			UAbilitySystemComponent* PSASC = WKGameState->GetAbilitySystemComponent();
 			if (WKPlayerState && WKPlayerState->GetTeam() == WKTAG_GAME_TEAM_NONE)
 			{
 				if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())

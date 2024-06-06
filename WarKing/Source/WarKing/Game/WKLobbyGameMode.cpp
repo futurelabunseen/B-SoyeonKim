@@ -21,13 +21,5 @@ void AWKLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 			World->ServerTravel(FString("/Game/WarKing/Maps/ElvenRuins?listen"));
 		}
 	}
-
-	//UGameInstance* GameInstance = GetGameInstance();
-	//if (GameInstance)
-	//{
-	//	UMultiplayerSessionsSubsystem* Subsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
-	//	check(Subsystem);
-
-
-	//}
+	
 }

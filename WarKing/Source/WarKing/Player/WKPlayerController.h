@@ -39,11 +39,14 @@ protected:
 	void ServerCheckMatchState();
 	
 	UFUNCTION(Client, Reliable)
-	void ClientJoinMidgame(float Match);
-
-	float SingleTripTime = 0.f;
+	void ClientJoinMidgame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
+	
+	float LevelStartingTime = 0.f;
 	float MatchTime = 0.f;
-
+	float WarmupTime = 0.f;
+	float CooldownTime = 0.f;
+	float SingleTripTime = 0.f;
+	uint32 CountdownInt = 0;
 	// Requests the current server time, passing in the client's time when the request was sent
 	UFUNCTION(Server, Reliable)
 	void ServerRequestServerTime(float TimeOfClientRequest);
@@ -63,20 +66,17 @@ protected:
 	virtual float GetServerTime(); // Synced with server world clock
 	virtual void ReceivedPlayer() override; // Sync with server clock as soon as possible
 
+	void BlockPlayerInput(bool bBlock);
+
 // HUD Section
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HUD)
-	TSubclassOf<class UWKHUDWidget> WKHUDWidgetClass;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HUD)
-	TObjectPtr<class UWKHUDWidget> WKHUDWidget;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<class UWKGASWidgetComponent> HUDHpBarComponent;
-
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class AWKHUD> WKHUD;
 
 	//HUD Update
 	void SetHUDMatchCountdown(float CountdownTime);
+
+	void SetHUDAnnounceCountdown(float Coun);
+
+	FString GetWinnerText();
 };

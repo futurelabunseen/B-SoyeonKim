@@ -20,6 +20,8 @@ class WARKING_API AWKGameState : public AGameState, public IAbilitySystemInterfa
 public:
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const;
+	float GetBlueTeamScore() const;
+	float GetRedTeamScore() const;
 
 protected:
 	AWKGameState(const FObjectInitializer& ObjectInitializer);

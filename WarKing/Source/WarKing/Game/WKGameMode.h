@@ -50,4 +50,7 @@ private:
 public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
 	FORCEINLINE float GetMatchTime() const { return MatchTime; }
+	FORCEINLINE float GetWarmupTime() const { return WarmupTime; }
+	FORCEINLINE float GetCooldownTime() const { return CooldownTime; }
+	FORCEINLINE float GetLevelStartingTime() const { return LevelStartingTime; }
 };

@@ -45,3 +45,7 @@
 #define WKTAG_GAME_TEAM_BLUE FGameplayTag::RequestGameplayTag(FName("Game.Team.Blue"))
 #define WKTAG_GAME_TEAM_RED FGameplayTag::RequestGameplayTag(FName("Game.Team.Red"))
 #define WKTAG_GAME_TEAM_NONE FGameplayTag::RequestGameplayTag(FName("Game.Team.None"))
+
+//Game State
+#define WKTAG_GAME_STATE_INPROGRESS FGameplayTag::RequestGameplayTag(FName("Game.State.Inprogress"))
+#define WKTAG_GAME_STATE_COOLDOWN FGameplayTag::RequestGameplayTag(FName("Game.State.Cooldown"))

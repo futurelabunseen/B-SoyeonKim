@@ -10,6 +10,7 @@ class UWKOverlayWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 class UWKUserOverlayWidget;
+class UWKAnnouncementOverlayWidget;
 class UWKGameWIdgetController;
 struct FWidgetControllerParams;
 /**
@@ -28,6 +29,14 @@ public:
 		UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS);	
 
 	void SetTimerText(FString CountdownText);
+	void AddAnnouncement();
+	void SetAnnounceText(FString AnnounceText);
+	void SetAnnounceTimerText(FString CountdownText);
+	void SetAnnounceWidgetVisible(ESlateVisibility Visibility);
+	void SetGameOverlayVisible(ESlateVisibility Visibility);
+
+	UPROPERTY()
+	TObjectPtr<UWKAnnouncementOverlayWidget> AnnounceWidget;
 
 private:
 	UPROPERTY()
@@ -35,6 +44,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UWKUserOverlayWidget> OverlayWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UWKAnnouncementOverlayWidget> AnnounceWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UWKOverlayWidgetController> OverlayWidgetController;

@@ -57,6 +57,24 @@ UAttributeSet* AWKGameState::GetAttributeSet() const
 	return AttributeSet;
 }
 
+float AWKGameState::GetBlueTeamScore() const
+{
+	if (AttributeSet)
+	{
+		return AttributeSet->GetControlScoreBlue();
+	}
+	return 0.0f;
+}
+
+float AWKGameState::GetRedTeamScore() const
+{
+	if (AttributeSet)
+	{
+		return AttributeSet->GetControlScoreRed();
+	}
+	return 0.0f;
+}
+
 void AWKGameState::HandleBeginPlay()
 {
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));

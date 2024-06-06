@@ -5,6 +5,7 @@
 
 #include "Components/TextBlock.h"
 #include "UI/Widget/WKUserOverlayWidget.h"
+#include "UI/Widget/WKAnnouncementOverlayWidget.h"
 #include "UI/WidgetController/WKOverlayWidgetController.h"
 #include "UI/WidgetController/WKGameWIdgetController.h"
 
@@ -58,5 +59,47 @@ void AWKHUD::SetTimerText(FString CountdownText)
 	if (OverlayWidget)
 	{
 		OverlayWidget->Timer->SetText(FText::FromString(CountdownText));
+	}
+}
+
+void AWKHUD::AddAnnouncement()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && AnnounceWidgetClass)
+	{
+		AnnounceWidget = CreateWidget<UWKAnnouncementOverlayWidget>(PlayerController, AnnounceWidgetClass);
+		AnnounceWidget->AddToViewport();
+	}
+}
+
+void AWKHUD::SetAnnounceText(FString AnnounceText)
+{
+	if (AnnounceWidget)
+	{
+		AnnounceWidget->AnnounceText->SetText(FText::FromString(AnnounceText));
+	}
+}
+
+void AWKHUD::SetAnnounceTimerText(FString CountdownText)
+{
+	if (AnnounceWidget)
+	{
+		AnnounceWidget->TimeText->SetText(FText::FromString(CountdownText));
+	}
+}
+
+void AWKHUD::SetAnnounceWidgetVisible(ESlateVisibility Visibility)
+{
+	if (AnnounceWidget)
+	{
+		AnnounceWidget->SetVisibility(Visibility);
+	}
+}
+
+void AWKHUD::SetGameOverlayVisible(ESlateVisibility Visibility)
+{
+	if (OverlayWidget)
+	{
+		OverlayWidget->SetVisibility(Visibility);
 	}
 }

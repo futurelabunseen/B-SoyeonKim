@@ -5,18 +5,13 @@
 #include "UI/WKHUDWidget.h"
 #include "UI/WKHUD.h"
 #include "Game/WKGameMode.h"
+#include "Game/WKGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AWKPlayerController::AWKPlayerController()
 {
-	static ConstructorHelpers::FClassFinder<UWKHUDWidget> ABHUDWidgetRef(TEXT("/Game/WarKing/UI/WBP_WKHUD.WBP_WKHUD_C"));
-	if (ABHUDWidgetRef.Class)
-	{
-		WKHUDWidgetClass = ABHUDWidgetRef.Class;
-	}
 
-	HUDHpBarComponent = CreateDefaultSubobject<UWKGASWidgetComponent>(TEXT("HUDWidget"));
 }
 
 void AWKPlayerController::BeginPlay()
@@ -27,6 +22,8 @@ void AWKPlayerController::BeginPlay()
 	{
 		WKHUD = Cast<AWKHUD>(GetHUD());
 	}
+
+	BlockPlayerInput(false);
 	ServerCheckMatchState();
 }
 
@@ -48,9 +45,24 @@ void AWKPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void AWKPlayerController::SetHUDTime()
 {
 	float TimeLeft = 0.f;
-	TimeLeft = MatchTime - GetServerTime();
 
-	SetHUDMatchCountdown(TimeLeft);
+	if (MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::Cooldown) TimeLeft = CooldownTime + WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
+
+	if (CountdownInt != SecondsLeft)
+	{
+		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
+		{
+			SetHUDAnnounceCountdown(TimeLeft);
+		}
+		if (MatchState == MatchState::InProgress)
+		{
+			SetHUDMatchCountdown(TimeLeft);
+		}
+	}
+	CountdownInt = SecondsLeft;
 }
 
 void AWKPlayerController::OnMatchStateSet(FName State)
@@ -63,12 +75,22 @@ void AWKPlayerController::OnMatchStateSet(FName State)
 void AWKPlayerController::HandleMatchHasStarted()
 {
 	//GameStart
+	if (WKHUD)
+	{
+		WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Hidden);
+	}
 }
 
 void AWKPlayerController::HandleCooldown()
 {
+	BlockPlayerInput(true);
 	//Cooldown
-
+	if (WKHUD)
+	{		
+		WKHUD->SetGameOverlayVisible(ESlateVisibility::Hidden);
+		WKHUD->SetAnnounceText(GetWinnerText());
+		WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Visible);
+	}
 }
 
 void AWKPlayerController::OnRep_MatchState()
@@ -83,9 +105,18 @@ void AWKPlayerController::OnRep_MatchState()
 	}
 }
 
-void AWKPlayerController::ClientJoinMidgame_Implementation(float Match)
+void AWKPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime)
 {
+	WarmupTime = Warmup;
 	MatchTime = Match;
+	CooldownTime = Cooldown;
+	LevelStartingTime = StartingTime;
+	MatchState = StateOfMatch;
+	if (WKHUD && MatchState == MatchState::WaitingToStart)
+	{	
+		WKHUD->AddAnnouncement();
+		WKHUD->SetAnnounceText(FString::Printf(TEXT("New match starts in:")));
+	}
 }
 
 void AWKPlayerController::ServerCheckMatchState_Implementation()
@@ -93,8 +124,13 @@ void AWKPlayerController::ServerCheckMatchState_Implementation()
 	AWKGameMode* WKGameMode = Cast<AWKGameMode>(UGameplayStatics::GetGameMode(this));
 	if (WKGameMode)
 	{
+		WarmupTime = WKGameMode->GetWarmupTime();
 		MatchTime = WKGameMode->GetMatchTime();
-		ClientJoinMidgame(MatchTime);
+		CooldownTime = WKGameMode->GetCooldownTime();
+		LevelStartingTime = WKGameMode->GetLevelStartingTime();
+		MatchState = WKGameMode->GetMatchState();
+
+		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, CooldownTime, LevelStartingTime);
 	}
 }
 
@@ -140,6 +176,17 @@ void AWKPlayerController::ReceivedPlayer()
 	}
 }
 
+void AWKPlayerController::BlockPlayerInput(bool bBlock)
+{
+	SetIgnoreMoveInput(bBlock);
+	SetIgnoreLookInput(bBlock);
+
+	if(bBlock)
+		SetInputMode(FInputModeUIOnly());
+	else
+		SetInputMode(FInputModeGameOnly());
+}
+
 void AWKPlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
 	if (WKHUD)
@@ -150,6 +197,47 @@ void AWKPlayerController::SetHUDMatchCountdown(float CountdownTime)
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		WKHUD->SetTimerText(CountdownText);
 	}
+}
+
+void AWKPlayerController::SetHUDAnnounceCountdown(float CountdownTime)
+{
+	if (WKHUD)
+	{
+		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
+		int32 Seconds = CountdownTime - Minutes * 60;
+
+		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		WKHUD->SetAnnounceTimerText(CountdownText);
+	}
+}
+
+FString AWKPlayerController::GetWinnerText()
+{
+	AWKGameState* WKGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
+	FString ReturnInfo = FString();
+	if (WKGameState)
+	{
+		int32 RedTeamScore = FMath::CeilToInt(WKGameState->GetRedTeamScore());
+		int32 BlueTeamScore = FMath::CeilToInt(WKGameState->GetBlueTeamScore());
+
+		if (RedTeamScore > BlueTeamScore)
+		{
+			ReturnInfo = FString::Printf(TEXT("RedTeam Winner!"));
+		}
+		else if (RedTeamScore < BlueTeamScore)
+		{
+			ReturnInfo = FString::Printf(TEXT("BlueTeam Winner!"));
+		}
+		else
+		{
+			ReturnInfo = FString::Printf(TEXT("Draw"));
+		}
+		
+		ReturnInfo.Append(FString("\n"));
+		ReturnInfo.Append(FString::Printf(TEXT("Red : %d%% | Blue : %d%%"), RedTeamScore, BlueTeamScore));
+	}
+
+	return ReturnInfo;
 }
 
 void AWKPlayerController::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Player_AS, UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS)
