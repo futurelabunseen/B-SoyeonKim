@@ -50,6 +50,8 @@ public:
 	UFUNCTION()
 	bool GetIsMoving();
 
+	void SetSpawnPoint();
+
 // Camera Section
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))

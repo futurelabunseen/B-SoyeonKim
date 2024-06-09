@@ -50,7 +50,8 @@ void AWKPlayerController::SetHUDTime()
 	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
 	else if (MatchState == MatchState::Cooldown) TimeLeft = CooldownTime + WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
 	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
-
+	SecondsLeft = SecondsLeft <= 0.f ? 0.f : SecondsLeft;
+	
 	if (CountdownInt != SecondsLeft)
 	{
 		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
@@ -62,6 +63,7 @@ void AWKPlayerController::SetHUDTime()
 			SetHUDMatchCountdown(TimeLeft);
 		}
 	}
+
 	CountdownInt = SecondsLeft;
 }
 

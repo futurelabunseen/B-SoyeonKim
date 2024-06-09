@@ -16,8 +16,10 @@
 #include "Tag/WKGameplayTag.h"
 #include "GameplayTagContainer.h"
 #include "Attribute/WKCharacterAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/WKPlayerController.h"
 #include "Player/WKGASPlayerState.h"
+#include "Actor/PlayerStart/WKPlayerStart.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
 {	
@@ -99,6 +101,7 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 	GASAbilitySetting();
 	ConsoleCommandSetting();
 	SetTeamColor(GetTeam());
+	SetSpawnPoint();
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
@@ -351,6 +354,38 @@ void AWKCharacterPlayer::Sprint(bool IsSprint)
 bool AWKCharacterPlayer::GetIsMoving()
 {
 	return GetVelocity().Size() > 0.f && GetCharacterMovement()->IsMovingOnGround();
+}
+
+void AWKCharacterPlayer::SetSpawnPoint()
+{
+	if (HasAuthority() && WKPlayerState && WKPlayerState->GetTeam() != WKTAG_GAME_TEAM_NONE)
+	{
+		TArray<AActor*> PlayerStarts;
+		UGameplayStatics::GetAllActorsOfClass(this, AWKPlayerStart::StaticClass(), PlayerStarts);
+		TArray<AWKPlayerStart*> TeamPlayerStarts;
+
+		for (auto Start : PlayerStarts)
+		{
+			AWKPlayerStart* TeamStart = Cast<AWKPlayerStart>(Start);
+			if (TeamStart && TeamStart->TeamTag == WKPlayerState->GetTeam())
+			{
+				TeamPlayerStarts.Add(TeamStart);
+			}
+		}
+
+		if (TeamPlayerStarts.Num() > 0)
+		{
+			AWKPlayerStart* ChosenPlayerStart = TeamPlayerStarts[FMath::RandRange(0, TeamPlayerStarts.Num() - 1)];
+	
+			FRotator Rotator = ChosenPlayerStart->GetActorRotation();
+			Rotator.Roll = 0;
+			SetActorLocationAndRotation(
+				ChosenPlayerStart->GetActorLocation(),
+				Rotator);
+
+			WK_LOG(LogWKNetwork, Log, TEXT("SetSpawnPoint : %f, %f, %f"), Rotator.Roll, Rotator.Pitch, Rotator.Yaw);
+		}
+	}
 }
 
 void AWKCharacterPlayer::OnOutOfHealth()

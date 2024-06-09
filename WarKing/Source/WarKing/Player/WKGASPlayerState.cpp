@@ -108,4 +108,9 @@ void AWKGASPlayerState::SetTeam(FGameplayTag TeamToSet)
 	}
 }
 
+void AWKGASPlayerState::SetSpawnPoint()
+{
+
+}
+
 

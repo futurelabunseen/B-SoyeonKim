@@ -15,7 +15,6 @@ AWKGameState::AWKGameState(const FObjectInitializer& ObjectInitializer) : Super(
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AttributeSet = CreateDefaultSubobject<UWKGameAttributeSet>(TEXT("GameAttributeSet"));
 
-	//TODO : 기본값 확인하기
 	NetUpdateFrequency = 100.f;
 }
 
@@ -26,7 +25,6 @@ void AWKGameState::PostInitializeComponents()
 	if (ensure(ASC))
 	{
 		ASC->InitAbilityActorInfo(this, this);
-	
 	
 		// Init Effect Setting
 		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
@@ -41,9 +39,6 @@ void AWKGameState::PostInitializeComponents()
 					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
 			}
 		}
-
-		/*ASC->RegisterGameplayTagEvent(WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM,
-			EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);*/
 	}
 }
 

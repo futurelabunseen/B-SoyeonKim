@@ -62,5 +62,6 @@ private:
 public:
 	FORCEINLINE FGameplayTag GetTeam() const { return TeamTag; }
 	void SetTeam(FGameplayTag TeamToSet);
+	void SetSpawnPoint();
 
 };

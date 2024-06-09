@@ -20,25 +20,6 @@ namespace MatchState
 
 AWKGameMode::AWKGameMode()
 {
-	//static ConstructorHelpers::FClassFinder<APawn> ThirdPersonClassRef(TEXT("/Script/WarKing.WKCharacterPlayer"));
-	//static ConstructorHelpers::FClassFinder<APawn> DefaultPawnClassRef(TEXT("/Game/WarKing/Blueprint/BP_WKCharacter_Blade.BP_WKCharacter_Blade_C"));
-	//if (DefaultPawnClassRef.Class)
-	//{
-	//	DefaultPawnClass = DefaultPawnClassRef.Class;
-	//}
-
-	////클래스 정보가 복제된거라 _C를 붙일 필요는 없음
-	//static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/WarKing.WKPlayerController"));
-
-	//if (PlayerControllerClassRef.Class)
-	//{
-	//	// DefaultPawnClass
-	//	PlayerControllerClass = PlayerControllerClassRef.Class;
-	//}
-	//
-	//GameStateClass = AWKGameState::StaticClass();
-	//PlayerStateClass = AWKGASPlayerState::StaticClass();
-
 	bDelayedStart = true;
 }
 
@@ -54,7 +35,6 @@ void AWKGameMode::PreLogin(const FString& Options, const FString& Address, const
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));
 
 	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
-	//ErrorMessage = TEXT("Server Is Full");
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }

@@ -19,4 +19,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	int32 GameStartPlayerNum = 2;
+
+	UPROPERTY(EditAnywhere)
+	float TraverlTime = 3.0f;
+
+private:
+	void ServerTravelGameLevel();
+
+	void StartReady();
+
+	FTimerHandle TravelTimer;
 };

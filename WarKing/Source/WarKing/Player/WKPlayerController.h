@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "AbilitySystemInterface.h"
 #include "WKPlayerController.generated.h"
 
 class UAttributeSet;
