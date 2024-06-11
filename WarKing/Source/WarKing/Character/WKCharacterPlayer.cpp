@@ -91,13 +91,15 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 	SetTeamColor(GetTeam());
 	SetSpawnPoint();
 
+	ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_DEBUFF_STUN,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);
+
 	if (WKPlayerState && !WKPlayerState->GetInitializedValue())
 	{
 		SetGASGiveAbility();
 		SetHUD();
 		SetInitEffects();
 		ConsoleCommandSetting();
-
 		WKPlayerState->SetInitializedValue(true);
 	}
 
@@ -227,9 +229,6 @@ void AWKCharacterPlayer::InitGASSetting()
 			ASC->RemoveLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);
 		}
 		WKPlayerState->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
-
-		ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_DEBUFF_STUN,
-			EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);
 	}
 
 	// Widget 초기화 작업
@@ -437,8 +436,6 @@ void AWKCharacterPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32 Ne
 
 	if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
 	{
-		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("NoDead"));
-
 		// Muticast RPC 호출
 		MulticastSetStun(bIsCheckStun);
 
@@ -464,6 +461,7 @@ void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 	// Server 외
 	if (!HasAuthority())
 	{
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("MulticastSetStun_Implementation"));
 		SetStun(bIsStun);
 	}
 }

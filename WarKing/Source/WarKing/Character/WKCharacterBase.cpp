@@ -185,7 +185,6 @@ void AWKCharacterBase::PlayDeadAnimation()
 
 void AWKCharacterBase::SetStun(bool IsStun)
 {
-	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetStun"));
 	UWKAnimInstance* AnimInstance = Cast<UWKAnimInstance>(GetMesh()->GetAnimInstance());
 
 	if (AnimInstance)
