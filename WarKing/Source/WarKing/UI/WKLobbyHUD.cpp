@@ -18,7 +18,14 @@ void AWKLobbyHUD::InitOverlay()
 	if (Widget)
 	{
 		LobbyOverlayWidget = Cast<UWKLobbyWidget>(Widget);
+		LobbyOverlayWidget->AddToViewport();
 	}
-	
-	Widget->AddToViewport();
+}
+
+void AWKLobbyHUD::AddPlayerInfo(UObject* ListElementObject)
+{
+	if (LobbyOverlayWidget)
+	{
+		LobbyOverlayWidget->AddToPlayerInfoListView(ListElementObject);
+	}
 }

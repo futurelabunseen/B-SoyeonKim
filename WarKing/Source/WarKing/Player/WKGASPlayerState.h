@@ -29,6 +29,9 @@ public:
 
 	mutable FOutOfHealthDelegate OnOutOfHealth;
 
+	FORCEINLINE bool GetInitializedValue() const { return bInitialized; }
+	FORCEINLINE void SetInitializedValue(bool bInitializedSet) { bInitialized = bInitializedSet; }
+
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_Team)
 	FGameplayTag TeamTag;
@@ -59,9 +62,8 @@ private:
 	UPROPERTY(Replicated)
 	class AWKCharacterBase* WKCharacter;
 
+	bool bInitialized = false;
 public:
 	FORCEINLINE FGameplayTag GetTeam() const { return TeamTag; }
 	void SetTeam(FGameplayTag TeamToSet);
-	void SetSpawnPoint();
-
 };

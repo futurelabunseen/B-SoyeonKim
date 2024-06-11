@@ -16,6 +16,7 @@ class WARKING_API UWKLobbyWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UWKLobbyWidget(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UListView> PlayerInfoList;
@@ -23,7 +24,10 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> NickNameTextBox;
 
+	UPROPERTY()
+	TSubclassOf<class UWKPlayerInfoWidget> ListElementClass;
+
 public:
 
-	void AddPlayerInfoElement();
+	void AddToPlayerInfoListView(UObject* ListElementObject);
 };

@@ -14,4 +14,6 @@ class WARKING_API AWKLobbyGameState : public AGameState
 {
 	GENERATED_BODY()
 	
+public:
+
 };

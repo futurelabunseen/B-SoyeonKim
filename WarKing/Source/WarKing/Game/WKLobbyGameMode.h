@@ -23,6 +23,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float TraverlTime = 3.0f;
 
+	UPROPERTY()
+	class AWKLobbyPlayerController* LocalPlayerController;
+
 private:
 	void ServerTravelGameLevel();
 

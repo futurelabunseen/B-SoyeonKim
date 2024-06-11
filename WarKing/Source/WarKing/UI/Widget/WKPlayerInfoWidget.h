@@ -17,6 +17,9 @@ class WARKING_API UWKPlayerInfoWidget : public UUserWidget, public IUserObjectLi
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> NickNameText;
 

@@ -21,7 +21,7 @@ private:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void OnRep_PlayerState() override;
-
+	virtual void OnRep_Controller() override;
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnRep_Owner() override;
@@ -32,8 +32,12 @@ protected:
 	void GASInputPressed(const FGameplayTag InputTag);
 	void GASInputReleased(int32 InputId);
 
-	void GASAbilitySetting();
+	void InitGASSetting();
+	void SetGASGiveAbility();
+	void SetHUD();
 	void ConsoleCommandSetting();
+
+	void SetInitEffects();
 
 	void InitializeInput();
 
@@ -51,6 +55,8 @@ public:
 	bool GetIsMoving();
 
 	void SetSpawnPoint();
+
+	void SetPlayerDefaults();
 
 // Camera Section
 protected:

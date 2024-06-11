@@ -6,6 +6,7 @@
 #include "Game/WKLobbyGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/WKLobbyPlayerController.h"
+#include "UI/WKLobbyHUD.h"
 #include "GameFramework/PlayerState.h"
 #include "MultiplayerSessionsSubsystem.h"
 
@@ -20,6 +21,17 @@ void AWKLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	//	WKPlayerController->OnLobbyStart();
 	//}
 
+	if (LocalPlayerController)
+	{
+		if (NewPlayer->IsLocalController())
+		{
+			AWKLobbyPlayerController* LocallyController = Cast<AWKLobbyPlayerController>(NewPlayer);
+			if (LocallyController)
+			{
+				LocalPlayerController = LocallyController;
+			}
+		}
+	}
 	// 게임에 접속한 Player 갯수 확인
 	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
 
@@ -44,35 +56,23 @@ void AWKLobbyGameMode::ServerTravelGameLevel()
 
 void AWKLobbyGameMode::StartReady()
 {
-	AWKLobbyGameState* WKLobbyState = Cast<AWKLobbyGameState>(UGameplayStatics::GetGameState(this));
-	if (WKLobbyState)
-	{
-		for (auto PState : WKLobbyState->PlayerArray)
-		{
-			APlayerState* PlayerState = PState.Get();
-			if (PlayerState)
-			{
-				PlayerState->GetPlayerName();
-			}
+	//TODO : Ready 정보.. 넘기기..!
+	
+	//AWKLobbyGameState* WKLobbyState = Cast<AWKLobbyGameState>(UGameplayStatics::GetGameState(this));
 
-		/*	AWKGASPlayerState* WKPlayerState = Cast<AWKGASPlayerState>(PState.Get());
-			UAbilitySystemComponent* PSASC = WKLobbyState->GetAbilitySystemComponent();
-			if (WKPlayerState && WKPlayerState->GetTeam() == WKTAG_GAME_TEAM_NONE)
-			{
-				if (WKLobbyState->BlueTeam.Num() >= WKLobbyState->RedTeam.Num())
-				{
-					WKLobbyState->RedTeam.AddUnique(WKPlayerState);
-					WKPlayerState->SetTeam(WKTAG_GAME_TEAM_RED);
-				}
-				else
-				{
-					WKLobbyState->BlueTeam.AddUnique(WKPlayerState);
-					WKPlayerState->SetTeam(WKTAG_GAME_TEAM_BLUE);
-				}
-			}*/
-		}
-	}
+	//if (WKLobbyState && LocalPlayerController)
+	//{
+	//	for (auto PState : WKLobbyState->PlayerArray)
+	//	{
+	//		APlayerState* PlayerState = PState.Get();
+	//		if (PlayerState)
+	//		{
+	//			//FString PlayerName = PlayerState->GetPlayerName();
 
+	//			LocalPlayerController->WKLobbyHUD->AddPlayerInfo(PlayerState);
+	//		}
+	//	}
+	//}
 
 	GetWorldTimerManager().SetTimer(
 		TravelTimer,

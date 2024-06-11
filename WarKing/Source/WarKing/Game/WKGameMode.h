@@ -30,6 +30,7 @@ private:
 	virtual void BeginPlay() override;
 	virtual void Logout(AController* Exiting) override;
 	virtual void OnMatchStateSet() override;
+	virtual void SetPlayerDefaults(APawn* PlayerPawn) override;
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;

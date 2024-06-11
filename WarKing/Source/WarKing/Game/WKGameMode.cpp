@@ -8,6 +8,7 @@
 #include "AbilitySystemComponent.h"
 #include "Player/WKGASPlayerState.h"
 #include "Player/WKPlayerController.h"
+#include "Character/WKCharacterPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tag/WKGameplayTag.h"
 #include "GameFramework/Character.h"
@@ -192,6 +193,18 @@ void AWKGameMode::OnMatchStateSet()
 				PSASC->RemoveReplicatedLooseGameplayTag(WKTAG_GAME_STATE_INPROGRESS);
 			}
 		}
+	}
+}
+
+void AWKGameMode::SetPlayerDefaults(APawn* PlayerPawn)
+{
+	Super::SetPlayerDefaults(PlayerPawn);
+
+	AWKCharacterPlayer* WKPlayer = Cast<AWKCharacterPlayer>(PlayerPawn);
+
+	if (WKPlayer)
+	{
+		WKPlayer->SetPlayerDefaults();
 	}
 }
 

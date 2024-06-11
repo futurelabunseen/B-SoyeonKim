@@ -66,8 +66,6 @@ AWKCharacterPlayer::AWKCharacterPlayer()
 	{
 		AttackAction = InputActionAttackRef.Object;
 	}
-
-	
 }
 
 void AWKCharacterPlayer::BeginPlay()
@@ -86,46 +84,35 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));
+	
+	WKPlayerState = GetPlayerState<AWKGASPlayerState>();
 
-	// Owner 확인 Log
-	AActor* OwnerActor = GetOwner();
-	if (OwnerActor)
-	{
-		WK_LOG(LogWKNetwork, Log, TEXT("Owner : %s"), *OwnerActor->GetName());
-	}
-	else
-	{
-		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("No Owner"));
-	}
-
-	GASAbilitySetting();
-	ConsoleCommandSetting();
+	InitGASSetting();
 	SetTeamColor(GetTeam());
 	SetSpawnPoint();
+
+	if (WKPlayerState && !WKPlayerState->GetInitializedValue())
+	{
+		SetGASGiveAbility();
+		SetHUD();
+		SetInitEffects();
+		ConsoleCommandSetting();
+
+		WKPlayerState->SetInitializedValue(true);
+	}
+
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
 void AWKCharacterPlayer::OnRep_Owner()
 {
-	// 클라는 OnPossess() 호출 X -> PossessedBy 함수 호출되지 않음
-	// 클라에서 Owner값이 서버로부터 복제되며 함수 호출	
 	WK_LOG(LogWKNetwork, Log, TEXT("%s %s"), *GetName(), TEXT("Begin"));
 
 	Super::OnRep_Owner();
 
-	AActor* OwnerActor = GetOwner();
-	if (OwnerActor)
-	{
-		WK_LOG(LogWKNetwork, Log, TEXT("Owner : %s"), *OwnerActor->GetName());
-	}
-	else
-	{
-		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("No Owner"));
-	}
+	ConsoleCommandSetting();
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
-
-	ConsoleCommandSetting();
 }
 
 void AWKCharacterPlayer::OnRep_PlayerState()
@@ -133,10 +120,23 @@ void AWKCharacterPlayer::OnRep_PlayerState()
 	// 클라 전용 
 	Super::OnRep_PlayerState();
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("OnRep_PlayerState"));
-
-	// 서버에서 복제한 PlayerState가 존재하고 나서 GAS를 연결해야 하므로 여기서 호출
-	GASAbilitySetting();
+	WKPlayerState = GetPlayerState<AWKGASPlayerState>();
+	InitGASSetting();
 	SetTeamColor(GetTeam());
+
+
+	if (WKPlayerState && !WKPlayerState->GetInitializedValue())
+	{
+		SetHUD();
+		
+		WKPlayerState->SetInitializedValue(true);
+	}
+}
+
+void AWKCharacterPlayer::OnRep_Controller()
+{
+	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("OnRep_Controller"));
+
 }
 
 void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -210,7 +210,7 @@ void AWKCharacterPlayer::GASInputReleased(int32 InputId)
 	}
 }
 
-void AWKCharacterPlayer::GASAbilitySetting()
+void AWKCharacterPlayer::InitGASSetting()
 {
 	WKPlayerState = GetPlayerState<AWKGASPlayerState>();
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("GASAbilitySetting"));
@@ -219,61 +219,55 @@ void AWKCharacterPlayer::GASAbilitySetting()
 	{
 		ASC = WKPlayerState->GetAbilitySystemComponent();
 
-		ASC->InitAbilityActorInfo(WKPlayerState, this);
+		ASC->InitAbilityActorInfo(WKPlayerState, this);	
 
-		// Server에서만 수행
-		if (HasAuthority())
+		// 서버 캐릭터만 Remove...
+		if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
 		{
-			for (const auto& StartAbility : StartAbilities)
-			{
-				FGameplayAbilitySpec StartSpec(StartAbility);
-				ASC->GiveAbility(StartSpec);
-			}
-
-			for (const auto& StartInputAbility : StartInputAbilities)
-			{
-				FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
-				StartSpec.InputID = StartInputAbility.Key;
-				ASC->GiveAbility(StartSpec);
-			}
-
-			ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_DEBUFF_STUN,
-				EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);
+			ASC->RemoveLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);
 		}
-
-		// Init Effect Setting
-		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
-
-		for (TSubclassOf<UGameplayEffect> GameplayEffect : StartEffects)
-		{
-			FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(GameplayEffect, 1.f, EffectContext);
-			if (NewHandle.IsValid())
-			{
-				FActiveGameplayEffectHandle ActiveGEHandle =
-					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
-			}
-		}
-
 		WKPlayerState->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 
-		// TODO : PlayerController로 옮기기
-		// HUD Set
-		UWKCharacterAttributeSet* CurrentAttributeSet = WKPlayerState->GetAttributeSet();
-		AWKGameState* CurrentGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
-		
-		if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
-		{
-			if (CurrentAttributeSet && CurrentGameState)
-			{
-				WKPlayerController->InitOverlay(ASC, CurrentAttributeSet,
-					CurrentGameState->GetAbilitySystemComponent(), CurrentGameState->GetAttributeSet());
-			}	
-		}
+		ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_DEBUFF_STUN,
+			EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);
 	}
 
 	// Widget 초기화 작업
 	HpBar->InitGASWidget();
+}
+
+void AWKCharacterPlayer::SetGASGiveAbility()
+{	
+	for (const auto& StartAbility : StartAbilities)
+	{
+		FGameplayAbilitySpec StartSpec(StartAbility);
+		ASC->GiveAbility(StartSpec);
+	}
+
+	for (const auto& StartInputAbility : StartInputAbilities)
+	{
+		FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
+		StartSpec.InputID = StartInputAbility.Key;
+		ASC->GiveAbility(StartSpec);
+	}
+}
+
+void AWKCharacterPlayer::SetHUD()
+{		
+	// TODO : PlayerController로 옮기기
+	// HUD Set
+	UWKCharacterAttributeSet* CurrentAttributeSet = WKPlayerState->GetAttributeSet();
+	AWKGameState* CurrentGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
+
+
+	if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
+	{
+		if (CurrentAttributeSet && CurrentGameState)
+		{
+			WKPlayerController->InitOverlay(ASC, CurrentAttributeSet,
+				CurrentGameState->GetAbilitySystemComponent(), CurrentGameState->GetAttributeSet());
+		}
+	}
 }
 
 void AWKCharacterPlayer::ConsoleCommandSetting()
@@ -283,6 +277,22 @@ void AWKCharacterPlayer::ConsoleCommandSetting()
 	if (ensure(PlayerController))
 	{
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	}
+}
+
+void AWKCharacterPlayer::SetInitEffects()
+{		// Init Effect Setting
+	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	for (TSubclassOf<UGameplayEffect> GameplayEffect : StartEffects)
+	{
+		FGameplayEffectSpecHandle NewHandle = ASC->MakeOutgoingSpec(GameplayEffect, 1.f, EffectContext);
+		if (NewHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle ActiveGEHandle =
+				ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
+		}
 	}
 }
 
@@ -306,6 +316,16 @@ void AWKCharacterPlayer::InitializeInput()
 
 			SetupGASInputComponent();
 		}
+	}
+}
+
+void AWKCharacterPlayer::SetPlayerDefaults()
+{
+	if (IsValid(ASC))
+	{
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetPlayerDefaults"));
+		UWKCharacterAttributeSet* CurrentAttributeSet = WKPlayerState->GetAttributeSet();
+		CurrentAttributeSet->ResetAttributeSetData();
 	}
 }
 

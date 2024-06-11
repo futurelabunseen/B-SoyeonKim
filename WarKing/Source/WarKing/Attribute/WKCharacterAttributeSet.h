@@ -44,6 +44,7 @@ public:
 	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
+	void ResetAttributeSetData();
 	//mutable FOutOfHealthDelegate OnOutOfHealth;
 
 protected:

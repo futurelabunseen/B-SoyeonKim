@@ -19,6 +19,8 @@ public:
 	AWKLobbyHUD();
 
 	void InitOverlay();
+
+	void AddPlayerInfo(UObject* ListElementObject);
 private:
 
 	UPROPERTY()

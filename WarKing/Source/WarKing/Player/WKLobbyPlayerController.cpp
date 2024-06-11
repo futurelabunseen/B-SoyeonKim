@@ -26,4 +26,3 @@ void AWKLobbyPlayerController::BeginPlay()
 		WKLobbyHUD->InitOverlay();
 	}
 }
-

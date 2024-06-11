@@ -119,6 +119,12 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 	//bOutOfHealth = (GetHealth() <= 0.0f);
 }
 
+void UWKCharacterAttributeSet::ResetAttributeSetData()
+{
+	SetHealth(GetMaxHealth());
+	SetStamina(GetMaxStamina());
+}
+
 void UWKCharacterAttributeSet::AdjustAttributeForMaxChange(FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty)
 {
 	UAbilitySystemComponent* AbilityComp = GetOwningAbilitySystemComponent();

@@ -19,9 +19,10 @@ public:
 
 	void OnLobbyStart();
 
-protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class AWKLobbyHUD> WKLobbyHUD;
+
+protected:
+
+	virtual void BeginPlay() override;
 };
