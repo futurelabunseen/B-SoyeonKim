@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UWKGASWidgetComponent> HpBar;
 
+	UPROPERTY(EditAnywhere, Category = Widget)
+	TObjectPtr<class UUserWidget> HpBarWidget;
+
 	UPROPERTY()
 	class AWKGASPlayerState* WKPlayerState;
 
@@ -67,4 +70,9 @@ protected:
 // Stun Section
 protected:
 	 void SetStun(bool IsStun);
+
+	 UPROPERTY(EditAnywhere)
+	 float StunCooldownTime = 1.3f;
+
+	 FTimerHandle StunTimer;
 };

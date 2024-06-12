@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
 #include "WKGASWidgetComponent.generated.h"
-
+class UWKGASUserWidget;
 /**
  * 
  */
@@ -20,9 +20,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+
 	UPROPERTY()
 	TObjectPtr<APlayerCameraManager> PlayerCameraManager;
+
+	UWKGASUserWidget* GASUserWidget;
 public:
 
 	void InitGASWidget();
+
+	FORCEINLINE UWKGASUserWidget* GetGASWidget() { return GASUserWidget; }
 };

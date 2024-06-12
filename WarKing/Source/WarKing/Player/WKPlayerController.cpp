@@ -27,51 +27,40 @@ void AWKPlayerController::BeginPlay()
 	ServerCheckMatchState();
 }
 
-void AWKPlayerController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	SetHUDTime();
-	CheckTimeSync(DeltaTime);
-}
 
 void AWKPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWKPlayerController, MatchState);
+	DOREPLIFETIME(AWKPlayerController, GameTime);
 }
  
-void AWKPlayerController::SetHUDTime()
-{
-	float TimeLeft = 0.f;
-
-	if (MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
-	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
-	else if (MatchState == MatchState::Cooldown) TimeLeft = CooldownTime + WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
-	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
-	SecondsLeft = SecondsLeft <= 0.f ? 0.f : SecondsLeft;
-	
-	if (CountdownInt != SecondsLeft)
-	{
-		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
-		{
-			SetHUDAnnounceCountdown(TimeLeft);
-		}
-		if (MatchState == MatchState::InProgress)
-		{
-			SetHUDMatchCountdown(TimeLeft);
-		}
-	}
-
-	CountdownInt = SecondsLeft;
-}
-
 void AWKPlayerController::OnMatchStateSet(FName State)
 {
 	MatchState = State;
 
 	OnRep_MatchState();
+}
+
+void AWKPlayerController::OnRespawnState(bool bIsRespawnStart)
+{
+	if (WKHUD)
+	{
+		if (bIsRespawnStart)
+		{
+			WKHUD->SetAnnounceText("Respawning.....");
+			WKHUD->SetAnnounceTimerText(FString());
+			WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Visible);
+		}
+		else
+		{
+			if (MatchState == MatchState::InProgress)
+			{
+				WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Hidden);
+			}		
+		}		
+	}
 }
 
 void AWKPlayerController::HandleMatchHasStarted()
@@ -107,6 +96,32 @@ void AWKPlayerController::OnRep_MatchState()
 	}
 }
 
+void AWKPlayerController::OnRep_GameTime()
+{
+	if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
+	{
+		SetHUDAnnounceCountdown(GameTime);
+	}
+	if (MatchState == MatchState::InProgress)
+	{
+		SetHUDMatchCountdown(GameTime);
+	}
+}
+
+void AWKPlayerController::SetServerTime()
+{
+	float TimeLeft = 0.f;	
+
+	if (WKGameMode)
+	{
+		TimeLeft = WKGameMode->GetCountdownTime();
+	}
+
+	GameTime = FMath::FloorToInt(TimeLeft);
+
+	OnRep_GameTime();
+}
+
 void AWKPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime)
 {
 	WarmupTime = Warmup;
@@ -123,7 +138,8 @@ void AWKPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, f
 
 void AWKPlayerController::ServerCheckMatchState_Implementation()
 {
-	AWKGameMode* WKGameMode = Cast<AWKGameMode>(UGameplayStatics::GetGameMode(this));
+	WKGameMode = Cast<AWKGameMode>(UGameplayStatics::GetGameMode(this));
+
 	if (WKGameMode)
 	{
 		WarmupTime = WKGameMode->GetWarmupTime();
@@ -134,49 +150,15 @@ void AWKPlayerController::ServerCheckMatchState_Implementation()
 
 		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, CooldownTime, LevelStartingTime);
 	}
+	SetServerTime();
+
+	GetWorldTimerManager().SetTimer(
+		TimeTimer,
+		this,
+		&ThisClass::SetServerTime,
+		0.3f, true);
 }
 
-void AWKPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)
-{
-	float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();
-	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt);
-}
-
-void AWKPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)
-{
-	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
-	SingleTripTime = 0.5f * RoundTripTime;
-	float CurrentServerTime = TimeServerReceivedClientRequest + SingleTripTime;
-	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
-}
-
-void AWKPlayerController::CheckTimeSync(float DeltaTime)
-{
-	TimeSyncRunningTime += DeltaTime;
-	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
-	{
-		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
-		TimeSyncRunningTime = 0.f;
-	}
-}
-
-float AWKPlayerController::GetServerTime()
-{
-	if (HasAuthority()) return GetWorld()->GetTimeSeconds();
-	else
-	{
-		return GetWorld()->GetTimeSeconds() + ClientServerDelta;
-	}
-}
-
-void AWKPlayerController::ReceivedPlayer()
-{
-	Super::ReceivedPlayer();
-	if (IsLocalController())
-	{
-		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
-	}
-}
 
 void AWKPlayerController::BlockPlayerInput(bool bBlock)
 {
@@ -193,6 +175,12 @@ void AWKPlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
 	if (WKHUD)
 	{
+		if (CountdownTime <= 0.f)
+		{
+			WKHUD->SetTimerText(FString());
+			return;
+		}
+
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 		int32 Seconds = CountdownTime - Minutes * 60;
 
@@ -205,6 +193,11 @@ void AWKPlayerController::SetHUDAnnounceCountdown(float CountdownTime)
 {
 	if (WKHUD)
 	{
+		if (CountdownTime <= 0.f)
+		{
+			WKHUD->SetAnnounceTimerText(FString());
+			return;
+		}
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 		int32 Seconds = CountdownTime - Minutes * 60;
 

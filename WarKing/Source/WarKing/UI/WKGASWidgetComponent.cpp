@@ -41,7 +41,7 @@ void UWKGASWidgetComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UWKGASWidgetComponent::InitGASWidget()
 {
-	UWKGASUserWidget* GASUserWidget = Cast<UWKGASUserWidget>(GetWidget());
+	 GASUserWidget = Cast<UWKGASUserWidget>(GetWidget());
 
 	if (GASUserWidget)
 	{

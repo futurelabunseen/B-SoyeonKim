@@ -81,14 +81,12 @@ AWKCharacterBase::AWKCharacterBase()
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 220.0f));
 
 	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/WarKing/UI/WBP_HpBar.WBP_HpBar_C"));
-
 	if (HpBarWidgetRef.Class)
 	{
 		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
-
-		// TODO : 카메라 방향으로 회전
 		HpBar->SetWidgetSpace(EWidgetSpace::World);
-		HpBar->SetDrawSize(FVector2D(100.0f, 10.f));
+		HpBar->SetDrawSize(FVector2D(100.0f, 60.0f));
+		HpBar->SetGeometryMode(EWidgetGeometryMode::Plane);
 		HpBar->SetDrawAtDesiredSize(false);
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		HpBar->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
@@ -197,7 +195,12 @@ void AWKCharacterBase::SetStun(bool IsStun)
 		}
 		else
 		{
-			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+			GetWorldTimerManager().SetTimer(StunTimer, FTimerDelegate::CreateLambda(
+				[this]()->void
+				{
+					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+				}
+			), StunCooldownTime, false);
 		}
 	}
 }

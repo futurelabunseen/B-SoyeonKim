@@ -80,27 +80,8 @@ void AWKGameMode::PostLogin(APlayerController* NewPlayer)
 
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 #pragma endregion
-
-	//Team Setting
-	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
-
-	if (WKGameState)
-	{
-		AWKGASPlayerState* WKPlayerState = NewPlayer->GetPlayerState<AWKGASPlayerState>();
-		if (WKPlayerState && WKPlayerState->GetTeam() == WKTAG_GAME_TEAM_NONE)
-		{
-			if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
-			{
-				WKGameState->RedTeam.AddUnique(WKPlayerState);
-				WKPlayerState->SetTeam(WKTAG_GAME_TEAM_RED);
-			}
-			else
-			{
-				WKGameState->BlueTeam.AddUnique(WKPlayerState);
-				WKPlayerState->SetTeam(WKTAG_GAME_TEAM_BLUE);
-			}
-		}	
-	}
+	
+	SetTeam(NewPlayer->PlayerState);
 }
 
 void AWKGameMode::StartPlay()
@@ -161,6 +142,12 @@ void AWKGameMode::Logout(AController* Exiting)
 	}
 }
 
+void AWKGameMode::InitSeamlessTravelPlayer(AController* NewController)
+{
+	Super::InitSeamlessTravelPlayer(NewController);
+	SetTeam(NewController->PlayerState);
+}
+
 void AWKGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
@@ -208,6 +195,29 @@ void AWKGameMode::SetPlayerDefaults(APawn* PlayerPawn)
 	}
 }
 
+void AWKGameMode::SetTeam(APlayerState* NewPlayerState)
+{	
+	//Team Setting
+	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
+	if (WKGameState)
+	{
+		AWKGASPlayerState* WKPlayerState = Cast<AWKGASPlayerState>(NewPlayerState);
+		if (WKPlayerState && WKPlayerState->GetTeam() == WKTAG_GAME_TEAM_NONE)
+		{
+			if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
+			{
+				WKGameState->RedTeam.AddUnique(WKPlayerState);
+				WKPlayerState->SetTeam(WKTAG_GAME_TEAM_RED);
+			}
+			else
+			{
+				WKGameState->BlueTeam.AddUnique(WKPlayerState);
+				WKPlayerState->SetTeam(WKTAG_GAME_TEAM_BLUE);
+			}
+		}
+	}
+}
+
 void AWKGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
 {
 	if (ElimmedCharacter)
@@ -235,20 +245,8 @@ void AWKGameMode::HandleMatchHasStarted()
 		for (auto PState : WKGameState->PlayerArray)
 		{
 			AWKGASPlayerState* WKPlayerState = Cast<AWKGASPlayerState>(PState.Get());
-			UAbilitySystemComponent* PSASC = WKGameState->GetAbilitySystemComponent();
-			if (WKPlayerState && WKPlayerState->GetTeam() == WKTAG_GAME_TEAM_NONE)
-			{
-				if (WKGameState->BlueTeam.Num() >= WKGameState->RedTeam.Num())
-				{
-					WKGameState->RedTeam.AddUnique(WKPlayerState);
-					WKPlayerState->SetTeam(WKTAG_GAME_TEAM_RED);
-				}
-				else
-				{
-					WKGameState->BlueTeam.AddUnique(WKPlayerState);
-					WKPlayerState->SetTeam(WKTAG_GAME_TEAM_BLUE);
-				}
-			}
+		
+			SetTeam(WKPlayerState);
 		}
 	}
 }

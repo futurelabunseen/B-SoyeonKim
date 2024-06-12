@@ -24,7 +24,6 @@ AWKControl::AWKControl()
 	Trigger->SetBoxExtent(FVector(150.0f, 150.0f, 150.0f));
 
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
-	//SetReplicates(true);
 }
 
 UAbilitySystemComponent* AWKControl::GetAbilitySystemComponent() const
@@ -36,20 +35,23 @@ void AWKControl::NotifyActorBeginOverlap(AActor* Other)
 {
 	Super::NotifyActorBeginOverlap(Other);
 
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other);
-	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("NotifyActorBeginOverlap"));
-
-	if (ASC)
+	if (Other->HasAuthority())
 	{
-		if (TargetASC)
+		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other);
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("NotifyActorBeginOverlap"));
+
+		if (ASC)
 		{
-			if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_BLUE))
+			if (TargetASC)
 			{
-				AddToBlueTeamPlayerNum(1);
-			}
-			else if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_RED))
-			{
-				AddToRedTeamPlayerNum(1);
+				if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_BLUE))
+				{
+					AddToBlueTeamPlayerNum(1);
+				}
+				else if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_RED))
+				{
+					AddToRedTeamPlayerNum(1);
+				}
 			}
 		}
 	}
@@ -59,18 +61,21 @@ void AWKControl::NotifyActorEndOverlap(AActor* Other)
 {
 	Super::NotifyActorEndOverlap(Other);
 
-	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other);
-	if (ASC)
+	if (Other->HasAuthority())
 	{
-		if (TargetASC)
+		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Other);
+		if (ASC)
 		{
-			if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_BLUE))
+			if (TargetASC)
 			{
-				AddToBlueTeamPlayerNum(-1);
-			}
-			else if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_RED))
-			{
-				AddToRedTeamPlayerNum(-1);
+				if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_BLUE))
+				{
+					AddToBlueTeamPlayerNum(-1);
+				}
+				else if (TargetASC->HasMatchingGameplayTag(WKTAG_GAME_TEAM_RED))
+				{
+					AddToRedTeamPlayerNum(-1);
+				}
 			}
 		}
 	}

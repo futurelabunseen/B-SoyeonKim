@@ -17,7 +17,9 @@ class WARKING_API UWKGASHpBarUserWidget : public UWKGASUserWidget
 
 public:
 	void UpdateHpBar();
-	
+
+	void SetNickName(FString NameText);
+
 protected:
 	virtual void SetAbilitySystemComponent(AActor* InOwner) override;
 
@@ -32,6 +34,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UTextBlock> TxtHpStat;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> NickNameText;
 
 	float CurrentHealth = 0.0f;
 	float CurrentMaxHealth = 0.1f;

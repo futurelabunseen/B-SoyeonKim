@@ -17,8 +17,8 @@ UWKCharacterAttributeSet::UWKCharacterAttributeSet() :
 	AttackRate(30.0f),
 	MaxAttackRate(100.0f),
 	MaxHealth(300.0f),
-	Damage(0.0f),
-	MaxStamina(100.0f)
+	MaxStamina(100.0f),
+	Damage(0.0f)
 {
 	InitHealth(GetMaxHealth());
 	InitStamina(GetMaxStamina());

@@ -29,8 +29,11 @@ private:
 	virtual void StartPlay() override;
 	virtual void BeginPlay() override;
 	virtual void Logout(AController* Exiting) override;
+	virtual void InitSeamlessTravelPlayer(AController* NewController) override;
 	virtual void OnMatchStateSet() override;
 	virtual void SetPlayerDefaults(APawn* PlayerPawn) override;
+
+	void SetTeam(APlayerState* WKPlayerState);
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;

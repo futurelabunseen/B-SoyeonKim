@@ -92,3 +92,11 @@ void UWKGASHpBarUserWidget::UpdateHpBar()
 			FString::Printf(TEXT("%.0f/%.0f"), CurrentHealth, CurrentMaxHealth)));
 	}
 }
+
+void UWKGASHpBarUserWidget::SetNickName(FString NameText)
+{
+	if (NickNameText)
+	{
+		NickNameText->SetText(FText::FromString(NameText));
+	}
+}

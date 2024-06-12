@@ -11,6 +11,7 @@
 #include "WarKing.h"
 #include "AbilitySystemComponent.h"
 #include "UI/WKGASWidgetComponent.h"
+#include "UI/WKGASHpBarUserWidget.h"
 #include "Game/WKGameState.h"
 #include "Game/WKGameMode.h"
 #include "Tag/WKGameplayTag.h"
@@ -22,7 +23,7 @@
 #include "Actor/PlayerStart/WKPlayerStart.h"
 
 AWKCharacterPlayer::AWKCharacterPlayer()
-{	
+{
 	// player가 빙의할 때 playerState에서 생성된 ASC값을 대입할 것임
 	ASC = nullptr;
 
@@ -89,7 +90,6 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 
 	InitGASSetting();
 	SetTeamColor(GetTeam());
-	SetSpawnPoint();
 
 	ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_DEBUFF_STUN,
 		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::StunTagChanged);
@@ -100,9 +100,17 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 		SetHUD();
 		SetInitEffects();
 		ConsoleCommandSetting();
+
 		WKPlayerState->SetInitializedValue(true);
 	}
 
+	SetNickNameWidget();
+
+	AWKPlayerController* PlayerController = Cast<AWKPlayerController>(GetController());
+	if (PlayerController)
+	{
+		PlayerController->OnRespawnState(false);
+	}
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
@@ -126,12 +134,22 @@ void AWKCharacterPlayer::OnRep_PlayerState()
 	InitGASSetting();
 	SetTeamColor(GetTeam());
 
-
 	if (WKPlayerState && !WKPlayerState->GetInitializedValue())
 	{
 		SetHUD();
-		
+
 		WKPlayerState->SetInitializedValue(true);
+	}
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+		{
+			SetNickNameWidget();
+		});
+
+	AWKPlayerController* PlayerController = Cast<AWKPlayerController>(GetController());
+	if (PlayerController)
+	{
+		PlayerController->OnRespawnState(false);
 	}
 }
 
@@ -253,11 +271,9 @@ void AWKCharacterPlayer::SetGASGiveAbility()
 
 void AWKCharacterPlayer::SetHUD()
 {		
-	// TODO : PlayerController로 옮기기
 	// HUD Set
 	UWKCharacterAttributeSet* CurrentAttributeSet = WKPlayerState->GetAttributeSet();
 	AWKGameState* CurrentGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
-
 
 	if (AWKPlayerController* WKPlayerController = Cast<AWKPlayerController>(GetController()))
 	{
@@ -269,18 +285,32 @@ void AWKCharacterPlayer::SetHUD()
 	}
 }
 
-void AWKCharacterPlayer::ConsoleCommandSetting()
+void AWKCharacterPlayer::SetNickNameWidget()
 {
-	APlayerController* PlayerController = CastChecked<APlayerController>(GetOwner());
-
-	if (ensure(PlayerController))
+	if (WKPlayerState)
 	{
-		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+		UWKGASHpBarUserWidget* WKHpBar = Cast<UWKGASHpBarUserWidget>(HpBar->GetWidget());
+
+		if (WKHpBar)
+		{
+			WKHpBar->SetNickName(WKPlayerState->GetPlayerName());
+		}
 	}
 }
 
+void AWKCharacterPlayer::ConsoleCommandSetting()
+{
+	//APlayerController* PlayerController = CastChecked<APlayerController>(GetOwner());
+
+	//if (ensure(PlayerController))
+	//{
+	//	PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
+	//}
+}
+
 void AWKCharacterPlayer::SetInitEffects()
-{		// Init Effect Setting
+{		
+	// Init Effect Setting
 	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
 	EffectContext.AddSourceObject(this);
 
@@ -322,6 +352,7 @@ void AWKCharacterPlayer::SetPlayerDefaults()
 {
 	if (IsValid(ASC))
 	{
+		SetSpawnPoint();
 		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetPlayerDefaults"));
 		UWKCharacterAttributeSet* CurrentAttributeSet = WKPlayerState->GetAttributeSet();
 		CurrentAttributeSet->ResetAttributeSetData();
@@ -416,12 +447,12 @@ void AWKCharacterPlayer::SetDead()
 {
 	Super::SetDead();
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	AWKPlayerController* PlayerController = Cast<AWKPlayerController>(GetController());
 	if (PlayerController)
 	{
 		DisableInput(PlayerController);
+		PlayerController->OnRespawnState(true);
 	}
-
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
 		this,
@@ -438,7 +469,7 @@ void AWKCharacterPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32 Ne
 	{
 		// Muticast RPC 호출
 		MulticastSetStun(bIsCheckStun);
-
+		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("StunTagChanged"));
 		// Server 수행
 		SetStun(bIsCheckStun);
 
@@ -468,6 +499,8 @@ void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 
 void AWKCharacterPlayer::ElimTimerFinished()
 {
+	AWKPlayerController* PlayerController = Cast<AWKPlayerController>(GetController());
+
 	AWKGameMode* WKGameMode = GetWorld()->GetAuthGameMode<AWKGameMode>();
 
 	if (WKGameMode)

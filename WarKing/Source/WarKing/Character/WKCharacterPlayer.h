@@ -35,6 +35,7 @@ protected:
 	void InitGASSetting();
 	void SetGASGiveAbility();
 	void SetHUD();
+	void SetNickNameWidget();
 	void ConsoleCommandSetting();
 
 	void SetInitEffects();
@@ -136,7 +137,7 @@ protected:
 	FTimerHandle ElimTimer;
 
 	UPROPERTY(EditDefaultsOnly)
-	float ElimDelay = 3.f;
+	float ElimDelay = 5.f;
 
 	void ElimTimerFinished();
 };

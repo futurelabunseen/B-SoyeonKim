@@ -9,22 +9,22 @@
 
 UWKLobbyWidget::UWKLobbyWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FClassFinder<UObject> ListElementRef(TEXT("/Game/WarKing/UI/PlayerInfo/WKBP_PlayerInfo_C"));
+	//static ConstructorHelpers::FClassFinder<UObject> ListElementRef(TEXT("/Game/WarKing/UI/PlayerInfo/WKBP_PlayerInfo_C"));
 
-	if (ListElementRef.Class)
-	{
-		ListElementClass = ListElementRef.Class;
-	}
+	//if (ListElementRef.Class)
+	//{
+	//	ListElementClass = ListElementRef.Class;
+	//}
 }
 
 void UWKLobbyWidget::AddToPlayerInfoListView(UObject* ListElementObject)
 {
-	if (PlayerInfoList)
-	{
-		//UWKPlayerInfoWidget* NewElement = NewObject<UWKPlayerInfoWidget>(this, ListElementClass);
-		//
-		//NewElement->NickNameText->SetText(FText::FromString(PlayerName));
+	//if (PlayerInfoList)
+	//{
+	//	//UWKPlayerInfoWidget* NewElement = NewObject<UWKPlayerInfoWidget>(this, ListElementClass);
+	//	//
+	//	//NewElement->NickNameText->SetText(FText::FromString(PlayerName));
 
-		PlayerInfoList->AddItem(ListElementObject);
-	}
+	//	PlayerInfoList->AddItem(ListElementObject);
+	//}
 }
