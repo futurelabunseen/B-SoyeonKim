@@ -8,6 +8,11 @@
 #define WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.FlamingSword"))
 #define WKTAG_CHARACTER_ACTION_ATTACK_LASTCOMBO FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack.LastCombo"))
 #define WKTAG_CHARACTER_ACTION_HITREACT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact"))
+#define WKTAG_CHARACTER_ACTION_ATTACK_COMBOATTACK2 FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack.ComboAttack2"))
+
+
+// Character State
+#define WKTAG_CHARACTER_STATE_ISATTACKING FGameplayTag::RequestGameplayTag(FName("Character.State.IsAttacking"))
 
 // Data
 #define WKTAG_DATA_DAMAGE FGameplayTag::RequestGameplayTag(FName("Data.Damage"))

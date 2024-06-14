@@ -26,10 +26,10 @@ public:
 	UPROPERTY()
 	class AWKLobbyPlayerController* LocalPlayerController;
 
+	void StartReady();
+
 private:
 	void ServerTravelGameLevel();
-
-	void StartReady();
 
 	FTimerHandle TravelTimer;
 };

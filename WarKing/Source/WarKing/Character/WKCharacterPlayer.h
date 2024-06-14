@@ -107,6 +107,10 @@ protected:
 	// Tag change callbacks
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
+
+	virtual void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType) override;
+
+	void RemoveAttackTag();
 // GAS Section
 protected:
 
@@ -123,6 +127,9 @@ protected:
 	// Init Effects
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TArray<TSubclassOf<class UGameplayEffect>> StartEffects;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	FGameplayTagContainer  CancelTags;
 
 // RPC Section
 protected:

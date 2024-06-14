@@ -7,6 +7,7 @@
 #include "WKLobbyWidget.generated.h"
 class UListView;
 class UEditableTextBox;
+class UButton;
 /**
  * 
  */
@@ -27,7 +28,15 @@ public:
 	UPROPERTY()
 	TSubclassOf<class UWKPlayerInfoWidget> ListElementClass;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* StartBt;
 public:
+	virtual void NativeConstruct() override;
 
 	void AddToPlayerInfoListView(UObject* ListElementObject);
+
+protected:
+
+	UFUNCTION()
+	void OnStartBtClicked();
 };

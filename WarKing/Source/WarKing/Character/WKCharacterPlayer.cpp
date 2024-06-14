@@ -98,7 +98,7 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 	{
 		SetGASGiveAbility();
 		SetHUD();
-		SetInitEffects();
+		SetInitEffects(); 
 		ConsoleCommandSetting();
 
 		WKPlayerState->SetInitializedValue(true);
@@ -168,7 +168,7 @@ void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* Player
 
 void AWKCharacterPlayer::SetupGASInputComponent()
 {
-	if (IsValid(ASC) && IsValid(InputComponent))
+	if (IsValid(InputComponent))
 	{
 		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
@@ -294,6 +294,7 @@ void AWKCharacterPlayer::SetNickNameWidget()
 		if (WKHpBar)
 		{
 			WKHpBar->SetNickName(WKPlayerState->GetPlayerName());
+			WKHpBar->SetWidgetTeamColor(GetTeam());
 		}
 	}
 }
@@ -453,6 +454,9 @@ void AWKCharacterPlayer::SetDead()
 		DisableInput(PlayerController);
 		PlayerController->OnRespawnState(true);
 	}
+
+	RemoveAttackTag();
+	
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
 		this,
@@ -483,6 +487,28 @@ void AWKCharacterPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32 Ne
 			//AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.NotCanceledByStun")));
 
 			ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
+		}
+	}
+}
+
+void AWKCharacterPlayer::PlayHitReactAnimation(EWKHitReactDirection HitDirectionType)
+{
+	Super::PlayHitReactAnimation(HitDirectionType);
+
+	RemoveAttackTag();
+}
+
+void AWKCharacterPlayer::RemoveAttackTag()
+{
+	if (!ASC) return;
+
+	if (CancelTags.IsEmpty()) return;
+
+	for (const FGameplayTag& CancelTag : CancelTags)
+	{
+		if (ASC->HasMatchingGameplayTag(CancelTag))
+		{
+			ASC->RemoveLooseGameplayTag(CancelTag);
 		}
 	}
 }

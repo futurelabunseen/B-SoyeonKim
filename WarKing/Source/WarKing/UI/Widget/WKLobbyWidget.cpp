@@ -5,7 +5,9 @@
 
 #include "UI/Widget/WKPlayerInfoWidget.h"
 #include "Components/TextBlock.h"
-
+#include "Components/Button.h"
+#include "Game/WKLobbyGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 UWKLobbyWidget::UWKLobbyWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -15,6 +17,16 @@ UWKLobbyWidget::UWKLobbyWidget(const FObjectInitializer& ObjectInitializer) : Su
 	//{
 	//	ListElementClass = ListElementRef.Class;
 	//}
+}
+
+void UWKLobbyWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (StartBt)
+	{
+		StartBt->OnClicked.AddDynamic(this, &UWKLobbyWidget::OnStartBtClicked);
+	}
 }
 
 void UWKLobbyWidget::AddToPlayerInfoListView(UObject* ListElementObject)
@@ -27,4 +39,13 @@ void UWKLobbyWidget::AddToPlayerInfoListView(UObject* ListElementObject)
 
 	//	PlayerInfoList->AddItem(ListElementObject);
 	//}
+}
+
+void UWKLobbyWidget::OnStartBtClicked()
+{
+	AWKLobbyGameMode* GameMode = Cast<AWKLobbyGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode)
+	{
+		GameMode->StartReady();	
+	}
 }

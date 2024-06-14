@@ -23,7 +23,8 @@ void UWKGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 		// RegisterGameplayTagEvent : 해당 태그가 부착, 떨어질때 지정한 함수 호출 델리게이트
 		//ASC->RegisterGameplayTagEvent(WKTAG_CHARACTER_STATE_INVISIBLE, EGameplayTagEventType::NewOrRemoved)
 		//	.AddUObject(this, &ThisClass::OnInvinsibleTagChanged);
-		PbHpBar->SetFillColorAndOpacity(HealthColor);
+
+		//PbHpBar->SetFillColorAndOpacity(FLinearColor::Red);
 
 		const UWKCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UWKCharacterAttributeSet>();
 		if (CurrentAttributeSet)
@@ -55,21 +56,6 @@ void UWKGASHpBarUserWidget::OnMaxHealthChanged(const FOnAttributeChangeData& Cha
 	UpdateHpBar();
 }
 
-void UWKGASHpBarUserWidget::OnInvinsibleTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-	// 0 보다 크면 부착된 상태
-	if (NewCount > 0)
-	{
-		PbHpBar->SetFillColorAndOpacity(InvinsibleColor);
-		PbHpBar->SetPercent(1.0f);
-	}
-	else
-	{
-		PbHpBar->SetFillColorAndOpacity(HealthColor);
-		UpdateHpBar();
-	}
-}
-
 void UWKGASHpBarUserWidget::UpdateHpBar()
 {
 	if(ASC)
@@ -93,7 +79,24 @@ void UWKGASHpBarUserWidget::UpdateHpBar()
 	}
 }
 
-void UWKGASHpBarUserWidget::SetNickName(FString NameText)
+void UWKGASHpBarUserWidget::SetWidgetTeamColor(const FGameplayTag Team)
+{
+	if (NickNameText && PbHpBar)
+	{
+		if (Team == WKTAG_GAME_TEAM_RED)
+		{
+			NickNameText->SetColorAndOpacity(RedTeamColor);
+			PbHpBar->SetFillColorAndOpacity(RedTeamColor);
+		}
+		else if (Team == WKTAG_GAME_TEAM_BLUE)
+		{
+			NickNameText->SetColorAndOpacity(BlueTeamColor);
+			PbHpBar->SetFillColorAndOpacity(BlueTeamColor);
+		}
+	}
+}
+
+void UWKGASHpBarUserWidget::SetNickName(const FString NameText)
 {
 	if (NickNameText)
 	{

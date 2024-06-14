@@ -60,7 +60,7 @@ public:
 	void SetTeamColor(FGameplayTag Team);
 
 protected:
-	void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType);
+	virtual void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType);
 
 // Dead Section
 protected:

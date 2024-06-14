@@ -88,18 +88,20 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinHealth, GetMaxHealth()));
 		SetDamage(0.0f);
 
-		if (GetHealth() > UE_KINDA_SMALL_NUMBER)
-		{
-			// HitReact -> Animation Multicast RPC
-			const FHitResult* Hit = Data.EffectSpec.GetContext().GetHitResult();
 
-			if (Hit)
-			{
-				EWKHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(Data.EffectSpec.GetContext().GetHitResult()->Location);
+		// HitReaction GA·Î ÀÌµ¿
+		//if (GetHealth() > UE_KINDA_SMALL_NUMBER)
+		//{
+		//	// HitReact -> Animation Multicast RPC
+		//	const FHitResult* Hit = Data.EffectSpec.GetContext().GetHitResult();
 
-				TargetCharacter->MultiPlayHitReact(HitDirection);
-			}
-		}
+		//	if (Hit)
+		//	{
+		//		EWKHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(Data.EffectSpec.GetContext().GetHitResult()->Location);
+
+		//		TargetCharacter->MultiPlayHitReact(HitDirection);
+		//	}
+		//}
 	}
 	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{

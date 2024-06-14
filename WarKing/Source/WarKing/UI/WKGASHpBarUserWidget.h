@@ -18,14 +18,14 @@ class WARKING_API UWKGASHpBarUserWidget : public UWKGASUserWidget
 public:
 	void UpdateHpBar();
 
-	void SetNickName(FString NameText);
+	void SetNickName(const FString NameText);
+	void SetWidgetTeamColor(const FGameplayTag Team);
 
 protected:
 	virtual void SetAbilitySystemComponent(AActor* InOwner) override;
 
 	virtual void OnHealthChanged(const FOnAttributeChangeData& ChangeData);
 	virtual void OnMaxHealthChanged(const FOnAttributeChangeData& ChangeData);
-	virtual void OnInvinsibleTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 protected:
 
@@ -41,6 +41,10 @@ protected:
 	float CurrentHealth = 0.0f;
 	float CurrentMaxHealth = 0.1f;
 
-	FLinearColor HealthColor = FLinearColor::Red;
-	FLinearColor InvinsibleColor = FLinearColor::Blue;
+
+	UPROPERTY(EditAnywhere)
+	FLinearColor RedTeamColor;
+
+	UPROPERTY(EditAnywhere)
+	FLinearColor BlueTeamColor;
 };

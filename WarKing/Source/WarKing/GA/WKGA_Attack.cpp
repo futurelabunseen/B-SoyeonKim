@@ -71,6 +71,7 @@ void UWKGA_Attack::OnInterruptedCallback()
 	UE_LOG(LogTemp, Log, TEXT("PlayAttack : OnInterruptedCallback"));
 	bool bReplicatedEndAbility = true;
 
+
 	//취소된 것이기 때문에 Camcelled true 설정
 	bool bWasCancelled = true;
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicatedEndAbility, bWasCancelled);
@@ -106,8 +107,10 @@ void UWKGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		}
 	}
 
-	AWKCharacterBase* WKCharacter = CastChecked<AWKCharacterBase>(ActorInfo->AvatarActor.Get());
-	WKCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	
+	if (!AvaterActorASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUN))
+	{
+		AWKCharacterBase* WKCharacter = CastChecked<AWKCharacterBase>(ActorInfo->AvatarActor.Get());
+		WKCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}	
 }
 	
