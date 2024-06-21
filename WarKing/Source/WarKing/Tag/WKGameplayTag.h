@@ -8,6 +8,10 @@
 #define WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.FlamingSword"))
 #define WKTAG_CHARACTER_ACTION_ATTACK_LASTCOMBO FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack.LastCombo"))
 #define WKTAG_CHARACTER_ACTION_HITREACT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact"))
+#define WKTAG_CHARACTER_ACTION_HITREACT_BACK FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact.Back"))
+#define WKTAG_CHARACTER_ACTION_HITREACT_FRONT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact.Front"))
+#define WKTAG_CHARACTER_ACTION_HITREACT_LEFT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact.Left"))
+#define WKTAG_CHARACTER_ACTION_HITREACT_RIGHT FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact.Right"))
 #define WKTAG_CHARACTER_ACTION_ATTACK_COMBOATTACK2 FGameplayTag::RequestGameplayTag(FName("Character.Action.Attack.ComboAttack2"))
 
 

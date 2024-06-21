@@ -5,6 +5,7 @@
 #include "Character/WKCharacterPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Tag/WKGameplayTag.h"
 #include "WarKing.h"
 
 UWKGA_Skill_FlamingSword::UWKGA_Skill_FlamingSword()
@@ -45,7 +46,7 @@ void UWKGA_Skill_FlamingSword::EndAbility(const FGameplayAbilitySpecHandle Handl
 void UWKGA_Skill_FlamingSword::OnCompleteCallback()
 {
 	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(GetActorInfo().AvatarActor.Get());
-	if (TargetCharacter)
+	if (TargetCharacter && !TargetCharacter->HasGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
 	{
 		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}	

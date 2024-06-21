@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "WarKing.h"
+#include "Tag/WKGameplayTag.h"
 
 UWKGA_Skill::UWKGA_Skill()
 {
@@ -39,7 +40,10 @@ void UWKGA_Skill::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(ActorInfo->AvatarActor.Get());
 	if (TargetCharacter)
 	{
-		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		if (!TargetCharacter->HasGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+		{
+			TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+		}
 	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

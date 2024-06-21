@@ -45,22 +45,26 @@ protected:
 	UPROPERTY()
 	class AWKGASPlayerState* WKPlayerState;
 
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<class UGameplayEffect> HitEffect;
+
+	bool isDead = false;
+
 // HitReact Section
 public:
 	
 	FGameplayTag GetTeam();
 
 	UFUNCTION(BlueprintCallable)
-	EWKHitReactDirection GetHitReactDirection(const FVector& ImpactPoint);
+	FGameplayTag GetHitReactDirection(const FVector& ImpactPoint);
+
+	UFUNCTION(Server, Reliable)
+	void ServerPlayHitReact(FGameplayTag HitDirectionType);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MultiPlayHitReact(EWKHitReactDirection HitDirectionType);
-	void MultiPlayHitReact_Implementation(EWKHitReactDirection HitDirectionType);
+	void MultiPlayHitReact(FGameplayTag HitDirectionType);
 
 	void SetTeamColor(FGameplayTag Team);
-
-protected:
-	virtual void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType);
 
 // Dead Section
 protected:

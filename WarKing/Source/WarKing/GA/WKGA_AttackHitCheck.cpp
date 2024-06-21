@@ -6,9 +6,11 @@
 #include "GA/AT/WKAT_Trace.h"
 #include "GA/TA/WKTA_Trace.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GA/WKGA_HitReact.h"
 #include "Character/WKCharacterPlayer.h"
 #include "Warking.h"
 #include "Attribute/WKCharacterAttributeSet.h"
+#include "Enum/WKTEnumToName.h"
 #include "Tag/WKGameplayTag.h"
 
 UWKGA_AttackHitCheck::UWKGA_AttackHitCheck()
@@ -78,13 +80,13 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 
 				if (!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
 				{
-					// Hit Reat
+					// HitReact
 					AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(HitResult.GetActor());
 
 					if (TargetCharacter)
 					{
-						EWKHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(HitResult.ImpactPoint);
-						TargetCharacter->MultiPlayHitReact(HitDirection);
+						FGameplayTag HitDirectionTag = TargetCharacter->GetHitReactDirection(HitResult.ImpactPoint);
+						TargetCharacter->ServerPlayHitReact(HitDirectionTag);
 					}
 
 					TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);

@@ -45,6 +45,7 @@ private:
 	float CooldownTime = 10.f;
 
 	float LevelStartingTime = 0.f;
+
 public:
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 	virtual void HandleMatchHasStarted() override;

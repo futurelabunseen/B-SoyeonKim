@@ -9,6 +9,7 @@
 
 class UWKGameAttributeSet;
 class AWKGASPlayerState;
+class UAttributeSet;
 /**
  * 
  */

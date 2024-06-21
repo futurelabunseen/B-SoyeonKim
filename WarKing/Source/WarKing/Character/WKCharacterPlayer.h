@@ -107,9 +107,7 @@ protected:
 	// Tag change callbacks
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
-
-	virtual void PlayHitReactAnimation(EWKHitReactDirection HitDirectionType) override;
-
+	void CancelAbilities();
 	void RemoveAttackTag();
 // GAS Section
 protected:

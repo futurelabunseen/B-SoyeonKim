@@ -103,7 +103,7 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 
 		WKPlayerState->SetInitializedValue(true);
 	}
-
+	isDead = false;
 	SetNickNameWidget();
 
 	AWKPlayerController* PlayerController = Cast<AWKPlayerController>(GetController());
@@ -133,6 +133,7 @@ void AWKCharacterPlayer::OnRep_PlayerState()
 	WKPlayerState = GetPlayerState<AWKGASPlayerState>();
 	InitGASSetting();
 	SetTeamColor(GetTeam());
+	isDead = false;
 
 	if (WKPlayerState && !WKPlayerState->GetInitializedValue())
 	{
@@ -140,7 +141,6 @@ void AWKCharacterPlayer::OnRep_PlayerState()
 
 		WKPlayerState->SetInitializedValue(true);
 	}
-
 	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
 		{
 			SetNickNameWidget();
@@ -157,6 +157,11 @@ void AWKCharacterPlayer::OnRep_Controller()
 {
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("OnRep_Controller"));
 
+	// OnRep_PlayerState()에서 놓칠 수 있어, 방어코드 작성
+	if (WKPlayerState)
+	{
+		WKPlayerState->GetAbilitySystemComponent()->RefreshAbilityActorInfo();
+	}
 }
 
 void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -168,10 +173,10 @@ void AWKCharacterPlayer::SetupPlayerInputComponent(class UInputComponent* Player
 
 void AWKCharacterPlayer::SetupGASInputComponent()
 {
-	if (IsValid(InputComponent))
-	{
-		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
+	if (IsValid(EnhancedInputComponent))
+	{
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, 0);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ThisClass::GASInputReleased, 0);
 
@@ -182,13 +187,13 @@ void AWKCharacterPlayer::SetupGASInputComponent()
 
 		// Blade Skill Q BlockAttack
 		EnhancedInputComponent->BindAction(SkillAction1, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_BLOCKATTACK);
-		
+
 		// Blade Skill E FlamingSword
 		EnhancedInputComponent->BindAction(SkillAction2, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD);
 
 		// Blade Skill R AOE
 		EnhancedInputComponent->BindAction(SkillActionUlt, ETriggerEvent::Triggered, this, &ThisClass::GASInputPressed, WKTAG_CHARACTER_ACTION_SKILL_AOE);
-	}
+	}	
 }
 
 void AWKCharacterPlayer::GASInputPressed(int32 InputId)
@@ -211,6 +216,10 @@ void AWKCharacterPlayer::GASInputPressed(int32 InputId)
 
 void AWKCharacterPlayer::GASInputPressed(const FGameplayTag InputTag)
 {
+	if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUN) || 
+			ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+		return;
+
 	FGameplayTagContainer Container;
 	Container.AddTag(InputTag);
 	ASC->TryActivateAbilitiesByTag(Container);
@@ -218,6 +227,10 @@ void AWKCharacterPlayer::GASInputPressed(const FGameplayTag InputTag)
 
 void AWKCharacterPlayer::GASInputReleased(int32 InputId)
 {
+	if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUN) ||
+		ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+		return;
+
 	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
 
 	if (Spec)
@@ -339,8 +352,6 @@ void AWKCharacterPlayer::InitializeInput()
 			InputSubsystem->ClearAllMappings();
 			InputSubsystem->AddMappingContext(DefaultMappingContext, 0);
 
-			WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("SetupPlayerInputComponent"));
-
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 
@@ -456,7 +467,9 @@ void AWKCharacterPlayer::SetDead()
 	}
 
 	RemoveAttackTag();
-	
+
+	CancelAbilities();
+
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
 		this,
@@ -480,22 +493,21 @@ void AWKCharacterPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32 Ne
 		if (bIsCheckStun)
 		{
 			// 어빌리티 취소 코드
-			FGameplayTagContainer AbilityTagsToCancel;
-			AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill")));
-
-			FGameplayTagContainer AbilityTagsToIgnore;
-			//AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.NotCanceledByStun")));
-
-			ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
+			CancelAbilities();
 		}
 	}
 }
 
-void AWKCharacterPlayer::PlayHitReactAnimation(EWKHitReactDirection HitDirectionType)
+void AWKCharacterPlayer::CancelAbilities()
 {
-	Super::PlayHitReactAnimation(HitDirectionType);
+	FGameplayTagContainer AbilityTagsToCancel;
+	AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.Action")));
+	AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.State")));
 
-	RemoveAttackTag();
+	FGameplayTagContainer AbilityTagsToIgnore;
+	AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.State.IsDead")));
+
+	ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
 }
 
 void AWKCharacterPlayer::RemoveAttackTag()
@@ -509,6 +521,7 @@ void AWKCharacterPlayer::RemoveAttackTag()
 		if (ASC->HasMatchingGameplayTag(CancelTag))
 		{
 			ASC->RemoveLooseGameplayTag(CancelTag);
+			ASC->RemoveReplicatedLooseGameplayTag(CancelTag);
 		}
 	}
 }
@@ -519,6 +532,7 @@ void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 	if (!HasAuthority())
 	{
 		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("MulticastSetStun_Implementation"));
+			
 		SetStun(bIsStun);
 	}
 }
@@ -528,6 +542,7 @@ void AWKCharacterPlayer::ElimTimerFinished()
 	AWKPlayerController* PlayerController = Cast<AWKPlayerController>(GetController());
 
 	AWKGameMode* WKGameMode = GetWorld()->GetAuthGameMode<AWKGameMode>();
+
 
 	if (WKGameMode)
 	{

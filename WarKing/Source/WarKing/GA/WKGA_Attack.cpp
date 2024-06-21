@@ -107,8 +107,10 @@ void UWKGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		}
 	}
 
-	if (!AvaterActorASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUN))
+	if (!AvaterActorASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUN) && 
+		!AvaterActorASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
 	{
+		// TODO : Dead 상태 체크 필요
 		AWKCharacterBase* WKCharacter = CastChecked<AWKCharacterBase>(ActorInfo->AvatarActor.Get());
 		WKCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}	
