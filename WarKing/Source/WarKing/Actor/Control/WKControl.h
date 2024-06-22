@@ -36,4 +36,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Box)
 	TObjectPtr<class UStaticMeshComponent> Mesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UWidgetComponent> ControlWidgetComponent;
+
+	UPROPERTY(EditAnywhere, Category = Widget)
+	TObjectPtr<class UWKUserWidget> ControlWidget;
+
 };

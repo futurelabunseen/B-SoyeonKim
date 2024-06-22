@@ -31,7 +31,6 @@ void UWKGA_Skill_FlamingSword::ActivateAbility(const FGameplayAbilitySpecHandle 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("SkillMontage"), ActiveSkillActionMontage, 1.0f);
 	PlayMontageTask->OnCompleted.AddDynamic(this, &UWKGA_Skill_FlamingSword::OnCompleteCallback);
 	PlayMontageTask->OnInterrupted.AddDynamic(this, &UWKGA_Skill_FlamingSword::OnInterruptedCallback);
-
 	PlayMontageTask->ReadyForActivation();
 
 	GetWorld()->GetTimerManager().

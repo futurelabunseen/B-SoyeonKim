@@ -6,9 +6,12 @@
 #include "Components/BoxComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Attribute/WKGameAttributeSet.h"
+#include "Components/WidgetComponent.h"
 #include "Physics/WKCollision.h"
 #include "Game/WKGameState.h"
 #include "Tag/WKGameplayTag.h"
+#include "UI/WKHUD.h"
+#include "UI/Widget/WKUserWidget.h"
 #include "WarKing.h"
 
 // Sets default values
@@ -24,6 +27,21 @@ AWKControl::AWKControl()
 	Trigger->SetBoxExtent(FVector(150.0f, 150.0f, 150.0f));
 
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
+
+	ControlWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	ControlWidgetComponent->SetupAttachment(RootComponent);
+	ControlWidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 20.0f));
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> ControlWidgetRef(TEXT("/Game/WarKing/UI/WBP_ControlInfo.WBP_ControlInfo_C"));
+
+	if (ControlWidgetRef.Class)
+	{
+		ControlWidgetComponent->SetWidgetClass(ControlWidgetRef.Class);
+		ControlWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+		ControlWidgetComponent->SetDrawSize(FVector2D(100.0f, 60.0f));
+		ControlWidgetComponent->SetGeometryMode(EWidgetGeometryMode::Plane);
+		ControlWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 UAbilitySystemComponent* AWKControl::GetAbilitySystemComponent() const
@@ -93,6 +111,18 @@ void AWKControl::BeginPlay()
 	if (WKAttribute)
 	{
 		AttributeSet = WKAttribute;
+	}
+
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
+	{
+		AWKHUD* WKHUD = Cast<AWKHUD>(PlayerController->GetHUD());
+		if (WKHUD)
+		{
+			UWKUserWidget* WKControlWidget = Cast<UWKUserWidget>(ControlWidgetComponent->GetWidget());
+			if(WKControlWidget)
+				WKHUD->SetControlWidget(WKControlWidget);
+		}
 	}
 }
 

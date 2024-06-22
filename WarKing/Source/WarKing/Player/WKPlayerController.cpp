@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Player/WKPlayerController.h"
@@ -49,7 +49,7 @@ void AWKPlayerController::OnRespawnState(bool bIsRespawnStart)
 	{
 		if (bIsRespawnStart)
 		{
-			WKHUD->SetAnnounceText("Respawning.....");
+			WKHUD->SetAnnounceText(TEXT("리스폰 중....."));
 			WKHUD->SetAnnounceTimerText(FString());
 			WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Visible);
 		}
@@ -132,7 +132,7 @@ void AWKPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, f
 	if (WKHUD && MatchState == MatchState::WaitingToStart)
 	{	
 		WKHUD->AddAnnouncement();
-		WKHUD->SetAnnounceText(FString::Printf(TEXT("New match starts in:")));
+		WKHUD->SetAnnounceText(FString::Printf(TEXT("곧 게임이 시작됩니다.\n거점을 점령하세요 :")));
 	}
 }
 
@@ -217,11 +217,11 @@ FString AWKPlayerController::GetWinnerText()
 
 		if (RedTeamScore > BlueTeamScore)
 		{
-			ReturnInfo = FString::Printf(TEXT("RedTeam Winner!"));
+			ReturnInfo = FString::Printf(TEXT("레드팀 우승"));
 		}
 		else if (RedTeamScore < BlueTeamScore)
 		{
-			ReturnInfo = FString::Printf(TEXT("BlueTeam Winner!"));
+			ReturnInfo = FString::Printf(TEXT("블루팀 우승"));
 		}
 		else
 		{

@@ -45,9 +45,10 @@ protected:
 	TArray<TSubclassOf<class UGameplayEffect>> StartEffects;
 
 public:
-
 	TArray<AWKGASPlayerState*> RedTeam;
 	TArray<AWKGASPlayerState*> BlueTeam;
+
+
 
 	UPROPERTY(EditDefaultsOnly)
 	float MatchTime = 120.f;
