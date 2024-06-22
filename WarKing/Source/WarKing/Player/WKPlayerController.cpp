@@ -7,11 +7,17 @@
 #include "Game/WKGameMode.h"
 #include "Game/WKGameState.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "Net/UnrealNetwork.h"
 
 AWKPlayerController::AWKPlayerController()
 {
-
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionReturnMenuRef(TEXT("/Script/EnhancedInput.InputAction'/Game/WarKing/Input/Actions/IA_ReturnMenu.IA_ReturnMenu'"));
+	if (nullptr != InputActionReturnMenuRef.Object)
+	{
+		ReturnMenuAction = InputActionReturnMenuRef.Object;
+	}
 }
 
 void AWKPlayerController::BeginPlay()
@@ -25,6 +31,19 @@ void AWKPlayerController::BeginPlay()
 
 	BlockPlayerInput(false);
 	ServerCheckMatchState();
+}
+
+void AWKPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	if (InputComponent == nullptr) return;
+
+	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+
+	if (IsValid(EnhancedInputComponent))
+	{
+		EnhancedInputComponent->BindAction(ReturnMenuAction, ETriggerEvent::Triggered, this, &ThisClass::ShowReturnToMainMenu);
+	}
 }
 
 
@@ -204,6 +223,13 @@ void AWKPlayerController::SetHUDAnnounceCountdown(float CountdownTime)
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		WKHUD->SetAnnounceTimerText(CountdownText);
 	}
+}
+
+void AWKPlayerController::ShowReturnToMainMenu()
+{
+	UE_LOG(LogTemp, Log, TEXT("ShowMenu"));
+
+
 }
 
 FString AWKPlayerController::GetWinnerText()

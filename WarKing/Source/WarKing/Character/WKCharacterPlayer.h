@@ -6,6 +6,7 @@
 #include "Character/WKCharacterBase.h"
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "WKCharacterPlayer.generated.h"
 
 /**

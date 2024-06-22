@@ -196,6 +196,28 @@ void AWKCharacterPlayer::SetupGASInputComponent()
 	}	
 }
 
+void AWKCharacterPlayer::InitializeInput()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerController->InputComponent);
+
+		if (EnhancedInputComponent)
+		{
+			InputSubsystem->ClearAllMappings();
+			InputSubsystem->AddMappingContext(DefaultMappingContext, 0);
+
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
+			
+
+			SetupGASInputComponent();
+		}
+	}
+}
+
 void AWKCharacterPlayer::GASInputPressed(int32 InputId)
 {
 	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
@@ -335,27 +357,6 @@ void AWKCharacterPlayer::SetInitEffects()
 		{
 			FActiveGameplayEffectHandle ActiveGEHandle =
 				ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
-		}
-	}
-}
-
-void AWKCharacterPlayer::InitializeInput()
-{
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
-	{
-		UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerController->InputComponent);
-
-		if (EnhancedInputComponent)
-		{
-			InputSubsystem->ClearAllMappings();
-			InputSubsystem->AddMappingContext(DefaultMappingContext, 0);
-
-			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
-			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
-
-			SetupGASInputComponent();
 		}
 	}
 }

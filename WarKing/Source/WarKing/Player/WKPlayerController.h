@@ -25,7 +25,12 @@ public:
 	void OnRespawnState(bool bIsRespawnStart);
 
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> ReturnMenuAction;
+
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 	void HandleMatchHasStarted();
 	void HandleCooldown();
 
@@ -74,6 +79,8 @@ protected:
 	void SetHUDMatchCountdown(float CountdownTime);
 
 	void SetHUDAnnounceCountdown(float Coun);
+
+	void ShowReturnToMainMenu();
 
 	FString GetWinnerText();
 };
