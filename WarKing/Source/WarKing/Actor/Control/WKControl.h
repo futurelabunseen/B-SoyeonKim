@@ -18,15 +18,15 @@ public:
 	virtual void NotifyActorBeginOverlap(class AActor* Other) override;
 	virtual void NotifyActorEndOverlap(class AActor* Other) override;
 
+	UFUNCTION()
+	void OnHUDInitialized(class UWKGameWIdgetController* WidgetController);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void AddToBlueTeamPlayerNum(int Count);
 	void AddToRedTeamPlayerNum(int Count);
-
-	UFUNCTION()
-	void OnHUDInitialized(class UWKGameWIdgetController* WidgetController);
 
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> ASC;

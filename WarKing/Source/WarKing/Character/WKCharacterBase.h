@@ -47,6 +47,8 @@ protected:
 
 	bool isDead = false;
 
+	class UWKAnimInstance* WKAnimInstance;
+
 // HitReact Section
 public:
 	

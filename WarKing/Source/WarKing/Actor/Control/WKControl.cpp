@@ -112,16 +112,6 @@ void AWKControl::BeginPlay()
 	{
 		AttributeSet = WKAttribute;
 	}
-
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController)
-	{
-		AWKHUD* WKHUD = Cast<AWKHUD>(PlayerController->GetHUD());
-		if (WKHUD)
-		{
-			WKHUD->OnHUDInitialized.AddDynamic(this, &AWKControl::OnHUDInitialized);
-		}
-	}
 }
 
 void AWKControl::AddToBlueTeamPlayerNum(int Count)
@@ -145,7 +135,9 @@ void AWKControl::OnHUDInitialized(UWKGameWIdgetController* WidgetController)
 	UWKUserWidget* WKControlWidget = Cast<UWKUserWidget>(ControlWidgetComponent->GetWidget());
 
 	if (WKControlWidget)
+	{
 		WKControlWidget->SetWidgetController(WidgetController);
+	}
 }
 
 

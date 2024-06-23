@@ -57,6 +57,11 @@ bool UWKGA_Skill_FlamingSword::CanActivateAbility(const FGameplayAbilitySpecHand
 		return false;
 	}
 
+	if (TargetCharacter->GetIsFalling())
+	{
+		return false;
+	}
+
 	return true;
 }
 

@@ -227,9 +227,10 @@ void AWKPlayerController::SetHUDAnnounceCountdown(float CountdownTime)
 
 void AWKPlayerController::ShowReturnToMainMenu()
 {
-	UE_LOG(LogTemp, Log, TEXT("ShowMenu"));
-
-
+	if (WKHUD)
+	{
+		WKHUD->SetReturnMenuOverlayVisibleToggle();
+	}
 }
 
 FString AWKPlayerController::GetWinnerText()
@@ -266,6 +267,7 @@ void AWKPlayerController::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttr
 	if (WKHUD)
 	{
 		WKHUD->InitOverlay(Player_ASC, Player_AS, Game_ASC, Game_AS);
+		WKHUD->AddReturnToMenu();
 	}
 }
 

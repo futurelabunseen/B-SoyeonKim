@@ -6,6 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystemComponent.h"
+#include "Animation/WKAnimInstance.h"
 #include "WarKing.h"
 #include "Tag/WKGameplayTag.h"
 
@@ -54,6 +55,11 @@ bool UWKGA_Skill::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 	}
 
 	if (TargetCharacter->HasGameplayTag(CooldownTag))
+	{
+		return false;
+	}
+
+	if (TargetCharacter->GetIsFalling())
 	{
 		return false;
 	}

@@ -371,6 +371,17 @@ void AWKCharacterPlayer::SetPlayerDefaults()
 	}
 }
 
+bool AWKCharacterPlayer::GetIsFalling()
+{
+	UCharacterMovementComponent* Movement = GetCharacterMovement();
+	if (Movement)
+	{
+		return Movement->IsFalling();
+	}
+
+	return false;
+}
+
 bool AWKCharacterPlayer::HasGameplayTag(FGameplayTag Tag) const
 {
 	if (IsValid(ASC))

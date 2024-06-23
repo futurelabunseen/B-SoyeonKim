@@ -3,13 +3,29 @@
 
 #include "UI/WKHUD.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
+#include "Actor/Control/WKControl.h"
 #include "UI/Widget/WKUserOverlayWidget.h"
 #include "UI/Widget/WKUserWidget.h"
 #include "UI/Widget/WKAnnouncementOverlayWidget.h"
 #include "UI/Widget/WKReturnMenuWidget.h"
 #include "UI/WidgetController/WKOverlayWidgetController.h"
 #include "UI/WidgetController/WKGameWIdgetController.h"
+
+void AWKHUD::BeginPlay()
+{
+	TArray<AActor*> WKControls;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWKControl::StaticClass(), WKControls);
+	if (WKControls.Num() > 0)
+	{
+		AWKControl* WKControl = Cast<AWKControl>(WKControls[0]);
+		if (WKControl)
+		{
+			OnHUDInitialized.AddDynamic(WKControl, &AWKControl::OnHUDInitialized);
+		}
+	}
+}
 
 UWKOverlayWidgetController* AWKHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
 {
@@ -53,8 +69,9 @@ void AWKHUD::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Pla
 	OverlayWidget->SetGameWidgetController(GameWidgetController);
 	GameWidgetController->BroadcastInitialValues();
 
-	// TODO : Control ÃÊ±âÈ­ ¾ÈµÊ ¤Ð 
+	// Control Init Delegate
 	OnHUDInitialized.Broadcast(GameWidgetController);
+
 
 	Widget->AddToViewport();
 }
@@ -64,6 +81,17 @@ void AWKHUD::SetTimerText(FString CountdownText)
 	if (OverlayWidget)
 	{
 		OverlayWidget->Timer->SetText(FText::FromString(CountdownText));
+	}
+}
+
+void AWKHUD::AddReturnToMenu()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && ReturnMenuWidgetClass)
+	{
+		ReturnMenuWidget = CreateWidget<UWKReturnMenuWidget>(PlayerController, ReturnMenuWidgetClass);
+		ReturnMenuWidget->SetVisibility(ESlateVisibility::Hidden);
+		ReturnMenuWidget->AddToViewport();
 	}
 }
 
@@ -106,5 +134,20 @@ void AWKHUD::SetGameOverlayVisible(ESlateVisibility Visibility)
 	if (OverlayWidget)
 	{
 		OverlayWidget->SetVisibility(Visibility);
+	}
+}
+
+void AWKHUD::SetReturnMenuOverlayVisibleToggle()
+{
+	if (ReturnMenuWidget)
+	{
+		if (ReturnMenuWidget->Visibility == ESlateVisibility::Visible)
+		{
+			ReturnMenuWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+		else
+		{
+			ReturnMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 }

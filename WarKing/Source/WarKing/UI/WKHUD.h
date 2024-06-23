@@ -29,6 +29,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnHUDInitialized OnHUDInitialized;
 
+	virtual void BeginPlay() override;
+
 	UWKOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 	UWKGameWIdgetController* GetGameOverlayWidgetController(const FWidgetControllerParams& WCParams);
 
@@ -37,10 +39,12 @@ public:
 
 	void SetTimerText(FString CountdownText);
 	void AddAnnouncement();
+	void AddReturnToMenu();
 	void SetAnnounceText(FString AnnounceText);
 	void SetAnnounceTimerText(FString CountdownText);
 	void SetAnnounceWidgetVisible(ESlateVisibility Visibility);
 	void SetGameOverlayVisible(ESlateVisibility Visibility);
+	void SetReturnMenuOverlayVisibleToggle();
 
 	UPROPERTY()
 	TObjectPtr<UWKAnnouncementOverlayWidget> AnnounceWidget;
@@ -72,5 +76,4 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UWKReturnMenuWidget> ReturnMenuWidgetClass;
-
 };
