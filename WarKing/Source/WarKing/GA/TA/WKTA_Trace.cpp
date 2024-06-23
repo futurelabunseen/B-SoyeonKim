@@ -58,7 +58,7 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 #pragma endregion
 
 	FHitResult OutHitResult;
-	// TODO: 후에 Attribute로 옮길 예정
+
 	const float AttackRange = AttributeSet->GetAttackRange();
 	const float AttackRadius = AttributeSet->GetAttackRadius();
 

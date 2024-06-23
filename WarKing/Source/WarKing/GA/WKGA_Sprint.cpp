@@ -21,7 +21,11 @@ void UWKGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 		if (TargetCharacter->GetIsMoving())
 		{
-			CommitAbility(Handle, ActorInfo, ActivationInfo);
+			if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+			{
+				EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+				return;
+			}
 		}
 		else
 		{

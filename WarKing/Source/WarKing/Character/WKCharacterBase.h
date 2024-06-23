@@ -45,9 +45,6 @@ protected:
 	UPROPERTY()
 	class AWKGASPlayerState* WKPlayerState;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<class UGameplayEffect> HitEffect;
-
 	bool isDead = false;
 
 // HitReact Section

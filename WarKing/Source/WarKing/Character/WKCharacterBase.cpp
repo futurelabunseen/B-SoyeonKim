@@ -168,23 +168,5 @@ void AWKCharacterBase::SetStun(bool IsStun)
 	if (AnimInstance)
 	{
 		AnimInstance->SetStun(IsStun);
-
-		if (IsStun)
-		{
-			GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-		}
-		else
-		{
-			GetWorldTimerManager().SetTimer(StunTimer, FTimerDelegate::CreateLambda(
-				[this]()->void
-				{
-					if (!isDead)
-					{
-						// Daad상태 추가
-						GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-					}	
-				}
-			), StunCooldownTime, false);
-		}
 	}
 }

@@ -38,14 +38,14 @@ void UWKGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 
     // 어빌리티 취소 코드
     FGameplayTagContainer AbilityTagsToCancel;
-    AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.Action")));
-    AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.State.IsJumping")));
+    AbilityTagsToCancel.AddTag(WKTAG_CHARACTER_ACTION_ATTACK);
+    AbilityTagsToCancel.AddTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD);
+    AbilityTagsToCancel.AddTag(WKTAG_CHARACTER_STATE_ISJUMPING);
 
     FGameplayTagContainer AbilityTagsToIgnore;
-    AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.Action.HitReact")));
-    ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
+    AbilityTagsToIgnore.AddTag(WKTAG_CHARACTER_ACTION_HITREACT);
 
-    UE_LOG(LogTemp, Log, TEXT("EventTag : %s , %s"), *TriggerEventData->EventTag.ToString(), *HitDirect);
+    ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
 }
 
 void UWKGA_HitReact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

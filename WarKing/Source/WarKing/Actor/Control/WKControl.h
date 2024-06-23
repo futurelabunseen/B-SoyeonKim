@@ -25,6 +25,9 @@ protected:
 	void AddToBlueTeamPlayerNum(int Count);
 	void AddToRedTeamPlayerNum(int Count);
 
+	UFUNCTION()
+	void OnHUDInitialized(class UWKGameWIdgetController* WidgetController);
+
 	UPROPERTY()
 	TObjectPtr<class UAbilitySystemComponent> ASC;
 

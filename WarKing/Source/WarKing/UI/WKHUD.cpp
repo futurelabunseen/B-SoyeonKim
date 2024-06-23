@@ -7,6 +7,7 @@
 #include "UI/Widget/WKUserOverlayWidget.h"
 #include "UI/Widget/WKUserWidget.h"
 #include "UI/Widget/WKAnnouncementOverlayWidget.h"
+#include "UI/Widget/WKReturnMenuWidget.h"
 #include "UI/WidgetController/WKOverlayWidgetController.h"
 #include "UI/WidgetController/WKGameWIdgetController.h"
 
@@ -49,21 +50,13 @@ void AWKHUD::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Pla
 	const FWidgetControllerParams GameWidgetControllerParams(Game_ASC, Game_AS);
 	UWKGameWIdgetController* GameWidgetController = GetGameOverlayWidgetController(GameWidgetControllerParams);
 
-	if (ControlWidget)
-	{
-		ControlWidget->SetWidgetController(GameWidgetController);
-	}
 	OverlayWidget->SetGameWidgetController(GameWidgetController);
 	GameWidgetController->BroadcastInitialValues();
 
-
+	// TODO : Control ÃÊ±âÈ­ ¾ÈµÊ ¤Ð 
+	OnHUDInitialized.Broadcast(GameWidgetController);
 
 	Widget->AddToViewport();
-}
-
-void AWKHUD::SetControlWidget(UWKUserWidget* InGameControlWidget)
-{
-	ControlWidget = InGameControlWidget;
 }
 
 void AWKHUD::SetTimerText(FString CountdownText)

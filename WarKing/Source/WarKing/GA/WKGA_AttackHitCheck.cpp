@@ -15,8 +15,6 @@
 
 UWKGA_AttackHitCheck::UWKGA_AttackHitCheck()
 {
-
-	// TOOD : 블루프린트에서 연결하는게 왜 nullptr로 잡히는지.. 체크하기
 	static ConstructorHelpers::FClassFinder<UGameplayEffect> StunEffectClassRef(TEXT("/Game/WarKing/Blueprint/GE/BPGE_Stun.BPGE_Stun_C"));
 
 	if (StunEffectClassRef.Class)
@@ -78,7 +76,9 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 					}	
 				}
 
-				if (!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+				if (!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD) &&
+					!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_AOE) &&
+					!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD))
 				{
 					// HitReact
 					AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(HitResult.GetActor());

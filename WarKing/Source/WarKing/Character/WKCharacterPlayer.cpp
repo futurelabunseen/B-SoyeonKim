@@ -212,7 +212,6 @@ void AWKCharacterPlayer::InitializeInput()
 			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 			EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 			
-
 			SetupGASInputComponent();
 		}
 	}
@@ -488,14 +487,6 @@ void AWKCharacterPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32 Ne
 		// Muticast RPC 호출
 		MulticastSetStun(bIsCheckStun);
 		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("StunTagChanged"));
-		// Server 수행
-		SetStun(bIsCheckStun);
-
-		if (bIsCheckStun)
-		{
-			// 어빌리티 취소 코드
-			CancelAbilities();
-		}
 	}
 }
 
@@ -507,8 +498,15 @@ void AWKCharacterPlayer::CancelAbilities()
 
 	FGameplayTagContainer AbilityTagsToIgnore;
 	AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.State.IsDead")));
+	//AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.AOE")));
 
 	ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
+
+	if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD))
+	{
+		ASC->RemoveLooseGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD);
+		ASC->RemoveReplicatedLooseGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD);
+	}
 }
 
 void AWKCharacterPlayer::RemoveAttackTag()
@@ -529,12 +527,34 @@ void AWKCharacterPlayer::RemoveAttackTag()
 
 void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 {
-	// Server 외
-	if (!HasAuthority())
+	// Server 수행
+	SetStun(bIsStun);
+
+	if (bIsStun)
 	{
-		WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("MulticastSetStun_Implementation"));
-			
-		SetStun(bIsStun);
+		CancelAbilities();
+		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+		if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN))
+		{
+			ASC->AddLooseGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN);
+		}
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(StunTimer, FTimerDelegate::CreateLambda(
+			[this]()->void
+			{
+				if (!isDead)
+				{
+					// Daad상태 추가
+					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+					if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN))
+					{
+						ASC->RemoveLooseGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN);
+					}
+				}
+			}
+		), StunCooldownTime, false);
 	}
 }
 

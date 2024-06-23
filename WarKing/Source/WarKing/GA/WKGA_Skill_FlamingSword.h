@@ -19,6 +19,7 @@ class WARKING_API UWKGA_Skill_FlamingSword : public UWKGameplayAbility
 
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
@@ -35,8 +36,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TObjectPtr<class UAnimMontage> ActiveSkillActionMontage;
 
+	UPROPERTY(EditAnywhere)
+	struct FGameplayTag ActivateActionTag;
+
 	UPROPERTY()
 	FTimerHandle AbilityEndTimer;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTag CooldownTag;
+
+	class UAbilitySystemComponent* ASC;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AbilityEndTimeRate = 6.0f;

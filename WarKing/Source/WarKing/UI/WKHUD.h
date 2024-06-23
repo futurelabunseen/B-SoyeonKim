@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "WidgetController/WKGameWIdgetController.h"
 #include "WKHUD.generated.h"
 
 class UWKOverlayWidgetController;
@@ -11,9 +12,11 @@ class UAttributeSet;
 class UAbilitySystemComponent;
 class UWKUserOverlayWidget;
 class UWKAnnouncementOverlayWidget;
-class UWKGameWIdgetController;
 class UWKUserWidget;
 struct FWidgetControllerParams;
+class UWKReturnMenuWidget;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHUDInitialized, UWKGameWIdgetController*, WidgetController);
 /**
  * 
  */
@@ -23,13 +26,14 @@ class WARKING_API AWKHUD : public AHUD
 	GENERATED_BODY()
 public:
 
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnHUDInitialized OnHUDInitialized;
+
 	UWKOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 	UWKGameWIdgetController* GetGameOverlayWidgetController(const FWidgetControllerParams& WCParams);
 
 	void InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Player_AS,
 		UAbilitySystemComponent* Game_ASC, UAttributeSet* Game_AS);	
-
-	void SetControlWidget(UWKUserWidget* InGameControlWidget);
 
 	void SetTimerText(FString CountdownText);
 	void AddAnnouncement();
@@ -63,6 +67,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UWKGameWIdgetController> GameOverlayWidgetControllerClass;
 
-	UPROPERTY(EditAnywhere, Category = Widget)
-	TObjectPtr<UWKUserWidget> ControlWidget;
+	UPROPERTY()
+	TObjectPtr<UWKReturnMenuWidget> ReturnMenuWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UWKReturnMenuWidget> ReturnMenuWidgetClass;
+
 };

@@ -53,7 +53,4 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> ComboAttackMontage;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FGameplayTag> CancelTags;
 };

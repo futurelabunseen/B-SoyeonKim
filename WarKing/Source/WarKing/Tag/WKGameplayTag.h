@@ -23,10 +23,11 @@
 
 // Character State
 #define WKTAG_CHARACTER_STATE_ISDEAD FGameplayTag::RequestGameplayTag(FName("Character.State.IsDead"))
+#define WKTAG_CHARACTER_STATE_ISJUMPING FGameplayTag::RequestGameplayTag(FName("Character.State.IsJumping"))
 #define WKTAG_CHARACTER_STATE_INVISIBLE FGameplayTag::RequestGameplayTag(FName("Character.State.Invisible"))
 #define WKTAG_CHARACTER_STATE_ISFLAMING FGameplayTag::RequestGameplayTag(FName("Character.State.IsFlaming"))
 #define WKTAG_CHARACTER_STATE_DEBUFF_STUN FGameplayTag::RequestGameplayTag(FName("Character.State.Debuff.Stun"))
-
+#define WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN FGameplayTag::RequestGameplayTag(FName("Character.State.Debuff.StunCooldown"))
 
 // GameplayCue
 #define WKTAG_GC_CHARACTER_ATTACKHIT FGameplayTag::RequestGameplayTag(FName("GameplayCue.Character.AttackHit"))

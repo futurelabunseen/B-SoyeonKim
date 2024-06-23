@@ -119,9 +119,7 @@ void AWKControl::BeginPlay()
 		AWKHUD* WKHUD = Cast<AWKHUD>(PlayerController->GetHUD());
 		if (WKHUD)
 		{
-			UWKUserWidget* WKControlWidget = Cast<UWKUserWidget>(ControlWidgetComponent->GetWidget());
-			if(WKControlWidget)
-				WKHUD->SetControlWidget(WKControlWidget);
+			WKHUD->OnHUDInitialized.AddDynamic(this, &AWKControl::OnHUDInitialized);
 		}
 	}
 }
@@ -140,6 +138,14 @@ void AWKControl::AddToRedTeamPlayerNum(int Count)
 
 	// Count -> 양수면 Add, 음수면 Loose
 	ASC->UpdateTagMap(WKTAG_GAME_CONTROL_REDTEAMPLAYER, Count);
+}
+
+void AWKControl::OnHUDInitialized(UWKGameWIdgetController* WidgetController)
+{
+	UWKUserWidget* WKControlWidget = Cast<UWKUserWidget>(ControlWidgetComponent->GetWidget());
+
+	if (WKControlWidget)
+		WKControlWidget->SetWidgetController(WidgetController);
 }
 
 

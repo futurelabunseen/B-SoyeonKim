@@ -30,9 +30,6 @@ protected:
     
     FString RemoveParentTag(const FGameplayTag& FullTag, const FGameplayTag& ParentTag);
 
-    UPROPERTY(EditAnywhere, Category = "GAS")
-    TSubclassOf<class UGameplayEffect> HitEffect;
-
 protected:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	TObjectPtr<class UAnimMontage> ActiveHitReactMontage;
