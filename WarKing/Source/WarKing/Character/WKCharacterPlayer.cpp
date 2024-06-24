@@ -382,6 +382,10 @@ bool AWKCharacterPlayer::GetIsFalling()
 	return false;
 }
 
+void AWKCharacterPlayer::ServerLeaveGame_Implementation()
+{
+}
+
 bool AWKCharacterPlayer::HasGameplayTag(FGameplayTag Tag) const
 {
 	if (IsValid(ASC))

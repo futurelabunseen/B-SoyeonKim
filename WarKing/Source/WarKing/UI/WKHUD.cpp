@@ -137,17 +137,11 @@ void AWKHUD::SetGameOverlayVisible(ESlateVisibility Visibility)
 	}
 }
 
-void AWKHUD::SetReturnMenuOverlayVisibleToggle()
+void AWKHUD::SetReturnMenuOverlayVisible(ESlateVisibility Visibility)
 {
 	if (ReturnMenuWidget)
 	{
-		if (ReturnMenuWidget->Visibility == ESlateVisibility::Visible)
-		{
-			ReturnMenuWidget->SetVisibility(ESlateVisibility::Hidden);
-		}
-		else
-		{
-			ReturnMenuWidget->SetVisibility(ESlateVisibility::Visible);
-		}
+		ReturnMenuWidget->SetVisibility(Visibility);
 	}
 }
+

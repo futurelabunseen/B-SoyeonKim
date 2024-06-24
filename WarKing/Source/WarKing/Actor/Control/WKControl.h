@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "AbilitySystemInterface.h"
 #include "WKControl.generated.h"
 
 UCLASS()

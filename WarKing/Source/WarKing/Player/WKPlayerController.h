@@ -69,6 +69,7 @@ protected:
 	void BlockPlayerInput(bool bBlock);
 
 	uint32 SecondsLeft;
+	bool bShowMenu = false;
 
 // HUD Section
 protected:

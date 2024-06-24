@@ -44,7 +44,7 @@ public:
 	void SetAnnounceTimerText(FString CountdownText);
 	void SetAnnounceWidgetVisible(ESlateVisibility Visibility);
 	void SetGameOverlayVisible(ESlateVisibility Visibility);
-	void SetReturnMenuOverlayVisibleToggle();
+	void SetReturnMenuOverlayVisible(ESlateVisibility Visibility);
 
 	UPROPERTY()
 	TObjectPtr<UWKAnnouncementOverlayWidget> AnnounceWidget;

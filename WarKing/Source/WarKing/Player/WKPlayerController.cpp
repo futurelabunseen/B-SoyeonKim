@@ -229,7 +229,19 @@ void AWKPlayerController::ShowReturnToMainMenu()
 {
 	if (WKHUD)
 	{
-		WKHUD->SetReturnMenuOverlayVisibleToggle();
+		if (!bShowMenu)
+		{
+			SetInputMode(FInputModeGameAndUI());
+			SetShowMouseCursor(true);
+			WKHUD->SetReturnMenuOverlayVisible(ESlateVisibility::Visible);
+		}
+		else
+		{
+			SetInputMode(FInputModeGameOnly());
+			SetShowMouseCursor(false);
+			WKHUD->SetReturnMenuOverlayVisible(ESlateVisibility::Hidden);
+		}
+		bShowMenu = !bShowMenu;
 	}
 }
 

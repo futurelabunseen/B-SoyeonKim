@@ -52,8 +52,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void HealthChanged(const FOnAttributeChangeData& Data);
-	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
+	virtual void HealthChanged(const struct FOnAttributeChangeData& Data);
+	virtual void MaxHealthChanged(const struct FOnAttributeChangeData& Data);
 
 	UFUNCTION()
 	void OnRep_Team();

@@ -62,6 +62,11 @@ public:
 
 	bool GetIsFalling();
 
+	
+
+	UFUNCTION(Server, Reliable)
+	void ServerLeaveGame();
+
 // Camera Section
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))

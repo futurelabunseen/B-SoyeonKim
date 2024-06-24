@@ -49,7 +49,7 @@ protected:
 	FDelegateHandle HealthChangedDelegateHandle;
 
 	// Attribute changed callbacks
-	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+	virtual void HealthChanged(const struct FOnAttributeChangeData& Data);
 
 	// Tag change callbacks
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
@@ -58,7 +58,7 @@ protected:
 protected:
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSetStun(bool	 bIsStun);
+	void MulticastSetStun(bool bIsStun);
 
 	void MulticastSetStun_Implementation(bool bIsStun);
 };
