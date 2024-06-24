@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
 #include "WKGameMode.generated.h"
-
 namespace MatchState
 {
 	extern WARKING_API const FName Cooldown;
@@ -33,7 +32,11 @@ private:
 	virtual void OnMatchStateSet() override;
 	virtual void SetPlayerDefaults(APawn* PlayerPawn) override;
 
+	void DesytoySession();
 	void SetTeam(APlayerState* WKPlayerState);
+
+	UFUNCTION()
+	void OnSetWinnerTeam();
 
 	UPROPERTY(EditDefaultsOnly)
 	float WarmupTime = 10.f;
@@ -52,6 +55,7 @@ public:
 
 private:
 	float CountdownTime = 0.f;
+	class AWKGameState* WKGameState;
 public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
 	FORCEINLINE float GetMatchTime() const { return MatchTime; }

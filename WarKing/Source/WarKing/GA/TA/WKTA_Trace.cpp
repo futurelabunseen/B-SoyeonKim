@@ -69,7 +69,18 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 	const FVector Start = SourceCharacter->GetActorLocation() + Forward * SourceCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	const FVector End = Start + Forward * AttackRange;
 
-	bool HitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, CCHANNEL_WKACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
+	FRotator CharacterRotation = SourceCharacter->GetActorRotation();
+	FQuat Rotation = FQuat(CharacterRotation + FRotator(0.f, 0.f, 90.f));
+
+	bool HitDetected = GetWorld()->SweepSingleByChannel(
+		OutHitResult,
+		Start,
+		End,
+		Rotation,
+		CCHANNEL_WKACTION,
+		FCollisionShape::MakeCapsule(AttackRadius, AttackRange),
+		Params
+	);
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 
@@ -77,9 +88,17 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 	if (bShowDebug)
 	{
 		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
-		float CapsuleHalfHeight = AttackRange * 0.5f;
 		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
-		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
+		
+		DrawDebugCapsule(GetWorld(),
+			CapsuleOrigin, 
+			AttackRange,
+			AttackRadius, 
+			Rotation,
+			DrawColor,
+			false,
+			5.0f
+		);
 	}
 #endif
 
@@ -92,7 +111,7 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 		{
 			if (SourceCharacter->GetTeam() != TargetCharacter->GetTeam() || TargetCharacter->GetTeam() == WKTAG_GAME_TEAM_NONE)
 			{
-				// HitResilt를 넣어주면 시작지점과 끝 지점에 대한 것을 굳이 따로 설정하지 않아도 알아서 지정해준다.
+				// HitResult를 넣어주면 시작지점과 끝 지점에 대한 것을 굳이 따로 설정하지 않아도 알아서 지정해준다.
 				FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(OutHitResult);
 				DataHandle.Add(TargetData);
 			}

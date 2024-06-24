@@ -62,11 +62,25 @@ void UWKGameAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 	//TODO : 거점 점령 점수 달성한 팀 Win 처리
 	if (Data.EvaluatedData.Attribute == GetControlScoreBlueAttribute())
 	{
-		SetControlScoreBlue(FMath::Clamp(GetControlScoreBlue(), 0.0f, GetMaxControlScore()));
+		float CurrBlueControlScore = GetControlScoreBlue();
+		float CurrMaxControlScore = GetMaxControlScore();
+		SetControlScoreBlue(FMath::Clamp(CurrBlueControlScore, 0.0f, CurrMaxControlScore));
+
+		if (CurrBlueControlScore >= CurrMaxControlScore)
+		{
+			OnWinnerTeam.Broadcast();
+		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetControlScoreRedAttribute())
 	{
-		SetControlScoreRed(FMath::Clamp(GetControlScoreRed(), 0.0f, GetMaxControlScore()));
+		float CurrRedControlScore = GetControlScoreRed();
+		float CurrMaxControlScore = GetMaxControlScore();
+		SetControlScoreRed(FMath::Clamp(CurrRedControlScore, 0.0f, CurrMaxControlScore));
+
+		if (CurrRedControlScore >= CurrMaxControlScore)
+		{
+			OnWinnerTeam.Broadcast();
+		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetControlGaugeBlueAttribute())
 	{

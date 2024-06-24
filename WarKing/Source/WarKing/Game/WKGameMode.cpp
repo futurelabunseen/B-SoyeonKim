@@ -12,6 +12,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Tag/WKGameplayTag.h"
 #include "GameFramework/Character.h"
+#include "Attribute/WKGameAttributeSet.h"
+#include "MultiplayerSessionsSubsystem.h"
 #include "GameFramework/PlayerStart.h"
 
 namespace MatchState
@@ -28,6 +30,7 @@ void AWKGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
+	WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
 }
 
 void AWKGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
@@ -89,7 +92,16 @@ void AWKGameMode::StartPlay()
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));
 
 	Super::StartPlay();
-
+	
+	if (WKGameState)
+	{
+		UAttributeSet* AttributeSet = WKGameState->GetAttributeSet();
+		if (AttributeSet)
+		{
+			UWKGameAttributeSet* WKAttributeSet = Cast<UWKGameAttributeSet>(AttributeSet);
+			WKAttributeSet->OnWinnerTeam.AddDynamic(this, &AWKGameMode::OnSetWinnerTeam);
+		}
+	}
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
@@ -119,16 +131,16 @@ void AWKGameMode::Tick(float DeltaTime)
 		CountdownTime = CooldownTime + WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
 		if (CountdownTime <= 0.f)
 		{
-			RestartGame();
+			DesytoySession();
+			//RestartGame();
 		}
 	}
 }
 
 void AWKGameMode::Logout(AController* Exiting)
 {
-	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
 	AWKGASPlayerState* WKPlayerState = Exiting->GetPlayerState<AWKGASPlayerState>();
-
+	WKGameState = WKGameState == nullptr ? Cast<AWKGameState>(UGameplayStatics::GetGameState(this)) : WKGameState;
 	if (WKGameState && WKPlayerState)
 	{
 		if (WKGameState->RedTeam.Contains(WKPlayerState))
@@ -161,8 +173,8 @@ void AWKGameMode::OnMatchStateSet()
 		}
 	}
 
-	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
-	
+	WKGameState = WKGameState == nullptr ? Cast<AWKGameState>(UGameplayStatics::GetGameState(this)) : WKGameState;
+
 	if (WKGameState)
 	{
 		UAbilitySystemComponent* PSASC = WKGameState->GetAbilitySystemComponent();
@@ -195,10 +207,22 @@ void AWKGameMode::SetPlayerDefaults(APawn* PlayerPawn)
 	}
 }
 
+void AWKGameMode::DesytoySession()
+{
+	UGameInstance* GameInstance = GetGameInstance();
+	if (GameInstance)
+	{
+		UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+		if (MultiplayerSessionsSubsystem)
+		{
+			MultiplayerSessionsSubsystem->DestroySession();
+		}
+	}
+}
+
 void AWKGameMode::SetTeam(APlayerState* NewPlayerState)
-{	
-	//Team Setting
-	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
+{
+	WKGameState = WKGameState == nullptr ? Cast<AWKGameState>(UGameplayStatics::GetGameState(this)) : WKGameState;
 	if (WKGameState)
 	{
 		AWKGASPlayerState* WKPlayerState = Cast<AWKGASPlayerState>(NewPlayerState);
@@ -216,6 +240,12 @@ void AWKGameMode::SetTeam(APlayerState* NewPlayerState)
 			}
 		}
 	}
+}
+
+void AWKGameMode::OnSetWinnerTeam()
+{
+	MatchTime -= CountdownTime;
+	SetMatchState(MatchState::Cooldown);
 }
 
 void AWKGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)
@@ -238,8 +268,7 @@ void AWKGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* Elim
 void AWKGameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
-
-	AWKGameState* WKGameState = Cast<AWKGameState>(UGameplayStatics::GetGameState(this));
+	WKGameState = WKGameState == nullptr ? Cast<AWKGameState>(UGameplayStatics::GetGameState(this)) : WKGameState;
 	if (WKGameState)
 	{
 		for (auto PState : WKGameState->PlayerArray)
