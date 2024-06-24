@@ -21,7 +21,8 @@ public:
 	int32 GameStartPlayerNum = 2;
 
 	UPROPERTY(EditAnywhere)
-	float TraverlTime = 3.0f;
+	float TraverlTime = 5.0f;
+	float LevelStartingTime = 0.f;
 
 	UPROPERTY()
 	class AWKLobbyPlayerController* LocalPlayerController;
@@ -30,6 +31,7 @@ public:
 
 private:
 	void ServerTravelGameLevel();
+	void Countdown();
 
 	FTimerHandle TravelTimer;
 };

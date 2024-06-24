@@ -56,9 +56,6 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 	}
 
 #pragma endregion
-
-	FHitResult OutHitResult;
-
 	const float AttackRange = AttributeSet->GetAttackRange();
 	const float AttackRadius = AttributeSet->GetAttackRadius();
 
@@ -71,9 +68,10 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 
 	FRotator CharacterRotation = SourceCharacter->GetActorRotation();
 	FQuat Rotation = FQuat(CharacterRotation + FRotator(0.f, 0.f, 90.f));
+	TArray<FHitResult> OutHitResults;
 
-	bool HitDetected = GetWorld()->SweepSingleByChannel(
-		OutHitResult,
+	bool HitDetected = GetWorld()->SweepMultiByChannel(
+		OutHitResults,
 		Start,
 		End,
 		Rotation,
@@ -84,38 +82,42 @@ FGameplayAbilityTargetDataHandle AWKTA_Trace::MakeTargetData() const
 
 	FGameplayAbilityTargetDataHandle DataHandle;
 
-#if ENABLE_DRAW_DEBUG
-	if (bShowDebug)
-	{
-		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
-		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
-		
-		DrawDebugCapsule(GetWorld(),
-			CapsuleOrigin, 
-			AttackRange,
-			AttackRadius, 
-			Rotation,
-			DrawColor,
-			false,
-			5.0f
-		);
-	}
-#endif
+//#if ENABLE_DRAW_DEBUG
+//	if (bShowDebug)
+//	{
+//		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
+//		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+//		
+//		DrawDebugCapsule(GetWorld(),
+//			CapsuleOrigin, 
+//			AttackRange,
+//			AttackRadius, 
+//			Rotation,
+//			DrawColor,
+//			false,
+//			5.0f
+//		);
+//	}
+//#endif
 
 	// 맞았을 때
 	if (HitDetected)
 	{
-		AWKCharacterBase* TargetCharacter = CastChecked<AWKCharacterBase>(OutHitResult.GetActor());
-
-		if (TargetCharacter)
+		for (const FHitResult& OutHitResult : OutHitResults)
 		{
-			if (SourceCharacter->GetTeam() != TargetCharacter->GetTeam() || TargetCharacter->GetTeam() == WKTAG_GAME_TEAM_NONE)
+			AWKCharacterBase* TargetCharacter = CastChecked<AWKCharacterBase>(OutHitResult.GetActor());
+
+			if (TargetCharacter)
 			{
-				// HitResult를 넣어주면 시작지점과 끝 지점에 대한 것을 굳이 따로 설정하지 않아도 알아서 지정해준다.
-				FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(OutHitResult);
-				DataHandle.Add(TargetData);
+				if (SourceCharacter->GetTeam() != TargetCharacter->GetTeam() || TargetCharacter->GetTeam() == WKTAG_GAME_TEAM_NONE)
+				{
+					// HitResult를 넣어주면 시작지점과 끝 지점에 대한 것을 굳이 따로 설정하지 않아도 알아서 지정해준다.
+	 
+					FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(OutHitResult);
+					DataHandle.Add(TargetData);
+				}
 			}
-		}
+		}	
 	}
 
 	return DataHandle;

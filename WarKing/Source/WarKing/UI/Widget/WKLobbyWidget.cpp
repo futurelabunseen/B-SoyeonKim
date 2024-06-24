@@ -11,34 +11,23 @@
 
 UWKLobbyWidget::UWKLobbyWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	//static ConstructorHelpers::FClassFinder<UObject> ListElementRef(TEXT("/Game/WarKing/UI/PlayerInfo/WKBP_PlayerInfo_C"));
 
-	//if (ListElementRef.Class)
-	//{
-	//	ListElementClass = ListElementRef.Class;
-	//}
+}
+
+void UWKLobbyWidget::SetStartBt()
+{
+	if (StartBt)
+	{
+		StartBt->SetVisibility(ESlateVisibility::Visible);
+		StartBt->OnClicked.AddDynamic(this, &UWKLobbyWidget::OnStartBtClicked);
+	}
 }
 
 void UWKLobbyWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (StartBt)
-	{
-		StartBt->OnClicked.AddDynamic(this, &UWKLobbyWidget::OnStartBtClicked);
-	}
-}
 
-void UWKLobbyWidget::AddToPlayerInfoListView(UObject* ListElementObject)
-{
-	//if (PlayerInfoList)
-	//{
-	//	//UWKPlayerInfoWidget* NewElement = NewObject<UWKPlayerInfoWidget>(this, ListElementClass);
-	//	//
-	//	//NewElement->NickNameText->SetText(FText::FromString(PlayerName));
-
-	//	PlayerInfoList->AddItem(ListElementObject);
-	//}
 }
 
 void UWKLobbyWidget::OnStartBtClicked()

@@ -13,7 +13,7 @@ void UWKGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(ActorInfo->AvatarActor.Get());
+	TargetCharacter = Cast<AWKCharacterPlayer>(ActorInfo->AvatarActor.Get());
 
 	if (TargetCharacter)
 	{
@@ -48,22 +48,24 @@ void UWKGA_Sprint::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 
 void UWKGA_Sprint::ServerSetStopSprint_Implementation()
 {
+	CancelCost();
 	StopSrpint();
 }
 
 void UWKGA_Sprint::EndSprintAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	ServerSetStopSprint();
+
 	StopSrpint();
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 
 void UWKGA_Sprint::StopSrpint()
 {
-	AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(GetActorInfo().AvatarActor.Get());
+	TargetCharacter = Cast<AWKCharacterPlayer>(GetActorInfo().AvatarActor.Get());
 	if (TargetCharacter)
 	{
-		CancelCost();
+		//CancelCost();
 		TargetCharacter->Sprint(false);
 	}
 }

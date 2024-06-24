@@ -16,13 +16,25 @@ class WARKING_API AWKLobbyPlayerController : public APlayerController
 	
 public:
 	AWKLobbyPlayerController();
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void OnLobbyStart();
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class AWKLobbyHUD> WKLobbyHUD;
 
-protected:
+	UPROPERTY(ReplicatedUsing = OnRep_GameTime)
+	uint32 GameTime;
 
+	UPROPERTY(ReplicatedUsing = OnRep_IsStartCount)
+	uint32 bIsStartCount = 0;
+
+
+	UFUNCTION()
+	void OnRep_GameTime();
+protected:
 	virtual void BeginPlay() override;
+
+
+	UFUNCTION()
+	void OnRep_IsStartCount();
 };

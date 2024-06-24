@@ -19,10 +19,10 @@ public:
 	AWKLobbyHUD();
 
 	void InitOverlay();
+	void SetTimerText(FString TimerText);
+	void SetTimerVisible(ESlateVisibility Visible);
 
-	void AddPlayerInfo(UObject* ListElementObject);
 private:
-
 	UPROPERTY()
 	TObjectPtr<UWKLobbyWidget> LobbyOverlayWidget;
 

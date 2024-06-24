@@ -57,16 +57,16 @@ FGameplayAbilityTargetDataHandle AWKTA_SphereMultiTrace::MakeTargetData() const
 
 	FGameplayAbilityTargetData_ActorArray* ActorsData = new FGameplayAbilityTargetData_ActorArray();
 	ActorsData->SetActors(HitActors);
-
-#if ENABLE_DRAW_DEBUG
-
-	if (bShowDebug)
-	{
-		FColor DrawColor = HitActors.Num() > 0 ? FColor::Green : FColor::Red;
-		DrawDebugSphere(GetWorld(), Origin, SkillRadius, 16, DrawColor, false, 5.0f);
-	}
-
-#endif
+//
+//#if ENABLE_DRAW_DEBUG
+//
+//	if (bShowDebug)
+//	{
+//		FColor DrawColor = HitActors.Num() > 0 ? FColor::Green : FColor::Red;
+//		DrawDebugSphere(GetWorld(), Origin, SkillRadius, 16, DrawColor, false, 5.0f);
+//	}
+//
+//#endif
 
 	return FGameplayAbilityTargetDataHandle(ActorsData);
 }

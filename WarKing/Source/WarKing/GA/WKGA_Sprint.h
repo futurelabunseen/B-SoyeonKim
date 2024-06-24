@@ -28,6 +28,6 @@ public:
 	void EndSprintAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo);
 	void StopSrpint();
 	void CancelCost();
-
+	class AWKCharacterPlayer* TargetCharacter;
 	UAbilitySystemComponent* TargetASC;
 };

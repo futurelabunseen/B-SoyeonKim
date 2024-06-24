@@ -36,7 +36,7 @@ void AWKLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
 
 	UE_LOG(LogTemp, Log, TEXT("AWKLobbyGameMode::PostLogin"));
-	// TODO : Ready 상태 체크
+	
 	if (NumberOfPlayers == GameStartPlayerNum)
 	{		
 		// Player정보 담기
@@ -54,29 +54,48 @@ void AWKLobbyGameMode::ServerTravelGameLevel()
 	}
 }
 
+void AWKLobbyGameMode::Countdown()
+{
+	float CountdownTime = TraverlTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+
+	/*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		AWKLobbyPlayerController* WKPlayerController = Cast<AWKLobbyPlayerController>(*It);
+		if (WKPlayerController)
+		{
+			WKPlayerController->GameTime = CountdownTime;	
+		}
+	}*/
+
+	//LocalPlayerController->OnRep_GameTime();
+
+	UE_LOG(LogTemp, Log ,TEXT("Count"));
+	if (CountdownTime <= 0.f)
+	{
+		GetWorldTimerManager().ClearTimer(TravelTimer);
+		ServerTravelGameLevel();
+	}
+}
+
 void AWKLobbyGameMode::StartReady()
 {
-	//TODO : Ready 정보.. 넘기기..!
-	
-	//AWKLobbyGameState* WKLobbyState = Cast<AWKLobbyGameState>(UGameplayStatics::GetGameState(this));
+	if (HasAuthority())
+	{
+		GetWorldTimerManager().SetTimer(
+			TravelTimer,
+			this,
+			&ThisClass::Countdown,
+			0.5f, true);
 
-	//if (WKLobbyState && LocalPlayerController)
-	//{
-	//	for (auto PState : WKLobbyState->PlayerArray)
-	//	{
-	//		APlayerState* PlayerState = PState.Get();
-	//		if (PlayerState)
-	//		{
-	//			//FString PlayerName = PlayerState->GetPlayerName();
+		LevelStartingTime = GetWorld()->GetTimeSeconds();
 
-	//			LocalPlayerController->WKLobbyHUD->AddPlayerInfo(PlayerState);
-	//		}
-	//	}
-	//}
-
-	GetWorldTimerManager().SetTimer(
-		TravelTimer,
-		this,
-		&ThisClass::ServerTravelGameLevel,
-		TraverlTime);
+		/*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+		{
+			AWKLobbyPlayerController* WKPlayerController = Cast<AWKLobbyPlayerController>(*It);
+			if (WKPlayerController)
+			{
+				WKPlayerController->bIsStartCount = 1;	
+			}
+		}*/
+	}	
 }

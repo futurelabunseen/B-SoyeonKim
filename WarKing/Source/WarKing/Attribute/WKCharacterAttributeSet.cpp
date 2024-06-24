@@ -4,7 +4,7 @@
 #include "Attribute/WKCharacterAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
-#include "Character/WKCharacterBase.h"
+#include "Character/WKCharacterPlayer.h"
 #include "Net/UnrealNetwork.h"
 #include "Enum/WKCharacterHitType.h"
 #include "Tag/WKGameplayTag.h"
@@ -70,11 +70,11 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 
 	float MinHealth = 0.0f;
 
-	AWKCharacterBase* TargetCharacter = nullptr;
+	AWKCharacterPlayer* TargetCharacter = nullptr;
 
 	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
 	{
-		TargetCharacter = Cast<AWKCharacterBase>(Data.Target.AbilityActorInfo->AvatarActor.Get());
+		TargetCharacter = Cast<AWKCharacterPlayer>(Data.Target.AbilityActorInfo->AvatarActor.Get());
 	}
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
@@ -87,26 +87,17 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		UE_LOG(LogTemp, Log, TEXT("Damage : %f"), GetDamage());
 		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), MinHealth, GetMaxHealth()));
 		SetDamage(0.0f);
-
-
-		// HitReaction GA·Î ÀÌµ¿
-		//if (GetHealth() > UE_KINDA_SMALL_NUMBER)
-		//{
-		//	// HitReact -> Animation Multicast RPC
-		//	const FHitResult* Hit = Data.EffectSpec.GetContext().GetHitResult();
-
-		//	if (Hit)
-		//	{
-		//		EWKHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(Data.EffectSpec.GetContext().GetHitResult()->Location);
-
-		//		TargetCharacter->MultiPlayHitReact(HitDirection);
-		//	}
-		//}
 	}
 	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
-	{
+	{	
 		// Handle stamina changes.
 		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
+
+		if (GetStamina() <= KINDA_SMALL_NUMBER)
+		{
+			if (TargetCharacter)
+				TargetCharacter->ServerSetStopSprint();
+		}
 	}
 
 

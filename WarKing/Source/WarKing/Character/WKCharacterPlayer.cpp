@@ -382,6 +382,41 @@ bool AWKCharacterPlayer::GetIsFalling()
 	return false;
 }
 
+void AWKCharacterPlayer::ClientSetStopSprint_Implementation()
+{
+	Sprint(false);
+
+	if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISSPRINTING))
+	{
+		ASC->RemoveLooseGameplayTag(WKTAG_CHARACTER_STATE_ISSPRINTING);
+	}
+}
+
+void AWKCharacterPlayer::ServerSetStopSprint()
+{
+	Sprint(false);
+
+	if (!IsLocallyControlled())
+	{
+		ClientSetStopSprint();
+	}
+	
+	if (ASC && SprintCostEffect)
+	{
+		ASC->RemoveActiveGameplayEffectBySourceEffect(SprintCostEffect, ASC);
+	
+		FGameplayTagContainer AbilityTagsToCancel;
+		AbilityTagsToCancel.AddTag(WKTAG_CHARACTER_STATE_ISSPRINTING);
+		FGameplayTagContainer AbilityTagsToIgnore;
+
+		ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
+		if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISSPRINTING))
+		{
+			ASC->RemoveLooseGameplayTag(WKTAG_CHARACTER_STATE_ISSPRINTING);
+		}
+	}
+}
+
 void AWKCharacterPlayer::ServerLeaveGame_Implementation()
 {
 }

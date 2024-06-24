@@ -62,7 +62,11 @@ public:
 
 	bool GetIsFalling();
 
-	
+	UFUNCTION()
+	void ServerSetStopSprint();
+
+	UFUNCTION(Client, Reliable)
+	void ClientSetStopSprint();
 
 	UFUNCTION(Server, Reliable)
 	void ServerLeaveGame();
@@ -136,6 +140,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = GAS)
 	FGameplayTagContainer  CancelTags;
+
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<UGameplayEffect> SprintCostEffect;
 
 // RPC Section
 protected:

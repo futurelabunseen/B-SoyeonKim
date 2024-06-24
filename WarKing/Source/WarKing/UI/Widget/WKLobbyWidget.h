@@ -5,9 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "WKLobbyWidget.generated.h"
-class UListView;
-class UEditableTextBox;
-class UButton;
+
+
 /**
  * 
  */
@@ -19,21 +18,15 @@ class WARKING_API UWKLobbyWidget : public UUserWidget
 public:
 	UWKLobbyWidget(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UListView> PlayerInfoList;
+	void SetStartBt();
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UEditableTextBox> NickNameTextBox;
-
-	UPROPERTY()
-	TSubclassOf<class UWKPlayerInfoWidget> ListElementClass;
+	TObjectPtr<class UButton> StartBt;
 
 	UPROPERTY(meta = (BindWidget))
-	UButton* StartBt;
+	TObjectPtr<class UTextBlock> Timer;
 public:
 	virtual void NativeConstruct() override;
-
-	void AddToPlayerInfoListView(UObject* ListElementObject);
 
 protected:
 

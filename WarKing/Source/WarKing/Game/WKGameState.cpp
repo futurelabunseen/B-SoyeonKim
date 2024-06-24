@@ -40,23 +40,6 @@ void AWKGameState::PostInitializeComponents()
 					ASC->ApplyGameplayEffectSpecToTarget(*NewHandle.Data.Get(), ASC.Get());
 			}
 		}
-
-		//if (HasAuthority())
-		//{
-		//	if (AttributeSet)
-		//	{
-		//		AGameMode* GameMode = GetWorld()->GetAuthGameMode<AGameMode>();
-		//		if (GameMode)
-		//		{
-		//			AWKGameMode* WKGameMode = Cast<AWKGameMode>(GameMode);
-		//			if (WKGameMode)
-		//			{
-		//				AttributeSet->OnWinnerTeam.AddDynamic();
-		//			}
-		//		}
-
-		//	}
-		//}
 	}
 }
 

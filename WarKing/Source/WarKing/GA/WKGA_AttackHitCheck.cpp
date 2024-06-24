@@ -40,71 +40,74 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 {		
 	if (UAbilitySystemBlueprintLibrary::TargetDataHasHitResult(TargetDataHandle, 0))
 	{
-		FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, 0);
-		UE_LOG(LogTemp, Log, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
-		
-		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
-		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
-		
-		if (!SourceASC || !TargetASC)
+		for (int32 i = 0; i < TargetDataHandle.Num(); ++i)
 		{
-			UE_LOG(LogTemp, Log, TEXT("UWKGA_AttackHitCheck::OnTraceResultCallback : ASC not Found!"));
-			return;
-		}
+			FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, i);
+			UE_LOG(LogTemp, Log, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
 
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
+			UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
+			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
 
-		if (EffectSpecHandle.IsValid())
-		{
-			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);
-			CueContextHandle.AddHitResult(HitResult);
-			FGameplayCueParameters CueParams;
-			CueParams.EffectContext = CueContextHandle;
-
-			if (!TargetASC->HasMatchingGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK))
+			if (!SourceASC || !TargetASC)
 			{
-				ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
-	
-				// 불검일 경우
-				if (SourceASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISFLAMING))
-				{
-					// TODO: 현재 화상 상태가 아닐 경우에만 붙이기, 나중엔 취소하고 다시 붙이는 것으로 수정
-					if (!TargetASC->HasMatchingGameplayTag(WKTAG_GC_CHARACTER_BURN))
-					{
-						FGameplayEffectSpecHandle DotEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDotDamageEffect, CurrentLevel);
-						ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, DotEffectSpecHandle, TargetDataHandle);
-					}	
-				}
+				UE_LOG(LogTemp, Log, TEXT("UWKGA_AttackHitCheck::OnTraceResultCallback : ASC not Found!"));
+				return;
+			}
 
-				if (!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD) &&
-					!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_AOE) &&
-					!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD))
-				{
-					// HitReact
-					AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(HitResult.GetActor());
+			FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, CurrentLevel);
 
-					if (TargetCharacter)
+			if (EffectSpecHandle.IsValid())
+			{
+				FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);
+				CueContextHandle.AddHitResult(HitResult);
+				FGameplayCueParameters CueParams;
+				CueParams.EffectContext = CueContextHandle;
+
+				if (!TargetASC->HasMatchingGameplayTag(WKTAG_EVENT_CHARACTER_ACTION_BLOCKATTACK))
+				{
+					ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetDataHandle);
+
+					// 불검일 경우
+					if (SourceASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISFLAMING))
 					{
-						FGameplayTag HitDirectionTag = TargetCharacter->GetHitReactDirection(HitResult.ImpactPoint);
-						TargetCharacter->ServerPlayHitReact(HitDirectionTag);
+						// TODO: 현재 화상 상태가 아닐 경우에만 붙이기, 나중엔 취소하고 다시 붙이는 것으로 수정
+						if (!TargetASC->HasMatchingGameplayTag(WKTAG_GC_CHARACTER_BURN))
+						{
+							FGameplayEffectSpecHandle DotEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDotDamageEffect, CurrentLevel);
+							ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, DotEffectSpecHandle, TargetDataHandle);
+						}
 					}
 
-					TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
+					if (!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD) &&
+						!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_AOE) &&
+						!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD))
+					{
+						// HitReact
+						AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(HitResult.GetActor());
+
+						if (TargetCharacter)
+						{
+							FGameplayTag HitDirectionTag = TargetCharacter->GetHitReactDirection(HitResult.ImpactPoint);
+							TargetCharacter->ServerPlayHitReact(HitDirectionTag);
+						}
+
+						TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParams);
+					}
+				}
+				else
+				{
+					// Block Attack GC 발동
+					TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_BLOCKATTACK, CueParams);
 				}
 			}
-			else
-			{
-				// Block Attack GC 발동
-				TargetASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_BLOCKATTACK, CueParams);
-			}
-		}
-		
-		// ComboAttack AttackRange Buff Effect
-		FGameplayEffectSpecHandle BuffEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackBuffEffect, CurrentLevel);
 
-		if (BuffEffectSpecHandle.IsValid())
-		{
-			ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, BuffEffectSpecHandle);
+			// ComboAttack AttackRange Buff Effect
+			FGameplayEffectSpecHandle BuffEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackBuffEffect, CurrentLevel);
+
+			if (BuffEffectSpecHandle.IsValid())
+			{
+				ApplyGameplayEffectSpecToOwner(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, BuffEffectSpecHandle);
+			}
 		}
 	} 
 	else if (UAbilitySystemBlueprintLibrary::TargetDataHasActor(TargetDataHandle, 0))

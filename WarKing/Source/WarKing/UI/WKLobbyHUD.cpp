@@ -3,6 +3,7 @@
 
 #include "UI/WKLobbyHUD.h"
 
+#include "Components/TextBlock.h"
 #include "UI/Widget/WKLobbyWidget.h"
 
 AWKLobbyHUD::AWKLobbyHUD()
@@ -19,13 +20,26 @@ void AWKLobbyHUD::InitOverlay()
 	{
 		LobbyOverlayWidget = Cast<UWKLobbyWidget>(Widget);
 		LobbyOverlayWidget->AddToViewport();
+
+		if (GetOwner()->HasAuthority())
+		{
+			LobbyOverlayWidget->SetStartBt();
+		}
 	}
 }
 
-void AWKLobbyHUD::AddPlayerInfo(UObject* ListElementObject)
+void AWKLobbyHUD::SetTimerText(FString TimerText)
 {
 	if (LobbyOverlayWidget)
 	{
-		LobbyOverlayWidget->AddToPlayerInfoListView(ListElementObject);
+		LobbyOverlayWidget->Timer->SetText(FText::FromString(TimerText));
+	}
+}
+
+void AWKLobbyHUD::SetTimerVisible(ESlateVisibility Visible)
+{
+	if (LobbyOverlayWidget)
+	{
+		LobbyOverlayWidget->Timer->SetVisibility(Visible);
 	}
 }
