@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
 #include "Actor/Control/WKControl.h"
+#include "Blueprint/UserWidget.h"
 #include "UI/Widget/WKUserOverlayWidget.h"
 #include "UI/Widget/WKUserWidget.h"
 #include "UI/Widget/WKAnnouncementOverlayWidget.h"
@@ -71,7 +72,14 @@ void AWKHUD::InitOverlay(UAbilitySystemComponent* Player_ASC, UAttributeSet* Pla
 
 	// Control Init Delegate
 	OnHUDInitialized.Broadcast(GameWidgetController);
+	
+	if (KeyGuideWidgetClass)
+	{
+		KeyGuideWidget = CreateWidget<UUserWidget>(GetWorld(), KeyGuideWidgetClass);
 
+		if (KeyGuideWidget)
+			KeyGuideWidget->AddToViewport();
+	}
 
 	Widget->AddToViewport();
 }
@@ -145,3 +153,10 @@ void AWKHUD::SetReturnMenuOverlayVisible(ESlateVisibility Visibility)
 	}
 }
 
+void AWKHUD::SetKeyGuideVisible(ESlateVisibility Visibility)
+{
+	if (KeyGuideWidget)
+	{
+		KeyGuideWidget->SetVisibility(Visibility);
+	}
+}

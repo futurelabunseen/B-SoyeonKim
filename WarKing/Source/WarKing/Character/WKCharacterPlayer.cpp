@@ -548,7 +548,6 @@ void AWKCharacterPlayer::CancelAbilities()
 
 	FGameplayTagContainer AbilityTagsToIgnore;
 	AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.State.IsDead")));
-	//AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Character.Action.Skill.AOE")));
 
 	ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
 

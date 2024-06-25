@@ -132,7 +132,6 @@ void AWKGameMode::Tick(float DeltaTime)
 		if (CountdownTime <= 0.f)
 		{
 			DesytoySession();
-			//RestartGame();
 		}
 	}
 }

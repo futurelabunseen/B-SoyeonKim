@@ -15,6 +15,7 @@ class UWKAnnouncementOverlayWidget;
 class UWKUserWidget;
 struct FWidgetControllerParams;
 class UWKReturnMenuWidget;
+class UUserWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHUDInitialized, UWKGameWIdgetController*, WidgetController);
 /**
@@ -45,6 +46,7 @@ public:
 	void SetAnnounceWidgetVisible(ESlateVisibility Visibility);
 	void SetGameOverlayVisible(ESlateVisibility Visibility);
 	void SetReturnMenuOverlayVisible(ESlateVisibility Visibility);
+	void SetKeyGuideVisible(ESlateVisibility Visibility);
 
 	UPROPERTY()
 	TObjectPtr<UWKAnnouncementOverlayWidget> AnnounceWidget;
@@ -76,4 +78,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UWKReturnMenuWidget> ReturnMenuWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> KeyGuideWidget;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> KeyGuideWidgetClass;
 };

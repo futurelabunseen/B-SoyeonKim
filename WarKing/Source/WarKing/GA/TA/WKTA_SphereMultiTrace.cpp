@@ -57,7 +57,7 @@ FGameplayAbilityTargetDataHandle AWKTA_SphereMultiTrace::MakeTargetData() const
 
 	FGameplayAbilityTargetData_ActorArray* ActorsData = new FGameplayAbilityTargetData_ActorArray();
 	ActorsData->SetActors(HitActors);
-//
+
 //#if ENABLE_DRAW_DEBUG
 //
 //	if (bShowDebug)

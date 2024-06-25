@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> ReturnMenuAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> KeyGuideAction;
+
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	void HandleMatchHasStarted();
@@ -71,6 +74,8 @@ protected:
 	uint32 SecondsLeft;
 	bool bShowMenu = false;
 
+	bool bShowKeyGuide = false;
+
 // HUD Section
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -82,6 +87,8 @@ protected:
 	void SetHUDAnnounceCountdown(float Coun);
 
 	void ShowReturnToMainMenu();
+
+	void ShowKeyGuide();
 
 	FString GetWinnerText();
 };

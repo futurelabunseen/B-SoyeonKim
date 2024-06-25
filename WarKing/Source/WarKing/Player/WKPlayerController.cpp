@@ -18,6 +18,12 @@ AWKPlayerController::AWKPlayerController()
 	{
 		ReturnMenuAction = InputActionReturnMenuRef.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> KeyGuideActionRef(TEXT("/Script/EnhancedInput.InputAction'/Game/WarKing/Input/Actions/IA_KeyGuide.IA_KeyGuide'"));
+	if (nullptr != KeyGuideActionRef.Object)
+	{
+		KeyGuideAction = KeyGuideActionRef.Object;
+	}
 }
 
 void AWKPlayerController::BeginPlay()
@@ -43,6 +49,7 @@ void AWKPlayerController::SetupInputComponent()
 	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(ReturnMenuAction, ETriggerEvent::Triggered, this, &ThisClass::ShowReturnToMainMenu);
+		EnhancedInputComponent->BindAction(KeyGuideAction, ETriggerEvent::Triggered, this, &ThisClass::ShowKeyGuide);
 	}
 }
 
@@ -178,7 +185,6 @@ void AWKPlayerController::ServerCheckMatchState_Implementation()
 		0.3f, true);
 }
 
-
 void AWKPlayerController::BlockPlayerInput(bool bBlock)
 {
 	SetIgnoreMoveInput(bBlock);
@@ -229,6 +235,7 @@ void AWKPlayerController::ShowReturnToMainMenu()
 {
 	if (WKHUD)
 	{
+		UE_LOG(LogTemp, Log, TEXT("AWKPlayerController::ShowReturnToMainMenu"));
 		if (!bShowMenu)
 		{
 			SetInputMode(FInputModeGameAndUI());
@@ -242,6 +249,23 @@ void AWKPlayerController::ShowReturnToMainMenu()
 			WKHUD->SetReturnMenuOverlayVisible(ESlateVisibility::Hidden);
 		}
 		bShowMenu = !bShowMenu;
+	}
+}
+
+void AWKPlayerController::ShowKeyGuide()
+{
+	if (WKHUD)
+	{
+		UE_LOG(LogTemp, Log, TEXT("AWKPlayerController::ShowKeyGuide"));
+		if (bShowKeyGuide)
+		{
+			WKHUD->SetKeyGuideVisible(ESlateVisibility::Visible);
+		}
+		else
+		{
+			WKHUD->SetKeyGuideVisible(ESlateVisibility::Hidden);
+		}
+		bShowKeyGuide = !bShowKeyGuide;
 	}
 }
 

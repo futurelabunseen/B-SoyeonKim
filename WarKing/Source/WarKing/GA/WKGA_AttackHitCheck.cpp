@@ -33,7 +33,6 @@ void UWKGA_AttackHitCheck::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	UWKAT_Trace* AttackTraceTask = UWKAT_Trace::CreateTask(this, TargetActorClass);
 	AttackTraceTask->OnComplete.AddDynamic(this, &UWKGA_AttackHitCheck::OnTraceResultCallback);
 	AttackTraceTask->ReadyForActivation();
-
 }
 
 void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
@@ -70,7 +69,6 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 					// 불검일 경우
 					if (SourceASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISFLAMING))
 					{
-						// TODO: 현재 화상 상태가 아닐 경우에만 붙이기, 나중엔 취소하고 다시 붙이는 것으로 수정
 						if (!TargetASC->HasMatchingGameplayTag(WKTAG_GC_CHARACTER_BURN))
 						{
 							FGameplayEffectSpecHandle DotEffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDotDamageEffect, CurrentLevel);
@@ -133,7 +131,6 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 			FGameplayEffectContextHandle CueContextHandle = UAbilitySystemBlueprintLibrary::GetEffectContext(EffectSpecHandle);
 			CueContextHandle.AddActors(TargetDataHandle.Data[0].Get()->GetActors(), false);
 
-			//TODO: 이펙트로 발동 -> 이펙트의 Target Tag를 활용하기
 			FGameplayCueParameters CueParam;
 			CueParam.EffectContext = CueContextHandle;
 			SourceASC->ExecuteGameplayCue(WKTAG_GC_CHARACTER_ATTACKHIT, CueParam);

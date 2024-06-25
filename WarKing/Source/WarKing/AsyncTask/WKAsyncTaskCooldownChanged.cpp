@@ -3,7 +3,8 @@
 
 #include "AsyncTask/WKAsyncTaskCooldownChanged.h"
 
-UWKAsyncTaskCooldownChanged* UWKAsyncTaskCooldownChanged::ListenForCooldownChange(UAbilitySystemComponent* AbilitySystemComponent, FGameplayTagContainer InCooldownTags, bool InUseServerCooldown)
+UWKAsyncTaskCooldownChanged* UWKAsyncTaskCooldownChanged::ListenForCooldownChange(UAbilitySystemComponent* AbilitySystemComponent, 
+	FGameplayTagContainer InCooldownTags, bool InUseServerCooldown)
 {
 	UWKAsyncTaskCooldownChanged* ListenForCooldownChange = NewObject<UWKAsyncTaskCooldownChanged>();
 	ListenForCooldownChange->ASC = AbilitySystemComponent;
@@ -16,14 +17,16 @@ UWKAsyncTaskCooldownChanged* UWKAsyncTaskCooldownChanged::ListenForCooldownChang
 		return nullptr;
 	}
 
-	AbilitySystemComponent->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(ListenForCooldownChange, &UWKAsyncTaskCooldownChanged::OnActiveGameplayEffectAddedCallback);
+	AbilitySystemComponent->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(ListenForCooldownChange,
+						&UWKAsyncTaskCooldownChanged::OnActiveGameplayEffectAddedCallback);
 
 	TArray<FGameplayTag> CooldownTagArray;
 	InCooldownTags.GetGameplayTagArray(CooldownTagArray);
 
 	for (FGameplayTag CooldownTag : CooldownTagArray)
 	{
-		AbilitySystemComponent->RegisterGameplayTagEvent(CooldownTag, EGameplayTagEventType::NewOrRemoved).AddUObject(ListenForCooldownChange, &UWKAsyncTaskCooldownChanged::CooldownTagChanged);
+		AbilitySystemComponent->RegisterGameplayTagEvent(CooldownTag, EGameplayTagEventType::NewOrRemoved).AddUObject(ListenForCooldownChange,
+			&UWKAsyncTaskCooldownChanged::CooldownTagChanged);
 	}
 
 	return ListenForCooldownChange;
@@ -110,7 +113,7 @@ bool UWKAsyncTaskCooldownChanged::GetCooldownRemainingForTag(FGameplayTagContain
 		CooldownDuration = 0.f;
 
 		FGameplayEffectQuery const Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(InCooldownTags);
-		TArray< TPair<float, float> > DurationAndTimeRemaining = ASC->GetActiveEffectsTimeRemainingAndDuration(Query);
+		TArray<TPair<float, float>> DurationAndTimeRemaining = ASC->GetActiveEffectsTimeRemainingAndDuration(Query);
 		if (DurationAndTimeRemaining.Num() > 0)
 		{
 			int32 BestIdx = 0;
