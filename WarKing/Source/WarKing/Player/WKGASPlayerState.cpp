@@ -70,7 +70,7 @@ void AWKGASPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 {
 	float Health = Data.NewValue;
 
-	if ((Health <= UE_KINDA_SMALL_NUMBER) && !ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+	if ((Health < 1.0f) && !ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
 	{
 		// 죽으면 해당 Target에는 IsDead Tag가 부착
 		ASC->AddLooseGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD);

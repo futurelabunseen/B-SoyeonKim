@@ -146,10 +146,6 @@ void AWKCharacterBase::SetDead()
 	isDead = true;
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	PlayDeadAnimation();
-
-	//Ragdoll
-	//GetMesh()->SetSimulatePhysics(true);
-	//GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	SetActorEnableCollision(false);
 	HpBar->SetHiddenInGame(true);
 }

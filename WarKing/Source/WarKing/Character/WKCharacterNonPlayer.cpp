@@ -89,7 +89,6 @@ void AWKCharacterNonPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32
 	// TODO: StunTest
 	bool bIsCheckStun = NewCount > 0;
 
-
 	if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
 	{
 		// Muticast RPC 호출
@@ -98,18 +97,6 @@ void AWKCharacterNonPlayer::StunTagChanged(const FGameplayTag CallbackTag, int32
 		// Server 수행
 		SetStun(bIsCheckStun);
 	}
-
-	// Stun시 해당 태그 관련 어빌리티를 전부 취소
-	//if (NewCount > 0)
-	//{
-	//	FGameplayTagContainer AbilityTagsToCancel;
-	//	AbilityTagsToCancel.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability")));
-
-	//	FGameplayTagContainer AbilityTagsToIgnore;
-	//	AbilityTagsToIgnore.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.NotCanceledByStun")));
-
-	//	ASC->CancelAbilities(&AbilityTagsToCancel, &AbilityTagsToIgnore);
-	//}
 }
 
 void AWKCharacterNonPlayer::MulticastSetStun_Implementation(bool bIsStun)

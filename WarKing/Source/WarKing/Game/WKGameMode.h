@@ -32,7 +32,6 @@ private:
 	virtual void OnMatchStateSet() override;
 	virtual void SetPlayerDefaults(APawn* PlayerPawn) override;
 	void DesytoySession();
-	void HandleSessionDestroyed(bool bWasSuccessful);
 	void SetTeam(APlayerState* WKPlayerState);
 
 	UFUNCTION()

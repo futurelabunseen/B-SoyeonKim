@@ -577,6 +577,9 @@ void AWKCharacterPlayer::RemoveAttackTag()
 
 void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 {
+	if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD))
+		return;
+
 	// Server 수행
 	SetStun(bIsStun);
 
@@ -584,9 +587,12 @@ void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 	{
 		CancelAbilities();
 		GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-		if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN))
+		if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUN))
 		{
-			ASC->AddLooseGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN);
+			if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN))
+			{
+				ASC->AddLooseGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN);
+			}
 		}
 	}
 	else
@@ -596,8 +602,12 @@ void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 			{
 				if (!isDead)
 				{
-					// Daad상태 추가
-					GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+					if (!ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUN))
+					{
+						// Daad상태 추가
+						GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+					}
+
 					if (ASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN))
 					{
 						ASC->RemoveLooseGameplayTag(WKTAG_CHARACTER_STATE_DEBUFF_STUNCOOLDOWN);
