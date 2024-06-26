@@ -278,3 +278,13 @@ void AWKGameMode::HandleMatchHasStarted()
 		}
 	}
 }
+
+void AWKGameMode::CheckDestroySession()
+{
+	int32 NumberOfPlayers = GameState.Get()->PlayerArray.Num();
+
+	if (NumberOfPlayers <= 1)
+	{
+		ReturnToMainMenuHost();
+	}
+}

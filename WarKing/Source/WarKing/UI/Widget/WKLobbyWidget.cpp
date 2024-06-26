@@ -32,6 +32,7 @@ void UWKLobbyWidget::NativeConstruct()
 
 void UWKLobbyWidget::OnStartBtClicked()
 {
+	StartBt->SetIsEnabled(false);
 	AWKLobbyGameMode* GameMode = Cast<AWKLobbyGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (GameMode)
 	{

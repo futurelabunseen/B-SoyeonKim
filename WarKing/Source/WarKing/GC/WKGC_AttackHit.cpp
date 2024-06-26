@@ -3,6 +3,7 @@
 
 #include "GC/WKGC_AttackHit.h"
 #include "Particles/ParticleSystem.h"
+#include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 
 UWKGC_AttackHit::UWKGC_AttackHit()
@@ -21,6 +22,10 @@ bool UWKGC_AttackHit::OnExecute_Implementation(AActor* Target, const FGameplayCu
 	if (HitResult)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(Target, ParticleSystem, HitResult->ImpactPoint, FRotator::ZeroRotator, true);
+		if (SoundCue)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, SoundCue, HitResult->ImpactPoint);
+		}
 	}
 	else
 	{

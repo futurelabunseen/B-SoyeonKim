@@ -88,4 +88,9 @@ void UWKReturnMenuWidget::OnPlayerLeftGame()
 			UE_LOG(LogTemp, Warning, TEXT("MultiplayerSessionsSubsystem valid"))
 				MultiplayerSessionsSubsystem->DestroySession();
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("MultiplayerSessionsSubsystem not valid. Cannot destroy session."))
+				ReturnButton->SetIsEnabled(true);
+		}
 }

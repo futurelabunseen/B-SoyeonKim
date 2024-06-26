@@ -6,8 +6,8 @@
 UWKCharacterSkillAttributeSet::UWKCharacterSkillAttributeSet() :
 	SkillRange(800.0f),
 	MaxSkillRange(1200.0f),
-	SkillAttackRate(150.0f),
-	MaxSkillAttackRate(300.0f),
+	SkillAttackRate(100.0f),
+	MaxSkillAttackRate(200.0f),
 	SkillEnergy(100.0f),
 	MaxSkillEnergy(100.0f)
 {

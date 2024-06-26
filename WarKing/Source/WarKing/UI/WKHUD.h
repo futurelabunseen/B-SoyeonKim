@@ -50,7 +50,7 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<UWKAnnouncementOverlayWidget> AnnounceWidget;
-
+	bool bShowMenu = false;
 private:
 	UPROPERTY()
 	TObjectPtr<UWKUserOverlayWidget> OverlayWidget;

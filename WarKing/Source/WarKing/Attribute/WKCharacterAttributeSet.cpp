@@ -100,7 +100,6 @@ void UWKCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectMo
 		}
 	}
 
-
 	//if((GetHealth() <= 0.0f) && !bOutOfHealth)
 	//{
 	//	UE_LOG(LogTemp, Log, TEXT(" PostGameplayEffectExecute DEAD : %f"), GetDamage());

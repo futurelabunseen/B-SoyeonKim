@@ -6,9 +6,11 @@
 #include "UI/WKHUD.h"
 #include "Game/WKGameMode.h"
 #include "Game/WKGameState.h"
+#include "Player/WKGASPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Tag/WKGameplayTag.h"
 #include "Net/UnrealNetwork.h"
 
 AWKPlayerController::AWKPlayerController()
@@ -71,21 +73,21 @@ void AWKPlayerController::OnMatchStateSet(FName State)
 
 void AWKPlayerController::OnRespawnState(bool bIsRespawnStart)
 {
-	if (WKHUD)
+	if (MatchState == MatchState::InProgress)
 	{
-		if (bIsRespawnStart)
+		if (WKHUD)
 		{
-			WKHUD->SetAnnounceText(TEXT("리스폰 중....."));
-			WKHUD->SetAnnounceTimerText(FString());
-			WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Visible);
-		}
-		else
-		{
-			if (MatchState == MatchState::InProgress)
+			if (bIsRespawnStart)
+			{
+				WKHUD->SetAnnounceText(TEXT("리스폰 중....."));
+				WKHUD->SetAnnounceTimerText(FString());
+				WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Visible);
+			}
+			else
 			{
 				WKHUD->SetAnnounceWidgetVisible(ESlateVisibility::Hidden);
-			}		
-		}		
+			}
+		}
 	}
 }
 
@@ -272,25 +274,50 @@ void AWKPlayerController::ShowKeyGuide()
 FString AWKPlayerController::GetWinnerText()
 {
 	AWKGameState* WKGameState = Cast<AWKGameState>(GetWorld()->GetGameState());
+	AWKGASPlayerState* WKPlayerState = GetPlayerState<AWKGASPlayerState>();
 	FString ReturnInfo = FString();
-	if (WKGameState)
+	if (WKGameState && WKPlayerState)
 	{
 		int32 RedTeamScore = FMath::CeilToInt(WKGameState->GetRedTeamScore());
 		int32 BlueTeamScore = FMath::CeilToInt(WKGameState->GetBlueTeamScore());
+		
+		FGameplayTag MyTeam = WKPlayerState->GetTeam();
+		FGameplayTag WinTeam = WKTAG_GAME_TEAM_NONE;
 
 		if (RedTeamScore > BlueTeamScore)
 		{
-			ReturnInfo = FString::Printf(TEXT("레드팀 우승"));
+			WinTeam = WKTAG_GAME_TEAM_RED;
 		}
 		else if (RedTeamScore < BlueTeamScore)
 		{
-			ReturnInfo = FString::Printf(TEXT("블루팀 우승"));
+			WinTeam = WKTAG_GAME_TEAM_BLUE;
 		}
-		else
+
+		if (WinTeam == WKTAG_GAME_TEAM_NONE)
 		{
 			ReturnInfo = FString::Printf(TEXT("Draw"));
 		}
-		
+		else
+		{
+			if (MyTeam == WKTAG_GAME_TEAM_BLUE)
+			{
+				ReturnInfo = FString::Printf(TEXT("블루팀 "));
+			}
+			else if (MyTeam == WKTAG_GAME_TEAM_RED)
+			{
+				ReturnInfo = FString::Printf(TEXT("레드팀 "));
+			}
+
+			if (MyTeam == WinTeam)
+			{
+				ReturnInfo.Append(FString(TEXT("승리")));
+			}
+			else
+			{
+				ReturnInfo.Append(FString(TEXT("패배")));
+			}
+		}	
+
 		ReturnInfo.Append(FString("\n"));
 		ReturnInfo.Append(FString::Printf(TEXT("Red : %d%% | Blue : %d%%"), RedTeamScore, BlueTeamScore));
 	}

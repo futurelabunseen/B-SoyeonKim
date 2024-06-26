@@ -7,6 +7,8 @@
 #include "Attribute/WKGameAttributeSet.h"
 #include "Game/WKGameMode.h"
 #include "WarKing.h"
+#include "Kismet/GameplayStatics.h" 
+#include "Sound/SoundCue.h" 
 #include "Tag/WKGameplayTag.h"
 
 AWKGameState::AWKGameState(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -15,6 +17,11 @@ AWKGameState::AWKGameState(const FObjectInitializer& ObjectInitializer) : Super(
 	ASC->SetIsReplicated(true);
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 	AttributeSet = CreateDefaultSubobject<UWKGameAttributeSet>(TEXT("GameAttributeSet"));
+
+	ASC->RegisterGameplayTagEvent(WKTAG_GAME_CONTROL_DOMINATE_BLUETEAM,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::DominateTagChanged);
+	ASC->RegisterGameplayTagEvent(WKTAG_GAME_CONTROL_DOMINATE_REDTEAM,
+		EGameplayTagEventType::NewOrRemoved).AddUObject(this, &ThisClass::DominateTagChanged);
 
 	NetUpdateFrequency = 100.f;
 }
@@ -71,6 +78,20 @@ float AWKGameState::GetRedTeamScore() const
 	return 0.0f;
 }
 
+void AWKGameState::PlaySound()
+{
+	if (SoundCue)
+	{
+		// 이 액터의 위치에서 사운드 재생
+		UGameplayStatics::PlaySound2D(this, SoundCue);
+	}
+}
+
+void AWKGameState::MulticastPlaySound_Implementation()
+{
+	PlaySound();
+}
+
 void AWKGameState::HandleBeginPlay()
 {
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("Begin"));
@@ -92,4 +113,12 @@ void AWKGameState::OnRep_ReplicatedHasBegunPlay()
 void AWKGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
+void AWKGameState::DominateTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (NewCount > 0)
+	{
+		MulticastPlaySound();
+	}
 }

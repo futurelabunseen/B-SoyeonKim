@@ -59,7 +59,6 @@ void UWKGameAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 		ASC = GetOwningAbilitySystemComponentChecked();
 	}
 
-	//TODO : 거점 점령 점수 달성한 팀 Win 처리
 	if (Data.EvaluatedData.Attribute == GetControlScoreBlueAttribute())
 	{
 		float CurrBlueControlScore = GetControlScoreBlue();

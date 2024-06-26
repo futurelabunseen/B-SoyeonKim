@@ -24,6 +24,7 @@ public:
 	void OnMatchStateSet(FName State);
 	void OnRespawnState(bool bIsRespawnStart);
 
+	FORCEINLINE FName GetMatchState() { return MatchState; };
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))

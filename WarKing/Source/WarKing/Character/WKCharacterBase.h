@@ -28,7 +28,7 @@ protected:
 	TObjectPtr<class UAnimMontage> DeadMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Stat, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UAnimMontage> HitReactMontage;
+	TObjectPtr<class UAnimMontage> RespawnMontage;
 
 	UPROPERTY(EditAnywhere, Category = Mesh)
 	TObjectPtr<USkeletalMesh> RedMaterial;

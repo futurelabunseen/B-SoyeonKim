@@ -26,7 +26,7 @@ void UWKGA_Skill_FlamingSword::ActivateAbility(const FGameplayAbilitySpecHandle 
 	PlayMontageTask->ReadyForActivation();
 
 	ASC = ActorInfo->AbilitySystemComponent.Get();
-
+	UE_LOG(LogTemp, Log, TEXT("UWKGA_Skill_FlamingSword:ActivateAbility Flaming motion Start"));
 	if (ASC)
 	{
 		ASC->AddLooseGameplayTag(ActivateActionTag);
@@ -85,6 +85,7 @@ void UWKGA_Skill_FlamingSword::OnCompleteCallback()
 		TargetCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 	}	
 
+	UE_LOG(LogTemp, Log, TEXT("UWKGA_Skill_FlamingSword:OnCompleteCallback Flaming motion complete"));
 	if (ASC->HasMatchingGameplayTag(ActivateActionTag))
 	{
 		ASC->RemoveLooseGameplayTag(ActivateActionTag);

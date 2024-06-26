@@ -77,8 +77,7 @@ void UWKGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 					}
 
 					if (!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_STATE_ISDEAD) &&
-						!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_AOE) &&
-						!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD))
+						!TargetASC->HasMatchingGameplayTag(WKTAG_CHARACTER_ACTION_SKILL_AOE))
 					{
 						// HitReact
 						AWKCharacterPlayer* TargetCharacter = Cast<AWKCharacterPlayer>(HitResult.GetActor());

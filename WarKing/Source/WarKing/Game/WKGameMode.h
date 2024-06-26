@@ -31,8 +31,8 @@ private:
 	virtual void InitSeamlessTravelPlayer(AController* NewController) override;
 	virtual void OnMatchStateSet() override;
 	virtual void SetPlayerDefaults(APawn* PlayerPawn) override;
-
 	void DesytoySession();
+	void HandleSessionDestroyed(bool bWasSuccessful);
 	void SetTeam(APlayerState* WKPlayerState);
 
 	UFUNCTION()
@@ -52,7 +52,7 @@ private:
 public:
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 	virtual void HandleMatchHasStarted() override;
-
+	void CheckDestroySession();
 private:
 	float CountdownTime = 0.f;
 	class AWKGameState* WKGameState;

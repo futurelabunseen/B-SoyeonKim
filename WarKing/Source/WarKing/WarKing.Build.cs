@@ -13,7 +13,8 @@ public class WarKing : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] {
             "Core", "CoreUObject", "Engine", "InputCore",
             "MultiplayerSessions",
-            "EnhancedInput", "OnlineSubSystemSteam", "OnlineSubSystem"
+            "EnhancedInput", "OnlineSubSystemSteam", "OnlineSubSystem",
+            "Niagara"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[] {

@@ -71,6 +71,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerLeaveGame();
 
+
 // Camera Section
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
@@ -151,6 +152,8 @@ protected:
 	void MulticastSetStun(bool bIsStun);
 
 	void MulticastSetStun_Implementation(bool bIsStun);
+
+	void RespawnMontagePlay();
 
 // Elim Section
 protected:

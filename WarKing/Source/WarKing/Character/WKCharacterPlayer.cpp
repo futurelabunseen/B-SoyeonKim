@@ -105,12 +105,12 @@ void AWKCharacterPlayer::PossessedBy(AController* NewController)
 	}
 	isDead = false;
 	SetNickNameWidget();
-
 	AWKPlayerController* PlayerController = Cast<AWKPlayerController>(GetController());
 	if (PlayerController)
 	{
 		PlayerController->OnRespawnState(false);
 	}
+	RespawnMontagePlay();
 	WK_LOG(LogWKNetwork, Log, TEXT("%s"), TEXT("End"));
 }
 
@@ -151,6 +151,7 @@ void AWKCharacterPlayer::OnRep_PlayerState()
 	{
 		PlayerController->OnRespawnState(false);
 	}
+	RespawnMontagePlay();
 }
 
 void AWKCharacterPlayer::OnRep_Controller()
@@ -605,6 +606,13 @@ void AWKCharacterPlayer::MulticastSetStun_Implementation(bool bIsStun)
 			}
 		), StunCooldownTime, false);
 	}
+}
+
+void AWKCharacterPlayer::RespawnMontagePlay()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance->StopAllMontages(0.0f);
+	AnimInstance->Montage_Play(RespawnMontage, 1.0f);
 }
 
 void AWKCharacterPlayer::ElimTimerFinished()

@@ -32,6 +32,11 @@ protected:
 	virtual void OnRep_ReplicatedHasBegunPlay() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void DominateTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	void PlaySound();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlaySound();
 
 //GAS Section
 protected:
@@ -44,10 +49,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = GAS)
 	TArray<TSubclassOf<class UGameplayEffect>> StartEffects;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	TObjectPtr<class USoundCue> SoundCue;
+
 public:
 	TArray<AWKGASPlayerState*> RedTeam;
 	TArray<AWKGASPlayerState*> BlueTeam;
-
 
 
 	UPROPERTY(EditDefaultsOnly)

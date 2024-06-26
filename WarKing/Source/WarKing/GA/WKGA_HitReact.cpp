@@ -39,7 +39,6 @@ void UWKGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
     // 어빌리티 취소 코드
     FGameplayTagContainer AbilityTagsToCancel;
     AbilityTagsToCancel.AddTag(WKTAG_CHARACTER_ACTION_ATTACK);
-    AbilityTagsToCancel.AddTag(WKTAG_CHARACTER_ACTION_SKILL_FLAMINGSWORD);
     AbilityTagsToCancel.AddTag(WKTAG_CHARACTER_STATE_ISJUMPING);
 
     FGameplayTagContainer AbilityTagsToIgnore;
