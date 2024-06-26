@@ -17,8 +17,8 @@ AWKHealPack::AWKHealPack()
 	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
 	Niagara = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraEffect"));
 
-	Niagara->SetupAttachment(RootComponent);
-
+	SetRootComponent(Niagara);
+	//Niagara->SetupAttachment(RootComponent);
 
 	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NiagaraSystemRef(TEXT("/Script/Niagara.NiagaraSystem'/Game/OtherAssets/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_3.NS_Pickup_3'"));
 	if (NiagaraSystemRef.Succeeded())

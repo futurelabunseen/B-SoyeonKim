@@ -14,13 +14,6 @@ void AWKLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	//AWKLobbyPlayerController* WKPlayerController = Cast<AWKLobbyPlayerController>(NewPlayer);
-
-	//if (WKPlayerController)
-	//{
-	//	WKPlayerController->OnLobbyStart();
-	//}
-
 	if (LocalPlayerController)
 	{
 		if (NewPlayer->IsLocalController())
@@ -49,7 +42,7 @@ void AWKLobbyGameMode::ServerTravelGameLevel()
 	UWorld* World = GetWorld();
 	if (World)
 	{
-		bUseSeamlessTravel = true;
+		//bUseSeamlessTravel = true;
 		World->ServerTravel(FString("/Game/WarKing/Maps/ElvenRuins?listen"));
 	}
 }
@@ -57,17 +50,6 @@ void AWKLobbyGameMode::ServerTravelGameLevel()
 void AWKLobbyGameMode::Countdown()
 {
 	float CountdownTime = TraverlTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-
-	/*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-	{
-		AWKLobbyPlayerController* WKPlayerController = Cast<AWKLobbyPlayerController>(*It);
-		if (WKPlayerController)
-		{
-			WKPlayerController->GameTime = CountdownTime;	
-		}
-	}*/
-
-	//LocalPlayerController->OnRep_GameTime();
 
 	UE_LOG(LogTemp, Log ,TEXT("Count"));
 	if (CountdownTime <= 0.f)
@@ -88,14 +70,5 @@ void AWKLobbyGameMode::StartReady()
 			0.5f, true);
 
 		LevelStartingTime = GetWorld()->GetTimeSeconds();
-
-		/*for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-		{
-			AWKLobbyPlayerController* WKPlayerController = Cast<AWKLobbyPlayerController>(*It);
-			if (WKPlayerController)
-			{
-				WKPlayerController->bIsStartCount = 1;	
-			}
-		}*/
 	}	
 }
